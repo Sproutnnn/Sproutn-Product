@@ -43,36 +43,6 @@ const ManufacturingService: React.FC = () => {
               <ArrowRightIcon className="ml-2 h-5 w-5 inline" />
             </Link>
           </div>
-          <div className="mt-16 max-w-3xl mx-auto relative">
-            <div className="bg-charcoal-700/70 backdrop-blur-sm p-6 rounded-xl border border-charcoal-600 shadow-2xl">
-              <div className="flex items-center mb-4">
-                <div className="flex space-x-2">
-                  <div className="w-3 h-3 rounded-full bg-red-500"></div>
-                  <div className="w-3 h-3 rounded-full bg-yellow-500"></div>
-                  <div className="w-3 h-3 rounded-full bg-green-500"></div>
-                </div>
-              </div>
-              <div className="text-gray-300">
-                <p className="mb-2">
-                  <span className="text-primary-400">$</span> Initializing
-                  production planning
-                </p>
-                <p className="mb-2">
-                  <span className="text-primary-400">&gt;</span> Coordinating
-                  materials procurement
-                </p>
-                <p className="mb-2">
-                  <span className="text-primary-400">&gt;</span> Implementing
-                  quality control measures
-                </p>
-                <p className="mb-4">
-                  <span className="text-primary-400">$</span>{' '}
-                  <span className="animate-pulse">|</span>
-                </p>
-              </div>
-            </div>
-            <div className="absolute -bottom-4 -right-4 -left-4 h-16 bg-gradient-to-t from-charcoal-800 to-transparent z-10"></div>
-          </div>
         </div>
       </section>
       {/* Services Section */}
