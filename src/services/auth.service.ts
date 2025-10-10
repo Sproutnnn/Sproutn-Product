@@ -1,5 +1,6 @@
 import bcrypt from 'bcryptjs';
 import { supabase } from '../lib/supabase';
+import { supabaseFetch } from '../lib/supabase-fetch';
 import type { Tables, TablesInsert } from '../types/database.types';
 
 export type User = Tables<'users'>;
@@ -52,12 +53,12 @@ export const authService = {
   async login(credentials: LoginCredentials): Promise<User> {
     console.log('🔐 Attempting login for:', credentials.email);
 
-    // Fetch user by email
-    const { data: user, error } = await supabase
-      .from('users')
-      .select('*')
-      .eq('email', credentials.email)
-      .single();
+    // Fetch user by email using direct fetch to avoid header issues
+    const { data: user, error } = await supabaseFetch<User>('users', 'GET', {
+      select: '*',
+      eq: { email: credentials.email },
+      single: true
+    });
 
     if (error) {
       console.error('❌ Database error:', error);
