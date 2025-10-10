@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { PlusIcon, PencilIcon, TrashIcon, StarIcon, CalendarIcon, UserIcon, TagIcon } from 'lucide-react';
+import { blogService } from '../../services/blog.service';
 interface BlogPost {
   id: string;
   title: string;
@@ -21,99 +22,69 @@ const BlogManagement: React.FC = () => {
   // Categories for filter
   const categories = ['Product Development', 'Manufacturing', 'Sourcing', 'Photography', 'Marketing', 'Sustainability', 'Business Tips'];
   useEffect(() => {
-    // In a real app, this would fetch from an API
-    // For demo purposes, we'll use mock data
-    setTimeout(() => {
-      setBlogPosts([{
-        id: '1',
-        title: 'How to Validate Your Product Idea Before Manufacturing',
-        excerpt: 'Learn effective strategies to test your product concept and gather valuable feedback before investing in manufacturing.',
-        author: 'Sarah Johnson',
-        date: '2023-06-15',
-        category: 'Product Development',
-        featured: true,
-        published: true
-      }, {
-        id: '2',
-        title: '5 Ways to Reduce Manufacturing Costs Without Sacrificing Quality',
-        excerpt: 'Discover practical approaches to optimize your production budget while maintaining high product standards.',
-        author: 'Michael Chen',
-        date: '2023-05-28',
-        category: 'Manufacturing',
-        featured: false,
-        published: true
-      }, {
-        id: '3',
-        title: 'Navigating Supply Chain Challenges in 2023',
-        excerpt: 'Insights on how to overcome current supply chain disruptions and ensure smooth production for your product.',
-        author: 'Jessica Martinez',
-        date: '2023-04-12',
-        category: 'Sourcing',
-        featured: false,
-        published: true
-      }, {
-        id: '4',
-        title: 'The Power of Professional Product Photography',
-        excerpt: 'Why investing in high-quality product images can dramatically increase your conversion rates and sales.',
-        author: 'David Wilson',
-        date: '2023-03-05',
-        category: 'Photography',
-        featured: false,
-        published: true
-      }, {
-        id: '5',
-        title: 'Creating an Effective Marketing Strategy for Product Launch',
-        excerpt: 'A step-by-step guide to building a marketing plan that will maximize visibility for your new product.',
-        author: 'Emily Roberts',
-        date: '2023-02-18',
-        category: 'Marketing',
-        featured: false,
-        published: true
-      }, {
-        id: '6',
-        title: 'Sustainable Manufacturing: Practices for Eco-Conscious Brands',
-        excerpt: "How to implement environmentally friendly production methods that appeal to today's conscious consumers.",
-        author: 'Alex Thompson',
-        date: '2023-01-25',
-        category: 'Sustainability',
-        featured: false,
-        published: true
-      }, {
-        id: '7',
-        title: 'Choosing the Right Materials for Your Product',
-        excerpt: 'A comprehensive guide to selecting materials that balance cost, durability, and sustainability.',
-        author: 'Ryan Miller',
-        date: '2023-07-02',
-        category: 'Product Development',
-        featured: false,
-        published: false
-      }]);
-      setLoading(false);
-    }, 500);
+    const fetchBlogPosts = async () => {
+      try {
+        setLoading(true);
+        const posts = await blogService.getAll(true); // true = include unpublished for admin
+        setBlogPosts(posts.map(post => ({
+          id: post.id,
+          title: post.title,
+          excerpt: post.excerpt || '',
+          author: post.author,
+          date: new Date(post.created_at || '').toISOString().split('T')[0],
+          category: post.category,
+          featured: post.featured || false,
+          published: post.published || false
+        })));
+      } catch (error) {
+        console.error('Error fetching blog posts:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchBlogPosts();
   }, []);
   const handleDeleteClick = (id: string) => {
     setPostToDelete(id);
     setShowDeleteModal(true);
   };
-  const confirmDelete = () => {
+  const confirmDelete = async () => {
     if (postToDelete) {
-      // In a real app, this would send a delete request to the API
-      setBlogPosts(prevPosts => prevPosts.filter(post => post.id !== postToDelete));
-      setShowDeleteModal(false);
-      setPostToDelete(null);
+      try {
+        await blogService.delete(postToDelete);
+        setBlogPosts(prevPosts => prevPosts.filter(post => post.id !== postToDelete));
+        setShowDeleteModal(false);
+        setPostToDelete(null);
+      } catch (error) {
+        console.error('Error deleting blog post:', error);
+        alert('Failed to delete blog post');
+      }
     }
   };
-  const toggleFeatured = (id: string) => {
-    setBlogPosts(prevPosts => prevPosts.map(post => post.id === id ? {
-      ...post,
-      featured: !post.featured
-    } : post));
+
+  const toggleFeatured = async (id: string) => {
+    try {
+      await blogService.toggleFeatured(id);
+      setBlogPosts(prevPosts => prevPosts.map(post =>
+        post.id === id ? { ...post, featured: !post.featured } : post
+      ));
+    } catch (error) {
+      console.error('Error toggling featured:', error);
+      alert('Failed to update featured status');
+    }
   };
-  const togglePublished = (id: string) => {
-    setBlogPosts(prevPosts => prevPosts.map(post => post.id === id ? {
-      ...post,
-      published: !post.published
-    } : post));
+
+  const togglePublished = async (id: string) => {
+    try {
+      await blogService.togglePublished(id);
+      setBlogPosts(prevPosts => prevPosts.map(post =>
+        post.id === id ? { ...post, published: !post.published } : post
+      ));
+    } catch (error) {
+      console.error('Error toggling published:', error);
+      alert('Failed to update published status');
+    }
   };
   const filteredPosts = blogPosts.filter(post => {
     const matchesSearch = post.title.toLowerCase().includes(searchTerm.toLowerCase()) || post.excerpt.toLowerCase().includes(searchTerm.toLowerCase()) || post.author.toLowerCase().includes(searchTerm.toLowerCase());

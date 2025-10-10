@@ -1,17 +1,12 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { ArrowRightIcon, ClockIcon, CheckCircleIcon, FileTextIcon, BoxIcon, TruckIcon, CreditCardIcon, PackageIcon, BarChartIcon } from 'lucide-react';
-export interface Project {
-  id: string;
-  name: string;
-  status: 'draft' | 'details' | 'prototyping' | 'sourcing' | 'payment' | 'production' | 'shipping' | 'completed';
+import type { ProjectWithCustomer } from '../services/projects.service';
+
+export type Project = ProjectWithCustomer & {
   createdAt: string;
   updatedAt: string;
-  customer: {
-    name: string;
-    email: string;
-  };
-}
+};
 interface ProjectCardProps {
   project: Project;
 }

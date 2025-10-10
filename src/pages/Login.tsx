@@ -17,18 +17,20 @@ const Login: React.FC = () => {
       navigate('/dashboard');
     }
   }, [isAuthenticated, navigate]);
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
+
     if (!email || !password) {
       setError('Please enter both email and password');
       return;
     }
+
     try {
-      login(email, password);
+      await login(email, password);
       navigate('/dashboard');
-    } catch (err) {
-      setError('Invalid login credentials');
+    } catch (err: any) {
+      setError(err.message || 'Invalid email or password');
     }
   };
   return <div className="min-h-screen flex bg-gradient-to-br from-gray-50 to-primary-50/20">
@@ -61,8 +63,7 @@ const Login: React.FC = () => {
               Your dream starts here
             </h2>
             <p className="mt-3 text-center text-sm text-charcoal-400">
-              Hint: Use email with "admin" for admin role, any other email for
-              customer role
+              Sign in to access your dashboard
             </p>
           </div>
           <form className="mt-8 space-y-6" onSubmit={handleSubmit}>

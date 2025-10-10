@@ -1,8 +1,11 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ArrowLeftIcon } from 'lucide-react';
+import { projectsService } from '../services/projects.service';
+import { useAuth } from '../context/AuthContext';
 const ProjectCreation: React.FC = () => {
   const navigate = useNavigate();
+  const { user } = useAuth();
   const [formData, setFormData] = useState({
     name: '',
     description: '',
@@ -21,15 +24,32 @@ const ProjectCreation: React.FC = () => {
       [name]: value
     }));
   };
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
-    // In a real app, this would send data to an API
-    // For demo purposes, we'll simulate an API call
-    setTimeout(() => {
-      // Navigate to the dashboard after "creating" the project
+
+    try {
+      if (!user?.id) {
+        throw new Error('User not authenticated');
+      }
+
+      await projectsService.create({
+        name: formData.name,
+        description: formData.description,
+        category: formData.category,
+        target_market: formData.targetMarket,
+        estimated_budget: formData.estimatedBudget,
+        customer_id: user.id,
+        status: 'draft'
+      });
+
       navigate('/dashboard');
-    }, 1000);
+    } catch (error) {
+      console.error('Error creating project:', error);
+      alert('Failed to create project. Please try again.');
+    } finally {
+      setIsSubmitting(false);
+    }
   };
   return <div>
       <button onClick={() => navigate(-1)} className="flex items-center text-sm text-gray-600 hover:text-gray-900 mb-6">

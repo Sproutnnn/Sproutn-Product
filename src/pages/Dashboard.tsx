@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { PlusIcon } from 'lucide-react';
 import ProjectCard, { Project } from '../components/ProjectCard';
 import { useAuth } from '../context/AuthContext';
+import { projectsService } from '../services/projects.service';
 const Dashboard: React.FC = () => {
   const {
     user
@@ -13,66 +14,53 @@ const Dashboard: React.FC = () => {
   const [selectedProject, setSelectedProject] = useState<Project | null>(null);
   const [newStatus, setNewStatus] = useState('');
   useEffect(() => {
-    // In a real app, this would fetch from an API
-    // For demo purposes, we'll use mock data
-    const mockProjects: Project[] = [{
-      id: '1',
-      name: 'Smart Home Controller',
-      status: 'prototyping',
-      createdAt: '2023-05-15T10:30:00Z',
-      updatedAt: '2023-05-20T14:45:00Z',
-      customer: {
-        name: 'John Doe',
-        email: 'john@example.com'
+    const fetchProjects = async () => {
+      try {
+        setLoading(true);
+        let fetchedProjects;
+
+        if (user?.role === 'admin') {
+          // Admins see all projects
+          fetchedProjects = await projectsService.getAll();
+        } else if (user?.id) {
+          // Customers see only their projects
+          fetchedProjects = await projectsService.getByCustomerId(user.id);
+        } else {
+          fetchedProjects = [];
+        }
+
+        setProjects(fetchedProjects.map(p => ({
+          ...p,
+          createdAt: p.created_at || '',
+          updatedAt: p.updated_at || ''
+        })));
+      } catch (error) {
+        console.error('Error fetching projects:', error);
+      } finally {
+        setLoading(false);
       }
-    }, {
-      id: '2',
-      name: 'Eco-Friendly Water Bottle',
-      status: 'sourcing',
-      createdAt: '2023-06-02T09:15:00Z',
-      updatedAt: '2023-06-10T16:20:00Z',
-      customer: {
-        name: 'Jane Smith',
-        email: 'jane@example.com'
-      }
-    }, {
-      id: '3',
-      name: 'Ergonomic Office Chair',
-      status: 'payment',
-      createdAt: '2023-04-10T11:00:00Z',
-      updatedAt: '2023-04-28T13:30:00Z',
-      customer: {
-        name: 'Robert Johnson',
-        email: 'robert@example.com'
-      }
-    }, {
-      id: '4',
-      name: 'Portable Solar Charger',
-      status: 'completed',
-      createdAt: '2023-03-05T08:45:00Z',
-      updatedAt: '2023-03-25T15:10:00Z',
-      customer: {
-        name: 'Sarah Williams',
-        email: 'sarah@example.com'
-      }
-    }];
-    setTimeout(() => {
-      setProjects(mockProjects);
-      setLoading(false);
-    }, 500); // Simulate API delay
-  }, []);
+    };
+
+    fetchProjects();
+  }, [user]);
   const handleStatusChange = (project: Project) => {
     setSelectedProject(project);
     setNewStatus(project.status);
     setShowStatusModal(true);
   };
-  const saveStatusChange = () => {
+  const saveStatusChange = async () => {
     if (selectedProject && newStatus) {
-      setProjects(prev => prev.map(p => p.id === selectedProject.id ? {
-        ...p,
-        status: newStatus as Project['status']
-      } : p));
-      setShowStatusModal(false);
+      try {
+        await projectsService.update(selectedProject.id, { status: newStatus });
+        setProjects(prev => prev.map(p => p.id === selectedProject.id ? {
+          ...p,
+          status: newStatus
+        } : p));
+        setShowStatusModal(false);
+      } catch (error) {
+        console.error('Error updating project status:', error);
+        alert('Failed to update project status');
+      }
     }
   };
   return <div>

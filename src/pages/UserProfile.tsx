@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ArrowLeftIcon, UserIcon, MailIcon, KeyIcon, CameraIcon, SaveIcon, BuildingIcon } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
+import { authService } from '../services/auth.service';
 const UserProfile: React.FC = () => {
   const navigate = useNavigate();
   const {
@@ -26,7 +27,7 @@ const UserProfile: React.FC = () => {
         ...formData,
         name: user.name || '',
         email: user.email || '',
-        companyName: user.companyName || ''
+        companyName: user.company_name || ''
       });
     }
   }, [user]);
@@ -52,35 +53,50 @@ const UserProfile: React.FC = () => {
       reader.readAsDataURL(file);
     }
   };
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
-    // Update user profile in auth context
-    updateUserProfile({
-      name: formData.name,
-      email: formData.email,
-      companyName: formData.companyName
-    });
-    // Simulate API call
-    setTimeout(() => {
-      setLoading(false);
+
+    try {
+      await updateUserProfile({
+        name: formData.name,
+        email: formData.email,
+        company_name: formData.companyName
+      });
+
       setSuccess(true);
-      // Reset success message after 3 seconds
       setTimeout(() => {
         setSuccess(false);
       }, 3000);
-    }, 1000);
+    } catch (error) {
+      console.error('Error updating profile:', error);
+      alert('Failed to update profile. Please try again.');
+    } finally {
+      setLoading(false);
+    }
   };
-  const handlePasswordSubmit = (e: React.FormEvent) => {
+  const handlePasswordSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+
     if (formData.newPassword !== formData.confirmPassword) {
       alert("New passwords don't match");
       return;
     }
+
+    if (!user?.id) {
+      alert('User not found');
+      return;
+    }
+
     setLoading(true);
-    // Simulate API call
-    setTimeout(() => {
-      setLoading(false);
+
+    try {
+      await authService.changePassword(
+        user.id,
+        formData.currentPassword,
+        formData.newPassword
+      );
+
       setSuccess(true);
       // Reset password fields
       setFormData({
@@ -89,11 +105,16 @@ const UserProfile: React.FC = () => {
         newPassword: '',
         confirmPassword: ''
       });
-      // Reset success message after 3 seconds
+
       setTimeout(() => {
         setSuccess(false);
       }, 3000);
-    }, 1000);
+    } catch (error: any) {
+      console.error('Error changing password:', error);
+      alert(error.message || 'Failed to change password. Please try again.');
+    } finally {
+      setLoading(false);
+    }
   };
   return <div>
       <button onClick={() => navigate(-1)} className="flex items-center text-sm text-gray-600 hover:text-gray-900 mb-6">
@@ -134,8 +155,8 @@ const UserProfile: React.FC = () => {
                   <h3 className="text-lg font-medium text-gray-900 mb-1">
                     {user?.name}
                   </h3>
-                  {user?.companyName && <p className="text-sm text-gray-700 mb-1">
-                      {user.companyName}
+                  {user?.company_name && <p className="text-sm text-gray-700 mb-1">
+                      {user.company_name}
                     </p>}
                   <p className="text-sm text-gray-500 capitalize">
                     {user?.role}

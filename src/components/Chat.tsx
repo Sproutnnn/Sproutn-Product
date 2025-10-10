@@ -1,36 +1,99 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { MessageCircleIcon, SendIcon, XIcon } from 'lucide-react';
+import { chatService } from '../services/chat.service';
+import { useAuth } from '../context/AuthContext';
 const Chat: React.FC = () => {
+  const { user } = useAuth();
   const [isOpen, setIsOpen] = useState(false);
   const [message, setMessage] = useState('');
-  const [messages, setMessages] = useState([{
-    id: 1,
-    sender: 'system',
-    text: "Welcome to Sprout'n support! How can we help you today?",
-    timestamp: new Date().toISOString()
-  }]);
-  const handleSendMessage = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!message.trim()) return;
-    // Add user message
-    const userMessage = {
-      id: messages.length + 1,
-      sender: 'user',
-      text: message,
-      timestamp: new Date().toISOString()
+  const [messages, setMessages] = useState<Array<{
+    id: string | number;
+    sender: string;
+    text: string;
+    timestamp: string;
+  }>>([]);
+  const [loading, setLoading] = useState(false);
+
+  // Load messages when component mounts and user is available
+  useEffect(() => {
+    if (!user?.id) return;
+
+    const loadMessages = async () => {
+      try {
+        setLoading(true);
+        const chatMessages = await chatService.getUserMessages(user.id);
+
+        if (chatMessages.length === 0) {
+          // Add welcome message if no messages exist
+          setMessages([{
+            id: 'welcome',
+            sender: 'system',
+            text: "Welcome to Sprout'n support! How can we help you today?",
+            timestamp: new Date().toISOString()
+          }]);
+        } else {
+          setMessages(chatMessages.map(m => ({
+            id: m.id,
+            sender: m.sender,
+            text: m.text,
+            timestamp: m.created_at || new Date().toISOString()
+          })));
+        }
+      } catch (error) {
+        console.error('Error loading messages:', error);
+      } finally {
+        setLoading(false);
+      }
     };
-    setMessages([...messages, userMessage]);
-    setMessage('');
-    // Simulate response after a short delay
-    setTimeout(() => {
-      const responseMessage = {
-        id: messages.length + 2,
-        sender: 'system',
-        text: 'Thanks for your message. Our team will get back to you shortly.',
-        timestamp: new Date().toISOString()
-      };
-      setMessages(prev => [...prev, responseMessage]);
-    }, 1000);
+
+    loadMessages();
+
+    // Subscribe to real-time messages
+    const subscription = chatService.subscribeToUserMessages(user.id, (newMessage) => {
+      setMessages(prev => [...prev, {
+        id: newMessage.id,
+        sender: newMessage.sender,
+        text: newMessage.text,
+        timestamp: newMessage.created_at || new Date().toISOString()
+      }]);
+    });
+
+    return () => {
+      subscription.unsubscribe();
+    };
+  }, [user]);
+  const handleSendMessage = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!message.trim() || !user?.id) return;
+
+    const messageText = message;
+    setMessage(''); // Clear input immediately
+
+    try {
+      // Send user message
+      await chatService.sendMessage({
+        sender: 'user',
+        text: messageText,
+        user_id: user.id
+      });
+
+      // Simulate auto-response after a short delay
+      setTimeout(async () => {
+        try {
+          await chatService.sendMessage({
+            sender: 'system',
+            text: 'Thanks for your message. Our team will get back to you shortly.',
+            user_id: user.id
+          });
+        } catch (error) {
+          console.error('Error sending auto-response:', error);
+        }
+      }, 1000);
+    } catch (error) {
+      console.error('Error sending message:', error);
+      alert('Failed to send message. Please try again.');
+      setMessage(messageText); // Restore message on error
+    }
   };
   return <>
       {/* Chat button */}

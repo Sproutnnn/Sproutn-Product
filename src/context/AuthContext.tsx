@@ -1,17 +1,12 @@
 import React, { useEffect, useState, createContext, useContext } from 'react';
-interface User {
-  id: string;
-  name: string;
-  email: string;
-  role: 'admin' | 'customer';
-  companyName?: string;
-}
+import { authService, type User } from '../services/auth.service';
 interface AuthContextType {
   user: User | null;
   isAuthenticated: boolean;
-  login: (email: string, password: string) => void;
+  login: (email: string, password: string) => Promise<void>;
   logout: () => void;
-  updateUserProfile: (data: Partial<User>) => void;
+  updateUserProfile: (data: Partial<Pick<User, 'name' | 'company_name' | 'email'>>) => Promise<void>;
+  signUp: (email: string, password: string, name: string, companyName?: string) => Promise<void>;
 }
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 export const AuthProvider: React.FC<{
@@ -21,42 +16,63 @@ export const AuthProvider: React.FC<{
 }) => {
   const [user, setUser] = useState<User | null>(null);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
+
   // Check for existing session on mount
   useEffect(() => {
-    const storedUser = localStorage.getItem('user');
-    if (storedUser) {
-      setUser(JSON.parse(storedUser));
-      setIsAuthenticated(true);
+    const storedUserId = localStorage.getItem('userId');
+    if (storedUserId) {
+      authService.getUserById(storedUserId).then((fetchedUser) => {
+        if (fetchedUser) {
+          setUser(fetchedUser);
+          setIsAuthenticated(true);
+        } else {
+          localStorage.removeItem('userId');
+        }
+      });
     }
   }, []);
-  const login = (email: string, password: string) => {
-    // In a real app, this would validate against a backend
-    // For demo, we'll simulate different roles based on email
-    const isAdmin = email.includes('admin');
-    const user: User = {
-      id: '1',
-      name: isAdmin ? 'Admin User' : 'Customer User',
-      email,
-      role: isAdmin ? 'admin' : 'customer',
-      companyName: isAdmin ? "Sprout'n Admin" : 'Acme Corp'
-    };
-    setUser(user);
-    setIsAuthenticated(true);
-    localStorage.setItem('user', JSON.stringify(user));
+  const login = async (email: string, password: string) => {
+    try {
+      const loggedInUser = await authService.login({ email, password });
+      setUser(loggedInUser);
+      setIsAuthenticated(true);
+      localStorage.setItem('userId', loggedInUser.id);
+    } catch (error) {
+      throw error;
+    }
   };
+
   const logout = () => {
     setUser(null);
     setIsAuthenticated(false);
-    localStorage.removeItem('user');
+    localStorage.removeItem('userId');
   };
-  const updateUserProfile = (data: Partial<User>) => {
-    if (user) {
-      const updatedUser = {
-        ...user,
-        ...data
-      };
+
+  const updateUserProfile = async (data: Partial<Pick<User, 'name' | 'company_name' | 'email'>>) => {
+    if (!user) return;
+
+    try {
+      const updatedUser = await authService.updateProfile(user.id, data);
       setUser(updatedUser);
-      localStorage.setItem('user', JSON.stringify(updatedUser));
+    } catch (error) {
+      throw error;
+    }
+  };
+
+  const signUp = async (email: string, password: string, name: string, companyName?: string) => {
+    try {
+      const newUser = await authService.signUp({
+        email,
+        password,
+        name,
+        companyName,
+        role: 'customer'
+      });
+      setUser(newUser);
+      setIsAuthenticated(true);
+      localStorage.setItem('userId', newUser.id);
+    } catch (error) {
+      throw error;
     }
   };
   return <AuthContext.Provider value={{
@@ -64,7 +80,8 @@ export const AuthProvider: React.FC<{
     isAuthenticated,
     login,
     logout,
-    updateUserProfile
+    updateUserProfile,
+    signUp
   }}>
       {children}
     </AuthContext.Provider>;
