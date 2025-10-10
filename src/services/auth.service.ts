@@ -50,6 +50,8 @@ export const authService = {
    * Login user
    */
   async login(credentials: LoginCredentials): Promise<User> {
+    console.log('🔐 Attempting login for:', credentials.email);
+
     // Fetch user by email
     const { data: user, error } = await supabase
       .from('users')
@@ -57,15 +59,26 @@ export const authService = {
       .eq('email', credentials.email)
       .single();
 
-    if (error || !user) {
+    if (error) {
+      console.error('❌ Database error:', error);
       throw new Error('Invalid email or password');
     }
+
+    if (!user) {
+      console.error('❌ User not found');
+      throw new Error('Invalid email or password');
+    }
+
+    console.log('✅ User found:', user.email);
+    console.log('🔑 Password hash:', user.password_hash.substring(0, 20) + '...');
 
     // Verify password
     const isValidPassword = await bcrypt.compare(
       credentials.password,
       user.password_hash
     );
+
+    console.log('🔓 Password valid:', isValidPassword);
 
     if (!isValidPassword) {
       throw new Error('Invalid email or password');
