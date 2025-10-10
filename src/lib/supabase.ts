@@ -1,7 +1,8 @@
 import { createClient } from '@supabase/supabase-js';
 
-const supabaseUrl = import.meta.env.VITE_SUPABASE_URL?.trim();
-const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY?.trim();
+// Clean environment variables by removing control characters and trimming
+const supabaseUrl = import.meta.env.VITE_SUPABASE_URL?.trim().replace(/[\x00-\x1F\x7F-\x9F]/g, '');
+const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY?.trim().replace(/[\x00-\x1F\x7F-\x9F]/g, '');
 
 // Validate environment variables
 if (!supabaseUrl || !supabaseAnonKey) {
@@ -18,17 +19,10 @@ if (typeof supabaseUrl !== 'string' || !supabaseUrl.startsWith('http')) {
   throw new Error('Invalid Supabase URL format');
 }
 
-// Validate key format and check for invalid characters
+// Validate key format
 if (typeof supabaseAnonKey !== 'string' || supabaseAnonKey.length < 20) {
-  console.error('Invalid Supabase anon key');
+  console.error('Invalid Supabase anon key - length:', supabaseAnonKey.length);
   throw new Error('Invalid Supabase anon key format');
-}
-
-// Check for invalid characters in the key that might cause header issues
-const hasInvalidChars = /[\x00-\x1F\x7F-\x9F]/.test(supabaseAnonKey);
-if (hasInvalidChars) {
-  console.error('Anon key contains invalid control characters');
-  throw new Error('Supabase anon key contains invalid characters');
 }
 
 console.log('✅ Supabase client initializing with:', {

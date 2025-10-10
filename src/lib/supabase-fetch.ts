@@ -3,8 +3,9 @@
  * This bypasses the Supabase JS client to avoid header issues
  */
 
-const supabaseUrl = import.meta.env.VITE_SUPABASE_URL?.trim();
-const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY?.trim();
+// Clean environment variables by removing control characters and trimming
+const supabaseUrl = import.meta.env.VITE_SUPABASE_URL?.trim().replace(/[\x00-\x1F\x7F-\x9F]/g, '');
+const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY?.trim().replace(/[\x00-\x1F\x7F-\x9F]/g, '');
 
 if (!supabaseUrl || !supabaseAnonKey) {
   throw new Error('Missing Supabase environment variables');
