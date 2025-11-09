@@ -13,9 +13,11 @@
     "@supabase/supabase-js": "^2.75.0",
     "bcryptjs": "^3.0.2",
     "lucide-react": "0.522.0",
+    "quill": "^2.0.3",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
     "react-markdown": "^10.1.0",
+    "react-quill": "^2.0.0",
     "react-router-dom": "^6.26.2"
   },
   "devDependencies": {

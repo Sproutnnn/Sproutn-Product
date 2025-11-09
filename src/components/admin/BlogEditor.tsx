@@ -1,8 +1,11 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useMemo } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { SaveIcon, ImageIcon, XIcon } from 'lucide-react';
 import { blogService } from '../../services/blog.service';
 import { supabase } from '../../lib/supabase';
+import ReactQuill from 'react-quill';
+import 'react-quill/dist/quill.snow.css';
+import '../../styles/quill-custom.css';
 
 interface BlogPost {
   title: string;
@@ -97,6 +100,42 @@ const BlogEditor: React.FC<BlogEditorProps> = ({ editMode = false }) => {
     const { name, checked } = e.target;
     setPost(prev => ({ ...prev, [name]: checked }));
   };
+
+  const handleContentChange = (value: string) => {
+    setPost(prev => ({ ...prev, content: value }));
+  };
+
+  // Quill editor modules configuration
+  const modules = useMemo(() => ({
+    toolbar: [
+      [{ 'header': [1, 2, 3, 4, 5, 6, false] }],
+      [{ 'font': [] }],
+      [{ 'size': ['small', false, 'large', 'huge'] }],
+      ['bold', 'italic', 'underline', 'strike'],
+      [{ 'color': [] }, { 'background': [] }],
+      [{ 'script': 'sub'}, { 'script': 'super' }],
+      [{ 'list': 'ordered'}, { 'list': 'bullet' }],
+      [{ 'indent': '-1'}, { 'indent': '+1' }],
+      [{ 'align': [] }],
+      ['blockquote', 'code-block'],
+      ['link', 'image', 'video'],
+      ['clean']
+    ],
+    clipboard: {
+      matchVisual: false,
+    }
+  }), []);
+
+  const formats = [
+    'header', 'font', 'size',
+    'bold', 'italic', 'underline', 'strike',
+    'color', 'background',
+    'script',
+    'list', 'bullet', 'indent',
+    'align',
+    'blockquote', 'code-block',
+    'link', 'image', 'video'
+  ];
 
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -252,18 +291,22 @@ const BlogEditor: React.FC<BlogEditorProps> = ({ editMode = false }) => {
 
           <div>
             <label htmlFor="content" className="block text-sm font-medium text-[#434C54] mb-1">
-              Content * (Markdown supported)
+              Content * (Rich Text Editor)
             </label>
-            <textarea
-              id="content"
-              name="content"
-              value={post.content}
-              onChange={handleChange}
-              required
-              rows={15}
-              className="block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-[#016E4E] focus:border-[#016E4E] font-mono"
-              placeholder="Write your blog post content here (Markdown supported)"
-            />
+            <div className="bg-white rounded-md border border-gray-300">
+              <ReactQuill
+                theme="snow"
+                value={post.content}
+                onChange={handleContentChange}
+                modules={modules}
+                formats={formats}
+                placeholder="Write your blog post content here..."
+                className="h-96"
+              />
+            </div>
+            <p className="mt-2 text-sm text-gray-500">
+              Use the toolbar to format your content with headers, lists, bold, italic, links, and more.
+            </p>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">

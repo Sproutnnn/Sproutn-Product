@@ -3,7 +3,8 @@ import { useParams, useNavigate, Link } from 'react-router-dom';
 import { ArrowLeftIcon, CalendarIcon, UserIcon, ClockIcon } from 'lucide-react';
 import Navigation from '../components/Navigation';
 import { blogService } from '../services/blog.service';
-import ReactMarkdown from 'react-markdown';
+import 'react-quill/dist/quill.snow.css';
+import '../styles/quill-custom.css';
 
 interface BlogPost {
   id: string;
@@ -157,32 +158,7 @@ const BlogDetail: React.FC = () => {
         </div>
 
         {/* Content */}
-        <div className="prose prose-lg max-w-none">
-          <ReactMarkdown
-            className="text-[#434C54]"
-            components={{
-              h1: ({ node, ...props }) => <h1 className="text-3xl font-bold mt-8 mb-4 text-[#434C54]" {...props} />,
-              h2: ({ node, ...props }) => <h2 className="text-2xl font-bold mt-6 mb-3 text-[#434C54]" {...props} />,
-              h3: ({ node, ...props }) => <h3 className="text-xl font-bold mt-4 mb-2 text-[#434C54]" {...props} />,
-              p: ({ node, ...props }) => <p className="mb-4 text-[#434C54] leading-relaxed" {...props} />,
-              ul: ({ node, ...props }) => <ul className="list-disc list-inside mb-4 text-[#434C54]" {...props} />,
-              ol: ({ node, ...props }) => <ol className="list-decimal list-inside mb-4 text-[#434C54]" {...props} />,
-              li: ({ node, ...props }) => <li className="mb-2" {...props} />,
-              a: ({ node, ...props }) => <a className="text-[#016E4E] hover:underline" {...props} />,
-              blockquote: ({ node, ...props }) => (
-                <blockquote className="border-l-4 border-[#859CB6] pl-4 italic my-4 text-[#434C54]" {...props} />
-              ),
-              code: ({ node, ...props }) => (
-                <code className="bg-gray-100 px-2 py-1 rounded text-sm" {...props} />
-              ),
-              pre: ({ node, ...props }) => (
-                <pre className="bg-gray-100 p-4 rounded-lg overflow-x-auto my-4" {...props} />
-              ),
-            }}
-          >
-            {post.content}
-          </ReactMarkdown>
-        </div>
+        <div className="prose prose-lg max-w-none ql-editor" dangerouslySetInnerHTML={{ __html: post.content }} />
       </article>
 
       {/* Footer */}

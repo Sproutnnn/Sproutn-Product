@@ -1,0 +1,162 @@
+/* Custom Quill Editor Styles */
+
+/* Editor container */
+.ql-container {
+  font-family: inherit;
+  font-size: 16px;
+}
+
+/* Editor toolbar */
+.ql-toolbar.ql-snow {
+  border: none;
+  border-bottom: 1px solid #d1d5db;
+  background-color: #f9fafb;
+  border-radius: 0.375rem 0.375rem 0 0;
+}
+
+/* Editor content area */
+.ql-editor {
+  min-height: 400px;
+  max-height: 600px;
+  overflow-y: auto;
+  font-size: 16px;
+  line-height: 1.6;
+}
+
+.ql-editor.ql-blank::before {
+  color: #9ca3af;
+  font-style: normal;
+}
+
+/* Ensure proper spacing in editor */
+.ql-editor p {
+  margin-bottom: 1rem;
+}
+
+.ql-editor h1 {
+  font-size: 2em;
+  font-weight: bold;
+  margin-top: 1.5rem;
+  margin-bottom: 1rem;
+}
+
+.ql-editor h2 {
+  font-size: 1.5em;
+  font-weight: bold;
+  margin-top: 1.25rem;
+  margin-bottom: 0.75rem;
+}
+
+.ql-editor h3 {
+  font-size: 1.25em;
+  font-weight: bold;
+  margin-top: 1rem;
+  margin-bottom: 0.5rem;
+}
+
+.ql-editor ul,
+.ql-editor ol {
+  margin-bottom: 1rem;
+  padding-left: 2rem;
+}
+
+.ql-editor li {
+  margin-bottom: 0.5rem;
+}
+
+.ql-editor blockquote {
+  border-left: 4px solid #859CB6;
+  padding-left: 1rem;
+  margin: 1rem 0;
+  font-style: italic;
+  color: #434C54;
+}
+
+.ql-editor a {
+  color: #016E4E;
+  text-decoration: underline;
+}
+
+.ql-editor a:hover {
+  color: #015d42;
+}
+
+.ql-editor pre {
+  background-color: #f3f4f6;
+  padding: 1rem;
+  border-radius: 0.5rem;
+  overflow-x: auto;
+  margin: 1rem 0;
+}
+
+.ql-editor code {
+  background-color: #f3f4f6;
+  padding: 0.125rem 0.25rem;
+  border-radius: 0.25rem;
+  font-size: 0.875em;
+}
+
+.ql-editor img {
+  max-width: 100%;
+  height: auto;
+  border-radius: 0.5rem;
+  margin: 1rem 0;
+}
+
+/* Toolbar button styling */
+.ql-snow .ql-stroke {
+  stroke: #434C54;
+}
+
+.ql-snow .ql-fill {
+  fill: #434C54;
+}
+
+.ql-snow .ql-picker-label {
+  color: #434C54;
+}
+
+.ql-toolbar.ql-snow .ql-picker-label:hover,
+.ql-toolbar.ql-snow .ql-picker-label.ql-active {
+  color: #016E4E;
+}
+
+.ql-toolbar.ql-snow button:hover,
+.ql-toolbar.ql-snow button.ql-active {
+  color: #016E4E;
+}
+
+.ql-toolbar.ql-snow button:hover .ql-stroke,
+.ql-toolbar.ql-snow button.ql-active .ql-stroke {
+  stroke: #016E4E;
+}
+
+.ql-toolbar.ql-snow button:hover .ql-fill,
+.ql-toolbar.ql-snow button.ql-active .ql-fill {
+  fill: #016E4E;
+}
+
+/* Fix height issue */
+.h-96 .ql-container {
+  height: 400px;
+}
+
+/* Ensure content displays properly on detail page */
+.prose .ql-editor {
+  padding: 0;
+  border: none;
+}
+
+.prose .ql-editor h1,
+.prose .ql-editor h2,
+.prose .ql-editor h3,
+.prose .ql-editor h4,
+.prose .ql-editor h5,
+.prose .ql-editor h6 {
+  color: #434C54;
+}
+
+.prose .ql-editor p,
+.prose .ql-editor li {
+  color: #434C54;
+}
