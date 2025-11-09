@@ -55,21 +55,28 @@ const BlogPage: React.FC = () => {
   const regularPosts = blogPosts.filter(post => !post.featured);
   return <div className="bg-white min-h-screen">
       <Navigation />
-      <div className="bg-[#859CB6] bg-opacity-10 py-12">
+      {/* Hero Section */}
+      <section className="bg-white text-[#434C54] py-20 border-b border-gray-100 animate-fadeIn">
         <div className="container mx-auto px-6">
-          <div className="flex justify-between items-center">
-            <h1 className="text-4xl font-bold text-[#434C54]">Our Blog</h1>
-            {isAdmin && <Link to="/admin/blogs" className="bg-[#016E4E] text-white px-4 py-2 rounded-md flex items-center">
+          <div className="max-w-3xl mx-auto text-center">
+            <h1 className="text-4xl md:text-5xl font-bold mb-6 animate-slideUp">
+              Our Blog
+            </h1>
+            <p className="text-xl mb-8 animate-slideUp animation-delay-200">
+              Insights, tips, and expert advice to help you navigate the product development journey
+            </p>
+            {isAdmin && (
+              <Link
+                to="/admin/blogs"
+                className="inline-flex items-center px-6 py-3 bg-[#016E4E] text-white font-medium rounded-md hover:bg-opacity-90 transition-colors duration-200"
+              >
                 <PencilIcon className="h-4 w-4 mr-2" />
                 Manage Blogs
-              </Link>}
+              </Link>
+            )}
           </div>
-          <p className="text-xl text-[#434C54] mt-4 max-w-2xl">
-            Insights, tips, and expert advice to help you navigate the product
-            development journey
-          </p>
         </div>
-      </div>
+      </section>
       <div className="container mx-auto px-6 py-12">
         {loading ? (
           <div className="flex justify-center items-center h-64">
@@ -187,22 +194,17 @@ const BlogPage: React.FC = () => {
                 <ul className="space-y-2">
                   <li>
                     <Link to="/services/prototyping" className="text-gray-400 hover:text-white transition-colors">
-                      Prototyping
+                      Sampling
                     </Link>
                   </li>
                   <li>
                     <Link to="/services/sourcing" className="text-gray-400 hover:text-white transition-colors">
-                      Sourcing
-                    </Link>
-                  </li>
-                  <li>
-                    <Link to="/services/manufacturing" className="text-gray-400 hover:text-white transition-colors">
-                      Manufacturing
+                      Manufacturing & Freight
                     </Link>
                   </li>
                   <li>
                     <Link to="/services/photography" className="text-gray-400 hover:text-white transition-colors">
-                      Photography
+                      Product Shots
                     </Link>
                   </li>
                   <li>
