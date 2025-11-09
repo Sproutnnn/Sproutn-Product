@@ -36,9 +36,9 @@ const Login: React.FC = () => {
   return <div className="min-h-screen flex bg-gradient-to-br from-gray-50 to-primary-50/20">
       {/* Left side with image */}
       <div className="hidden md:flex md:w-1/2 bg-cover bg-center relative" style={{
-      backgroundImage: "url('https://images.unsplash.com/photo-1581091226033-d5c48150dbaa?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1470&q=80')"
+      backgroundImage: "url('/login-shipping.jpg')"
     }}>
-        <div className="absolute inset-0 bg-gradient-to-r from-charcoal-500/70 to-primary-500/50 backdrop-blur-sm"></div>
+        <div className="absolute inset-0 bg-gradient-to-r from-charcoal-900/80 to-charcoal-800/80"></div>
         <div className="w-full h-full flex items-center justify-center relative z-10">
           <div className="text-center text-white p-10 max-w-lg">
             <h2 className="text-4xl font-bold mb-6">
