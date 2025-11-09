@@ -13,11 +13,10 @@ const PrototypingService: React.FC = () => {
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
           <div className="text-center">
             <h1 className="text-4xl md:text-6xl font-bold mb-6 bg-clip-text text-transparent bg-gradient-to-r from-white to-gray-300">
-              Prototype Your Vision
+              Sampling your business idea
             </h1>
             <p className="text-xl md:text-2xl text-gray-300 max-w-2xl mx-auto mb-10">
-              Turn your concept into a tangible product with precision and
-              expertise. We bring your ideas to life.
+              Turning product concepts to tangible samples bring your vision to life
             </p>
             <Link to="/login" className="px-8 py-3 bg-primary-500 text-white font-medium rounded-md hover:bg-primary-600 transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-primary-500/30">
               Get Started
@@ -31,11 +30,10 @@ const PrototypingService: React.FC = () => {
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
             <h2 className="text-3xl md:text-4xl font-bold mb-6">
-              Our Prototyping Process
+              Our sampling process
             </h2>
             <p className="text-lg text-gray-300 max-w-2xl mx-auto">
-              We follow a structured approach to transform your ideas into
-              functional prototypes
+              Smart, calculated, and efficient. We execute a structured approach to take your product vision from concept to a quality sample ready for mass production
             </p>
           </div>
           <div className="grid md:grid-cols-3 gap-8">
@@ -44,11 +42,10 @@ const PrototypingService: React.FC = () => {
                 <span className="text-xl font-bold">1</span>
               </div>
               <h3 className="text-xl font-semibold mb-3">
-                Concept Development
+                Concept development
               </h3>
               <p className="text-gray-300 mb-4">
-                We work with you to refine your product concept and create
-                detailed specifications
+                We work with you to refine your product concept and create detailed specifications
               </p>
             </div>
             <div className="bg-charcoal-700/50 backdrop-blur-sm p-6 rounded-xl border border-charcoal-600 hover:border-primary-500 transition-all duration-300 group">
@@ -56,11 +53,10 @@ const PrototypingService: React.FC = () => {
                 <span className="text-xl font-bold">2</span>
               </div>
               <h3 className="text-xl font-semibold mb-3">
-                Physical Prototyping
+                Product sample
               </h3>
               <p className="text-gray-300 mb-4">
-                We build physical prototypes using appropriate materials and
-                manufacturing techniques
+                We source samples from various manufacturers allowing you to get a feel of the possibilities
               </p>
             </div>
             <div className="bg-charcoal-700/50 backdrop-blur-sm p-6 rounded-xl border border-charcoal-600 hover:border-primary-500 transition-all duration-300 group">
@@ -68,11 +64,10 @@ const PrototypingService: React.FC = () => {
                 <span className="text-xl font-bold">3</span>
               </div>
               <h3 className="text-xl font-semibold mb-3">
-                Testing & Iteration
+                Testing and iterating
               </h3>
               <p className="text-gray-300 mb-4">
-                We test functionality and gather feedback to refine the
-                prototype until it meets your requirements
+                We guide you through sample testing and manage communications with suppliers to ensure samples are refined until they are ready for the production line
               </p>
             </div>
           </div>
@@ -84,49 +79,43 @@ const PrototypingService: React.FC = () => {
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
           <div className="text-center mb-16">
             <h2 className="text-3xl md:text-4xl font-bold mb-6">
-              Prototyping Benefits
+              Why sample with us
             </h2>
             <p className="text-lg text-gray-300 max-w-2xl mx-auto">
-              Why professional prototyping is essential for product success
+              We help you accomplish the best pre-production sample that meets market needs and your budgets
             </p>
           </div>
           <div className="grid md:grid-cols-2 gap-8">
             <div className="bg-charcoal-700/30 backdrop-blur-sm p-6 rounded-xl border border-charcoal-600">
               <h3 className="text-xl font-semibold text-primary-400 mb-3">
-                Validate Your Concept
+                Validate your concept
               </h3>
               <p className="text-gray-300">
-                Test your product idea with a physical prototype before
-                investing in full production, reducing financial risk and
-                ensuring market fit.
+                We guide you through sample testing and manage communications with suppliers to ensure samples are refined until they are ready for the production line
               </p>
             </div>
             <div className="bg-charcoal-700/30 backdrop-blur-sm p-6 rounded-xl border border-charcoal-600">
               <h3 className="text-xl font-semibold text-primary-400 mb-3">
-                Attract Investors
+                Benchmark to competition
               </h3>
               <p className="text-gray-300">
-                A professional prototype demonstrates your commitment and
-                provides tangible evidence of your concept, making it easier to
-                secure funding.
+                Understand where your samples with different manufacturers stack up with what's already out there in the market
               </p>
             </div>
             <div className="bg-charcoal-700/30 backdrop-blur-sm p-6 rounded-xl border border-charcoal-600">
               <h3 className="text-xl font-semibold text-primary-400 mb-3">
-                Optimize for Manufacturing
+                Prepare for streamlined manufacturing
               </h3>
               <p className="text-gray-300">
-                Identify and resolve potential production issues early,
-                streamlining the manufacturing process and reducing costs.
+                Understand the strengths and capabilities of your supplier options. Ensure a streamlined bulk production process with the right sample
               </p>
             </div>
             <div className="bg-charcoal-700/30 backdrop-blur-sm p-6 rounded-xl border border-charcoal-600">
               <h3 className="text-xl font-semibold text-primary-400 mb-3">
-                Patent Protection
+                Minimize unit costs
               </h3>
               <p className="text-gray-300">
-                A detailed prototype strengthens your intellectual property
-                claims and helps secure patents for your unique innovations.
+                Sampling with Sprout'n allows us to guide you through ways to reduce unit cost and helps in the negotiation of bulk order costs
               </p>
             </div>
           </div>

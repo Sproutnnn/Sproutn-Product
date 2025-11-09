@@ -32,11 +32,10 @@ const MarketingService: React.FC = () => {
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
           <div className="text-center">
             <h1 className="text-4xl md:text-6xl font-bold mb-6 bg-clip-text text-transparent bg-gradient-to-r from-white to-gray-300">
-              Strategic Marketing Solutions
+              Strategic marketing launch plan
             </h1>
             <p className="text-xl md:text-2xl text-gray-300 max-w-2xl mx-auto mb-10">
-              Launch and grow your product with data-driven marketing strategies
-              that drive sales.
+              Get a personalized marketing launch plan according to research specialized to your market
             </p>
             <Link to="/login" className="px-8 py-3 bg-primary-500 text-white font-medium rounded-md hover:bg-primary-600 transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-primary-500/30">
               Get Started
@@ -50,11 +49,10 @@ const MarketingService: React.FC = () => {
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
             <h2 className="text-3xl md:text-4xl font-bold mb-6">
-              Marketing Services
+              The plan
             </h2>
             <p className="text-lg text-gray-300 max-w-2xl mx-auto">
-              Comprehensive marketing solutions to help your product succeed in
-              the marketplace
+              A comprehensive launch roll out that focuses on competitive research, budget analysis, and available opportunities
             </p>
           </div>
           <div className="grid md:grid-cols-3 gap-8">

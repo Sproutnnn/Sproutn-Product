@@ -10,11 +10,10 @@ const About: React.FC = () => {
         <div className="container mx-auto px-6">
           <div className="max-w-3xl mx-auto text-center">
             <h1 className="text-4xl md:text-5xl font-bold mb-6 animate-slideUp">
-              Our Story
+              The mission
             </h1>
             <p className="text-xl mb-8 animate-slideUp animation-delay-200">
-              From a personal struggle to a mission to help entrepreneurs
-              succeed
+              Empower people to act on their ideas. Make them trust themselves enough to take the jump and avoid a life of regret. We are obsessed with making your dreams come to life
             </p>
           </div>
         </div>
@@ -25,57 +24,42 @@ const About: React.FC = () => {
           <div className="max-w-4xl mx-auto">
             <div className="prose prose-lg mx-auto">
               <h2 className="text-3xl font-bold text-[#434C54] mb-6 text-center animate-slideUp">
-                How It All Started
+                Where it all started
               </h2>
               <div className="animate-fadeIn animation-delay-200">
                 <p className="text-lg text-[#434C54] mb-6">
-                  In 2017, our founder Sarah Johnson had a brilliant idea for a
-                  sustainable home product. Like many entrepreneurs, she was
-                  passionate about her concept but quickly became overwhelmed by
-                  the complexities of bringing it to market.
+                  The simplest of answers. Two good friends who've known each other their entire lives and wanted more.
                 </p>
                 <p className="text-lg text-[#434C54] mb-6">
-                  After struggling to find reliable manufacturers, navigating
-                  complex supply chains, and making costly mistakes with
-                  prototyping, Sarah realized there was a critical gap in the
-                  market: no comprehensive support system existed for product
-                  entrepreneurs who needed guidance through the entire journey
-                  from concept to market.
+                  We've always shared that drive to build, create, and push boundaries. But along the way, we realized something important: the game isn't really set up for people to succeed. The systems, the access, the knowledge — it's all harder to reach than it should be. And we wanted to change that.
+                </p>
+                <p className="text-lg text-[#434C54] mb-6">
+                  Over the years, we learned how to talk to manufacturers the right way, how to understand what markets actually want, and how to build real connections that make things happen. Bit by bit, we built a network and a foundation that turned lessons into opportunities.
+                </p>
+                <p className="text-lg text-[#434C54] mb-6">
+                  From the beginning, we kept asking ourselves one simple question: "Why aren't more people doing this?" That question stuck with us.
+                </p>
+                <p className="text-lg text-[#434C54] mb-6">
+                  What started as our own pursuit for "more" became something bigger — a pursuit to help others chase theirs.
+                </p>
+                <p className="text-lg text-[#434C54] mb-6">
+                  And that's how Sprout'n was born. Out of friendship, frustration, curiosity — and the belief that success shouldn't be out of reach for anyone willing to go after it.
                 </p>
               </div>
               <div className="my-12 bg-gray-50 p-8 rounded-lg border-l-4 border-[#016E4E] animate-slideIn animation-delay-400">
                 <p className="text-xl italic text-[#434C54]">
-                  "I realized that the reason so many great product ideas never
-                  make it to market isn't because they aren't viable—it's
-                  because entrepreneurs lack the resources, connections, and
-                  expertise to navigate the complex journey from concept to
-                  launch."
+                  "For us, it has always been about rooting our success in that of others and I think that's something that makes us super unique."
                 </p>
                 <p className="text-right font-medium text-[#016E4E] mt-4">
-                  — Sarah Johnson, Founder
+                  — Jared, Co-Founder
                 </p>
               </div>
-              <div className="animate-fadeIn animation-delay-600">
-                <p className="text-lg text-[#434C54] mb-6">
-                  In 2018, Sarah joined forces with Michael Chen, a global
-                  sourcing expert, to create Sprout'n—a company dedicated to
-                  helping entrepreneurs overcome the barriers to bringing their
-                  product ideas to life.
+              <div className="my-12 bg-gray-50 p-8 rounded-lg border-l-4 border-[#016E4E] animate-slideIn animation-delay-600">
+                <p className="text-xl italic text-[#434C54]">
+                  "I think the obsession with providing people with opportunities they didn't think possible is probably the aspect that excites me the most. We just want to see everyone live out their dreams."
                 </p>
-                <p className="text-lg text-[#434C54] mb-6">
-                  What began as a small consulting operation quickly grew as
-                  word spread about their ability to help entrepreneurs navigate
-                  manufacturing challenges, optimize costs, and successfully
-                  launch products. By 2020, they had expanded to offer
-                  comprehensive services including prototyping, sourcing,
-                  manufacturing, photography, and marketing.
-                </p>
-                <p className="text-lg text-[#434C54] mb-6">
-                  Today, Sprout'n has helped hundreds of entrepreneurs bring
-                  their products to market, with a success rate far exceeding
-                  industry averages. Our mission remains the same: to empower
-                  innovators by making the product development journey
-                  accessible, efficient, and successful.
+                <p className="text-right font-medium text-[#016E4E] mt-4">
+                  — Chris, Co-Founder
                 </p>
               </div>
             </div>
@@ -87,10 +71,10 @@ const About: React.FC = () => {
         <div className="container mx-auto px-6">
           <div className="text-center mb-16">
             <h2 className="text-3xl font-bold text-[#434C54] mb-4 animate-slideUp">
-              Our Core Values
+              What guides us
             </h2>
             <p className="text-lg text-[#434C54] max-w-3xl mx-auto animate-slideUp animation-delay-200">
-              The principles that guide everything we do
+              Simple beliefs that put the people who trust us at the core of it all
             </p>
           </div>
           <div className="grid md:grid-cols-4 gap-8">
@@ -99,11 +83,10 @@ const About: React.FC = () => {
                 <HeartIcon className="h-8 w-8 text-[#016E4E]" />
               </div>
               <h3 className="text-xl font-semibold text-[#434C54] mb-2">
-                Entrepreneur First
+                Do it for their success
               </h3>
               <p className="text-[#434C54]">
-                We always put our clients' vision and success at the center of
-                everything we do.
+                Decisions are made with the success of the client and their ideas in mind
               </p>
             </div>
             <div className="bg-white p-6 rounded-lg shadow-sm text-center transform transition duration-300 hover:scale-105 hover:shadow-md animate-fadeIn animation-delay-400">
@@ -111,11 +94,10 @@ const About: React.FC = () => {
                 <LightbulbIcon className="h-8 w-8 text-[#859CB6]" />
               </div>
               <h3 className="text-xl font-semibold text-[#434C54] mb-2">
-                Innovation
+                Both sides challenge
               </h3>
               <p className="text-[#434C54]">
-                We embrace creative solutions and continuously improve our
-                processes and services.
+                Challenge the way of thinking and open the floor for feedback
               </p>
             </div>
             <div className="bg-white p-6 rounded-lg shadow-sm text-center transform transition duration-300 hover:scale-105 hover:shadow-md animate-fadeIn animation-delay-500">
@@ -123,11 +105,10 @@ const About: React.FC = () => {
                 <TrendingUpIcon className="h-8 w-8 text-[#434C54]" />
               </div>
               <h3 className="text-xl font-semibold text-[#434C54] mb-2">
-                Excellence
+                Encourage mistakes
               </h3>
               <p className="text-[#434C54]">
-                We maintain the highest standards in every aspect of our work,
-                from communication to execution.
+                Mistakes don't mean failure, in fact failure breeds success
               </p>
             </div>
             <div className="bg-white p-6 rounded-lg shadow-sm text-center transform transition duration-300 hover:scale-105 hover:shadow-md animate-fadeIn animation-delay-600">
@@ -135,11 +116,10 @@ const About: React.FC = () => {
                 <GlobeIcon className="h-8 w-8 text-[#434C54]" />
               </div>
               <h3 className="text-xl font-semibold text-[#434C54] mb-2">
-                Sustainability
+                Embrace obstacles
               </h3>
               <p className="text-[#434C54]">
-                We help clients create products that are not only successful but
-                also environmentally responsible.
+                Hurdling over obstacles creates innovation and leads to excellence
               </p>
             </div>
           </div>

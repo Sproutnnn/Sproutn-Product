@@ -13,19 +13,16 @@ const LandingPage: React.FC = () => {
   };
   const faqItems = [{
     question: "How does Sprout'n help with cash flow management?",
-    answer: 'We reduce upfront costs by negotiating with manufacturers to deliver the best unit price and terms to you. This helps you maintain better cash flow throughout the product development cycle.'
-  }, {
-    question: 'Can you help me develop a business plan for my product?',
-    answer: 'Absolutely! We work with you to create a comprehensive business roadmap that includes market analysis, cost projections, pricing strategies, and sales forecasts to maximize your chances of success.'
-  }, {
-    question: 'What marketing support do you provide?',
-    answer: 'Our marketing services include professional product photography, brand strategy development, digital marketing plans, and launch campaign creation. We provide consultation on tools and expertise to leverage to optimize bringing your product to market effectively.'
+    answer: 'We reduce your first order costs from sampling fees to negotiating the best unit price for you. We also give you access to some of the best freight costs on the market and guide you through the entire production process helping you avoid first time mistakes. All this helps maintain better cash flow throughout the first 12-24 months'
   }, {
     question: 'How do you simplify the manufacturing process?',
-    answer: 'We handle the complex aspects of manufacturing and logistics by vetting suppliers, negotiating terms, managing quality control, and coordinating shipping. This allows you to focus on other aspects of your business.'
+    answer: 'We handle the complex aspects of manufacturing and logistics by vetting suppliers, negotiating terms, managing quality control, and coordinating shipping. This allows you to focus on other aspects of your business'
   }, {
     question: 'How long does it typically take to bring a product to market?',
-    answer: 'While timelines vary based on product complexity, our streamlined process typically reduces time-to-market by 30-40% compared to entrepreneurs navigating the process alone. Most products can go from concept to market in 6-8 months.'
+    answer: 'While timelines vary based on product complexity, our streamlined process typically reduces time-to-market by 30-40% compared to entrepreneurs navigating the process alone. Most products can go from concept to market in 6-8 months. We help guide you through optimizing your time during manufacturing and delivery phases to ensure you are ready to hit the ground running instantly'
+  }, {
+    question: 'Can you help with idea validation?',
+    answer: 'Absolutely! If after our initial conversation and research we present an unfavorable market opportunity report, we will not encourage you to continue on as a client. Our goal is to stop you from investing unnecessarily in ideas'
   }];
   return <div className="bg-gradient-to-br from-charcoal-800 to-charcoal-900 min-h-screen w-full text-white">
       <Navigation />
@@ -37,11 +34,10 @@ const LandingPage: React.FC = () => {
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
           <div className="text-center">
             <h1 className="text-4xl md:text-6xl font-bold mb-6 bg-clip-text text-transparent bg-gradient-to-r from-white to-gray-300">
-              Grow your ideas into reality
+              The place where startup ideas come to life
             </h1>
             <p className="text-xl md:text-2xl text-gray-300 max-w-2xl mx-auto mb-10">
-              We make your journey from concept to market smoother, faster, and
-              more successful.
+              Bringing your business ideas from concept to market with less risk
             </p>
             <div className="flex flex-col sm:flex-row justify-center items-center space-y-4 sm:space-y-0 sm:space-x-6">
               <Link to={isAuthenticated ? '/create-project' : '/login'} className="px-8 py-3 bg-primary-500 text-white font-medium rounded-md hover:bg-primary-600 transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-primary-500/30">
@@ -382,7 +378,7 @@ const LandingPage: React.FC = () => {
               Our Services
             </h2>
             <p className="text-lg text-gray-300 max-w-2xl mx-auto">
-              From concept to market, we're with you every step of the way
+              From your first sample to launch ready
             </p>
           </div>
           <div className="grid md:grid-cols-3 gap-8">
@@ -390,10 +386,9 @@ const LandingPage: React.FC = () => {
               <div className="text-primary-400 mb-4">
                 <BoxIcon className="h-8 w-8" />
               </div>
-              <h3 className="text-xl font-semibold mb-3">Prototyping</h3>
+              <h3 className="text-xl font-semibold mb-3">Sampling</h3>
               <p className="text-gray-300 mb-4">
-                Turn concepts into tangible products with our expert prototyping
-                services.
+                Turning product concepts to tangible samples
               </p>
               <Link to="/services/prototyping" className="text-primary-400 group-hover:text-primary-300 inline-flex items-center">
                 Learn more{' '}
@@ -406,8 +401,7 @@ const LandingPage: React.FC = () => {
               </div>
               <h3 className="text-xl font-semibold mb-3">Sourcing</h3>
               <p className="text-gray-300 mb-4">
-                Find reliable manufacturing partners that meet your quality and
-                budget requirements.
+                Finding you reliable manufacturers suited to your budget and needs
               </p>
               <Link to="/services/sourcing" className="text-primary-400 group-hover:text-primary-300 inline-flex items-center">
                 Learn more{' '}
@@ -418,10 +412,9 @@ const LandingPage: React.FC = () => {
               <div className="text-primary-400 mb-4">
                 <Factory className="h-8 w-8" />
               </div>
-              <h3 className="text-xl font-semibold mb-3">Manufacturing</h3>
+              <h3 className="text-xl font-semibold mb-3">Manufacturing and freight</h3>
               <p className="text-gray-300 mb-4">
-                Scale your production efficiently with our comprehensive
-                manufacturing services.
+                Executing manufacturing and freight logistics ensuring seamless production and delivery
               </p>
               <Link to="/services/manufacturing" className="text-primary-400 group-hover:text-primary-300 inline-flex items-center">
                 Learn more{' '}
@@ -434,10 +427,9 @@ const LandingPage: React.FC = () => {
               <div className="text-primary-400 mb-4">
                 <CameraIcon className="h-8 w-8" />
               </div>
-              <h3 className="text-xl font-semibold mb-3">Photography</h3>
+              <h3 className="text-xl font-semibold mb-3">Product shots</h3>
               <p className="text-gray-300 mb-4">
-                Showcase your products beautifully with professional photography
-                that drives sales.
+                Making you launch ready with professional product shots that drive sales
               </p>
               <Link to="/services/photography" className="text-primary-400 group-hover:text-primary-300 inline-flex items-center">
                 Learn more{' '}
@@ -450,8 +442,7 @@ const LandingPage: React.FC = () => {
               </div>
               <h3 className="text-xl font-semibold mb-3">Marketing</h3>
               <p className="text-gray-300 mb-4">
-                Drive product sales and growth with our strategic marketing
-                solutions.
+                Creating extensive marketing launch plans that promote brand awareness and sales
               </p>
               <Link to="/services/marketing" className="text-primary-400 group-hover:text-primary-300 inline-flex items-center">
                 Learn more{' '}
@@ -467,11 +458,10 @@ const LandingPage: React.FC = () => {
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
           <div className="text-center mb-16">
             <h2 className="text-3xl md:text-4xl font-bold mb-6">
-              Why businesses fail
+              Why do business ideas fail
             </h2>
             <p className="text-lg text-gray-300 max-w-2xl mx-auto">
-              We've identified the key reasons and built our service to address
-              them
+              Our services are strategically designed to address and prevent the core challenges that lead to startup failure
             </p>
           </div>
           <div className="grid md:grid-cols-3 gap-8">
@@ -504,32 +494,32 @@ const LandingPage: React.FC = () => {
       <section className="py-20 relative">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
-            <h2 className="text-3xl md:text-4xl font-bold mb-6">Our Process</h2>
+            <h2 className="text-3xl md:text-4xl font-bold mb-6">Our process</h2>
             <p className="text-lg text-gray-300 max-w-2xl mx-auto">
-              We take your idea through calculated phases at your pace
+              A strategic process, adaptable to your pace and needs
             </p>
           </div>
           <div className="space-y-6">
             {[{
             number: '01',
-            title: 'Prototype your vision',
-            description: 'Turn your concept into a tangible product with our expert prototyping services'
+            title: 'Sample your vision',
+            description: 'Turn your idea into a physical product with our years of experience'
           }, {
             number: '02',
             title: 'Find the best supplier for you',
-            description: "We'll match you with reliable suppliers that meet your quality and budget requirements"
+            description: "We'll find you three reliable suppliers to choose from that meet your manufacturing and budget requirements"
           }, {
             number: '03',
-            title: 'Manufacture & ship at lower costs',
-            description: 'Leverage our network to reduce production costs and streamline shipping'
+            title: 'Place bulk orders and have them delivered',
+            description: 'Leverage our experience in manufacturing and freight logistics to ensure smooth operations and competitive costs'
           }, {
             number: '04',
-            title: 'Get professional product shots',
-            description: 'Showcase your product with high-quality photography that sells'
+            title: 'Showcase your product',
+            description: 'Get special pricing on professional product shots based on your own inspiration for your website and marketing assets'
           }, {
             number: '05',
-            title: 'Plan your marketing launch',
-            description: 'Create a strategic marketing plan to successfully introduce your product to the market'
+            title: 'Why do business ideas fail',
+            description: 'Get an extensive marketing launch plan to successfully introduce your product to the market ensuring your marketing dollars are spent wisely'
           }].map((step, index) => <div key={index} className="flex items-start bg-charcoal-700/30 backdrop-blur-sm p-6 rounded-xl border border-charcoal-600 hover:border-primary-500 transition-all duration-300">
                 <div className="text-xl font-bold text-primary-400 mr-6">
                   {step.number}
@@ -547,11 +537,10 @@ const LandingPage: React.FC = () => {
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
             <h2 className="text-3xl md:text-4xl font-bold mb-6">
-              Frequently Asked Questions
+              Frequently asked questions
             </h2>
             <p className="text-lg text-gray-300 max-w-2xl mx-auto">
-              Get answers to common questions about how we help entrepreneurs
-              succeed
+              You asked, so we've answered truthfully
             </p>
           </div>
           <div className="max-w-3xl mx-auto">

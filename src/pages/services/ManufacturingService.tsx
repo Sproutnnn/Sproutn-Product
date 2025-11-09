@@ -32,11 +32,10 @@ const ManufacturingService: React.FC = () => {
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
           <div className="text-center">
             <h1 className="text-4xl md:text-6xl font-bold mb-6 bg-clip-text text-transparent bg-gradient-to-r from-white to-gray-300">
-              Manufacturing Excellence
+              Manufacturing and freight
             </h1>
             <p className="text-xl md:text-2xl text-gray-300 max-w-2xl mx-auto mb-10">
-              Transform your product designs into market-ready goods with our
-              comprehensive manufacturing services.
+              We manage all your manufacturing and freight logistics with our years of experience and developed network
             </p>
             <Link to="/login" className="px-8 py-3 bg-primary-500 text-white font-medium rounded-md hover:bg-primary-600 transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-primary-500/30">
               Get Started
@@ -50,11 +49,10 @@ const ManufacturingService: React.FC = () => {
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
             <h2 className="text-3xl md:text-4xl font-bold mb-6">
-              Manufacturing Services
+              Why trust us with manufacturing and shipping
             </h2>
             <p className="text-lg text-gray-300 max-w-2xl mx-auto">
-              We handle every aspect of the manufacturing process to ensure
-              high-quality production at competitive prices
+              We have years of experience working with manufacturers to produce quality bulk orders and coordinating competitive priced delivery to you
             </p>
           </div>
           <div className="grid md:grid-cols-3 gap-8">
@@ -63,34 +61,28 @@ const ManufacturingService: React.FC = () => {
                 <Factory className="h-8 w-8" />
               </div>
               <h3 className="text-xl font-semibold mb-3">
-                Production Management
+                Manufacturing options
               </h3>
               <p className="text-gray-300 mb-4">
-                Our team oversees the entire production process, from materials
-                procurement to final assembly, ensuring efficient workflows and
-                timely delivery.
+                We provide you three of the best manufacturing options for your idea. Making sure it makes sense from a financial, MOQ, and quality perspective
               </p>
             </div>
             <div className="bg-charcoal-700/50 backdrop-blur-sm p-6 rounded-xl border border-charcoal-600 hover:border-primary-500 transition-all duration-300 group">
               <div className="text-primary-400 mb-4">
                 <ShieldIcon className="h-8 w-8" />
               </div>
-              <h3 className="text-xl font-semibold mb-3">Quality Assurance</h3>
+              <h3 className="text-xl font-semibold mb-3">Quality assurance</h3>
               <p className="text-gray-300 mb-4">
-                We implement rigorous quality control measures at every
-                production stage, conducting thorough inspections to ensure your
-                products meet all specifications.
+                We thoroughly vet all potential suppliers, reviewing their production capabilities, quality control processes, and business practices to ensure reliability
               </p>
             </div>
             <div className="bg-charcoal-700/50 backdrop-blur-sm p-6 rounded-xl border border-charcoal-600 hover:border-primary-500 transition-all duration-300 group">
               <div className="text-primary-400 mb-4">
                 <BarChart3Icon className="h-8 w-8" />
               </div>
-              <h3 className="text-xl font-semibold mb-3">Cost Optimization</h3>
+              <h3 className="text-xl font-semibold mb-3">Logistics support</h3>
               <p className="text-gray-300 mb-4">
-                We leverage our industry expertise and supplier relationships to
-                optimize production costs without compromising quality,
-                maximizing your profit margins.
+                Our team handles complex shipping logistics, customs documentation, and delivery coordination, ensuring your products arrive on time and in perfect condition
               </p>
             </div>
           </div>

@@ -26,11 +26,10 @@ const PhotographyService: React.FC = () => {
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
           <div className="text-center">
             <h1 className="text-4xl md:text-6xl font-bold mb-6 bg-clip-text text-transparent bg-gradient-to-r from-white to-gray-300">
-              Professional Product Photography
+              Product shots
             </h1>
             <p className="text-xl md:text-2xl text-gray-300 max-w-2xl mx-auto mb-10">
-              Showcase your products with stunning, professional photography
-              that drives conversions.
+              Making you launch ready with professional product shots that drive sales
             </p>
             <Link to="/login" className="px-8 py-3 bg-primary-500 text-white font-medium rounded-md hover:bg-primary-600 transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-primary-500/30">
               Get Started
@@ -68,12 +67,10 @@ const PhotographyService: React.FC = () => {
                 <ImageIcon className="h-8 w-8" />
               </div>
               <h3 className="text-xl font-semibold mb-3">
-                Lifestyle Photography
+                Marketing assets
               </h3>
               <p className="text-gray-300 mb-4">
-                Contextual photography showing your products in use, helping
-                customers visualize how your products fit into their lives and
-                enhancing emotional connection.
+                Get ahead start on marketing with professional level pictures and assets that are ready for you to use before your products are even delivered to you
               </p>
             </div>
             <div className="bg-charcoal-700/50 backdrop-blur-sm p-6 rounded-xl border border-charcoal-600 hover:border-primary-500 transition-all duration-300 group">
