@@ -50,12 +50,9 @@ const LandingPage: React.FC = () => {
             </div>
           </div>
           <div className="mt-16 max-w-4xl mx-auto relative">
-            <div className="bg-charcoal-700/70 backdrop-blur-sm p-6 rounded-xl border border-charcoal-600 shadow-2xl">
-              <div className="relative w-full h-64 md:h-80">
-                <img src="/HeroSproutn.svg" alt="Global Supply Chain Network" className="w-full h-full object-contain" />
-              </div>
+            <div className="relative w-full h-64 md:h-80">
+              <img src="/HeroSproutn.svg" alt="Global Supply Chain Network" className="w-full h-full object-contain" />
             </div>
-            <div className="absolute -bottom-4 -right-4 -left-4 h-16 bg-gradient-to-t from-charcoal-800 to-transparent z-10"></div>
           </div>
         </div>
       </section>
