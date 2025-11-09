@@ -29,6 +29,23 @@ export const blogService = {
   },
 
   /**
+   * Get only published blog posts
+   */
+  async getPublished(): Promise<BlogPost[]> {
+    const { data, error } = await supabase
+      .from('blog_posts')
+      .select('*')
+      .eq('published', true)
+      .order('created_at', { ascending: false });
+
+    if (error) {
+      throw new Error(error.message);
+    }
+
+    return data;
+  },
+
+  /**
    * Get a single blog post by ID
    */
   async getById(id: string): Promise<BlogPost | null> {
