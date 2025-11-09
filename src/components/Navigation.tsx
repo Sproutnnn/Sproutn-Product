@@ -67,13 +67,13 @@ const Navigation: React.FC = () => {
               {isServicesOpen && <div className="absolute left-0 mt-2 w-56 bg-charcoal-600 rounded-md shadow-md z-10 border border-charcoal-700">
                   <div className="py-1">
                     <Link to="/services/prototyping" className="block px-4 py-2 text-sm text-gray-300 hover:bg-charcoal-700 hover:text-primary-300">
-                      Prototyping
+                      Sampling
                     </Link>
                     <Link to="/services/sourcing" className="block px-4 py-2 text-sm text-gray-300 hover:bg-charcoal-700 hover:text-primary-300">
-                      Sourcing & Manufacturing
+                      Manufacturing & Freight
                     </Link>
                     <Link to="/services/photography" className="block px-4 py-2 text-sm text-gray-300 hover:bg-charcoal-700 hover:text-primary-300">
-                      Photography
+                      Product Shots
                     </Link>
                     <Link to="/services/marketing" className="block px-4 py-2 text-sm text-gray-300 hover:bg-charcoal-700 hover:text-primary-300">
                       Marketing
@@ -110,13 +110,13 @@ const Navigation: React.FC = () => {
             </button>
             {isServicesOpen && <div className="pl-4 space-y-1">
                 <Link to="/services/prototyping" className="block px-3 py-2 text-base font-medium text-gray-300 hover:bg-charcoal-600 hover:text-primary-300 rounded-md">
-                  Prototyping
+                  Sampling
                 </Link>
                 <Link to="/services/sourcing" className="block px-3 py-2 text-base font-medium text-gray-300 hover:bg-charcoal-600 hover:text-primary-300 rounded-md">
-                  Sourcing & Manufacturing
+                  Manufacturing & Freight
                 </Link>
                 <Link to="/services/photography" className="block px-3 py-2 text-base font-medium text-gray-300 hover:bg-charcoal-600 hover:text-primary-300 rounded-md">
-                  Photography
+                  Product Shots
                 </Link>
                 <Link to="/services/marketing" className="block px-3 py-2 text-base font-medium text-gray-300 hover:bg-charcoal-600 hover:text-primary-300 rounded-md">
                   Marketing
