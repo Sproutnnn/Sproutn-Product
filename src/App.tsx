@@ -18,6 +18,7 @@ import Layout from './components/Layout';
 import ProtectedRoute from './components/ProtectedRoute';
 import LandingPage from './pages/LandingPage';
 import BlogPage from './pages/BlogPage';
+import BlogDetail from './pages/BlogDetail';
 import ServicesPage from './pages/ServicesPage';
 import PrototypingService from './pages/services/PrototypingService';
 import SourcingService from './pages/services/SourcingService';
@@ -40,6 +41,7 @@ export function App() {
           <Route path="/" element={<LandingPage />} />
           <Route path="/login" element={<Login />} />
           <Route path="/blog" element={<BlogPage />} />
+          <Route path="/blog/:slug" element={<BlogDetail />} />
           <Route path="/about" element={<About />} />
           <Route path="/services" element={<ServicesPage />} />
           <Route path="/services/prototyping" element={<PrototypingService />} />

@@ -14,6 +14,7 @@ interface BlogPost {
   read_time: string;
   category: string;
   image_url: string;
+  slug: string;
   featured?: boolean;
 }
 
@@ -108,7 +109,7 @@ const BlogPage: React.FC = () => {
                       <ClockIcon className="h-4 w-4 mr-1" />
                       <span>{featuredPost.read_time}</span>
                     </div>
-                    <Link to={`/blog/${featuredPost.id}`} className="inline-flex items-center text-[#016E4E] font-medium hover:underline">
+                    <Link to={`/blog/${featuredPost.slug}`} className="inline-flex items-center text-[#016E4E] font-medium hover:underline">
                       Read Full Article
                       <ArrowRightIcon className="ml-2 h-4 w-4" />
                     </Link>
@@ -143,7 +144,7 @@ const BlogPage: React.FC = () => {
                         <ClockIcon className="h-4 w-4 mr-1" />
                         <span>{post.read_time}</span>
                       </div>
-                      <Link to={`/blog/${post.id}`} className="inline-flex items-center text-[#016E4E] font-medium hover:underline">
+                      <Link to={`/blog/${post.slug}`} className="inline-flex items-center text-[#016E4E] font-medium hover:underline">
                         Read More
                         <ArrowRightIcon className="ml-1 h-4 w-4" />
                       </Link>

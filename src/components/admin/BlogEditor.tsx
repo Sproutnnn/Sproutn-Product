@@ -14,6 +14,7 @@ interface BlogPost {
   read_time: string;
   featured: boolean;
   published: boolean;
+  slug?: string;
 }
 
 interface BlogEditorProps {
@@ -158,9 +159,16 @@ const BlogEditor: React.FC<BlogEditorProps> = ({ editMode = false }) => {
         }
       }
 
+      // Generate slug from title if creating new post or title changed
+      let slug = post.slug;
+      if (!editMode || !slug) {
+        slug = blogService.generateSlug(post.title);
+      }
+
       const blogData = {
         ...post,
-        image_url: imageUrl
+        image_url: imageUrl,
+        slug
       };
 
       if (editMode && id) {

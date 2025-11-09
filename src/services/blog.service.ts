@@ -63,6 +63,36 @@ export const blogService = {
   },
 
   /**
+   * Get a single blog post by slug
+   */
+  async getBySlug(slug: string): Promise<BlogPost | null> {
+    const { data, error } = await supabase
+      .from('blog_posts')
+      .select('*')
+      .eq('slug', slug)
+      .eq('published', true)
+      .single();
+
+    if (error) {
+      return null;
+    }
+
+    return data;
+  },
+
+  /**
+   * Generate a URL-friendly slug from title
+   */
+  generateSlug(title: string): string {
+    return title
+      .toLowerCase()
+      .trim()
+      .replace(/[^a-z0-9\s-]/g, '')
+      .replace(/\s+/g, '-')
+      .replace(/-+/g, '-');
+  },
+
+  /**
    * Get featured blog posts
    */
   async getFeatured(): Promise<BlogPost[]> {
