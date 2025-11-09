@@ -293,7 +293,7 @@ const BlogEditor: React.FC<BlogEditorProps> = ({ editMode = false }) => {
             <label htmlFor="content" className="block text-sm font-medium text-[#434C54] mb-1">
               Content * (Rich Text Editor)
             </label>
-            <div className="bg-white rounded-md border border-gray-300">
+            <div className="bg-white rounded-md border border-gray-300 overflow-hidden">
               <ReactQuill
                 theme="snow"
                 value={post.content}
@@ -302,6 +302,7 @@ const BlogEditor: React.FC<BlogEditorProps> = ({ editMode = false }) => {
                 formats={formats}
                 placeholder="Write your blog post content here..."
                 className="h-96"
+                style={{ width: '100%' }}
               />
             </div>
           </div>
