@@ -52,7 +52,8 @@ const LandingPage: React.FC = () => {
           <div className="mt-16 max-w-4xl mx-auto relative">
             <div className="bg-charcoal-700/70 backdrop-blur-sm p-6 rounded-xl border border-charcoal-600 shadow-2xl">
               <div className="relative w-full h-64 md:h-80">
-                <svg viewBox="0 0 1000 500" className="w-full h-full">
+                <img src="/HeroSproutn.svg" alt="Global Supply Chain Network" className="w-full h-full object-contain" />
+                {/* <svg viewBox="0 0 1000 500" className="w-full h-full">
                   {/* World map background */}
                   <rect width="1000" height="500" fill="#1a1d21" opacity="0.3" />
                   {/* Grid pattern */}
@@ -363,7 +364,7 @@ const LandingPage: React.FC = () => {
                       Data Points
                     </text>
                   </g>
-                </svg>
+                </svg> */}
               </div>
             </div>
             <div className="absolute -bottom-4 -right-4 -left-4 h-16 bg-gradient-to-t from-charcoal-800 to-transparent z-10"></div>
