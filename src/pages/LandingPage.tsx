@@ -34,18 +34,11 @@ const LandingPage: React.FC = () => {
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
           <div className="text-center">
             <h1 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-bold mb-6 bg-clip-text text-transparent bg-gradient-to-r from-white to-gray-300 max-w-7xl mx-auto px-4">
-              The place where startup ideas come to life
+              The Place Where Startup Ideas Come To Life
             </h1>
-            <p className="text-lg sm:text-xl md:text-2xl text-gray-300 max-w-3xl mx-auto mb-10">
+            <p className="text-lg sm:text-xl md:text-2xl text-gray-300 max-w-3xl mx-auto mb-10 font-normal">
               Bringing your business ideas from concept to market with less risk
             </p>
-          </div>
-          <div className="mt-8 max-w-4xl mx-auto relative mb-10">
-            <div className="relative w-full h-64 md:h-80">
-              <img src="/HeroSproutn.svg" alt="Global Supply Chain Network" className="w-full h-full object-contain" />
-            </div>
-          </div>
-          <div className="text-center">
             <div className="flex flex-col sm:flex-row justify-center items-center space-y-4 sm:space-y-0 sm:space-x-6">
               <Link to={isAuthenticated ? '/create-project' : '/login'} className="px-8 py-3 bg-primary-500 text-white font-medium rounded-md hover:bg-primary-600 transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-primary-500/30">
                 Get Started
@@ -54,6 +47,11 @@ const LandingPage: React.FC = () => {
               <Link to="/services" className="px-8 py-3 border border-gray-500 text-gray-300 font-medium rounded-md hover:bg-charcoal-700 hover:text-white transition-all duration-300">
                 Learn More
               </Link>
+            </div>
+          </div>
+          <div className="mt-16 max-w-4xl mx-auto relative">
+            <div className="relative w-full h-64 md:h-80">
+              <img src="/HeroSproutn.svg" alt="Global Supply Chain Network" className="w-full h-full object-contain" />
             </div>
           </div>
         </div>
