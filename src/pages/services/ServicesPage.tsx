@@ -136,10 +136,10 @@ const ServicesPage: React.FC = () => {
             Get started today and let us help you navigate the journey from
             concept to market.
           </p>
-          <Link to="/login" className="inline-flex items-center justify-center px-8 py-4 border border-transparent text-lg font-medium rounded-md text-[#016E4E] bg-white hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-white transition-colors duration-200">
+          <a href="https://calendly.com/chris-sproutn/30min" target="_blank" rel="noopener noreferrer" className="inline-flex items-center justify-center px-8 py-4 border border-transparent text-lg font-medium rounded-md text-[#016E4E] bg-white hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-white transition-colors duration-200">
             Get Started
             <ArrowRightIcon className="ml-2 h-5 w-5" />
-          </Link>
+          </a>
         </div>
       </section>
       {/* Footer */}

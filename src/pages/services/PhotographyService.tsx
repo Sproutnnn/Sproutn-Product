@@ -31,10 +31,10 @@ const PhotographyService: React.FC = () => {
             <p className="text-xl md:text-2xl text-gray-300 max-w-2xl mx-auto mb-10">
               Making you launch ready with professional product shots that drive sales
             </p>
-            <Link to="/login" className="px-8 py-3 bg-primary-500 text-white font-medium rounded-md hover:bg-primary-600 transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-primary-500/30">
+            <a href="https://calendly.com/chris-sproutn/30min" target="_blank" rel="noopener noreferrer" className="px-8 py-3 bg-primary-500 text-white font-medium rounded-md hover:bg-primary-600 transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-primary-500/30">
               Get Started
               <ArrowRightIcon className="ml-2 h-5 w-5 inline" />
-            </Link>
+            </a>
           </div>
         </div>
       </section>
@@ -119,9 +119,9 @@ const PhotographyService: React.FC = () => {
                         <span className="text-gray-300">{feature}</span>
                       </li>)}
                   </ul>
-                  <Link to="/login" className={`block text-center py-2 px-4 rounded-md font-medium ${pkg.popular ? 'bg-primary-500 text-white hover:bg-primary-600' : 'bg-charcoal-600 text-gray-300 hover:bg-charcoal-500'} transition-colors`}>
+                  <a href="https://calendly.com/chris-sproutn/30min" target="_blank" rel="noopener noreferrer" className={`block text-center py-2 px-4 rounded-md font-medium ${pkg.popular ? 'bg-primary-500 text-white hover:bg-primary-600' : 'bg-charcoal-600 text-gray-300 hover:bg-charcoal-500'} transition-colors`}>
                     Get Started
-                  </Link>
+                  </a>
                 </div>
               </div>)}
           </div>
@@ -205,10 +205,10 @@ const PhotographyService: React.FC = () => {
             rates and customer engagement.
           </p>
           <div className="flex flex-col sm:flex-row justify-center space-y-4 sm:space-y-0 sm:space-x-6">
-            <Link to="/login" className="px-8 py-3 bg-primary-500 text-white font-medium rounded-md hover:bg-primary-600 transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-primary-500/30">
+            <a href="https://calendly.com/chris-sproutn/30min" target="_blank" rel="noopener noreferrer" className="px-8 py-3 bg-primary-500 text-white font-medium rounded-md hover:bg-primary-600 transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-primary-500/30">
               Get Started
               <ArrowRightIcon className="ml-2 h-5 w-5 inline" />
-            </Link>
+            </a>
             <Link to="/services" className="px-8 py-3 border border-gray-500 text-gray-300 font-medium rounded-md hover:bg-charcoal-700 hover:text-white transition-all duration-300">
               Explore Other Services
             </Link>

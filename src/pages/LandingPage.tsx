@@ -40,10 +40,10 @@ const LandingPage: React.FC = () => {
               Bringing your business ideas from concept to market with less risk
             </p>
             <div className="flex flex-col sm:flex-row justify-center items-center space-y-4 sm:space-y-0 sm:space-x-6">
-              <Link to={isAuthenticated ? '/create-project' : '/login'} className="px-8 py-3 bg-primary-500 text-white font-medium rounded-md hover:bg-primary-600 transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-primary-500/30">
+              <a href="https://calendly.com/chris-sproutn/30min" target="_blank" rel="noopener noreferrer" className="px-8 py-3 bg-primary-500 text-white font-medium rounded-md hover:bg-primary-600 transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-primary-500/30">
                 Get Started
                 <ArrowRightIcon className="ml-2 h-5 w-5 inline" />
-              </Link>
+              </a>
               <Link to="/services" className="px-8 py-3 border border-gray-500 text-gray-300 font-medium rounded-md hover:bg-charcoal-700 hover:text-white transition-all duration-300">
                 Learn More
               </Link>
@@ -255,10 +255,10 @@ const LandingPage: React.FC = () => {
             Join the entrepreneurs who are successfully bringing their products
             to market with our help.
           </p>
-          <Link to={isAuthenticated ? '/create-project' : '/login'} className="px-8 py-3 bg-primary-500 text-white font-medium rounded-md hover:bg-primary-600 transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-primary-500/30">
+          <a href="https://calendly.com/chris-sproutn/30min" target="_blank" rel="noopener noreferrer" className="px-8 py-3 bg-primary-500 text-white font-medium rounded-md hover:bg-primary-600 transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-primary-500/30">
             Get Started
             <ArrowRightIcon className="ml-2 h-5 w-5 inline" />
-          </Link>
+          </a>
         </div>
       </section>
       {/* Footer */}

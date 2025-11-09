@@ -27,10 +27,10 @@ const SourcingService: React.FC = () => {
                 quality products at competitive prices with our expert sourcing
                 services.
               </p>
-              <Link to="/login" className="px-8 py-3 bg-primary-500 text-white font-medium rounded-md hover:bg-primary-600 transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-primary-500/30">
+              <a href="https://calendly.com/chris-sproutn/30min" target="_blank" rel="noopener noreferrer" className="px-8 py-3 bg-primary-500 text-white font-medium rounded-md hover:bg-primary-600 transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-primary-500/30">
                 Get Started
                 <ArrowRightIcon className="ml-2 h-5 w-5 inline" />
-              </Link>
+              </a>
             </div>
             {isAdmin && <button onClick={() => navigate('/admin/pages/edit/services-sourcing')} className="bg-white text-gray-700 p-2 rounded-full hover:bg-gray-100">
                 <PencilIcon className="h-5 w-5" />
