@@ -18,6 +18,7 @@ interface BlogPost {
   featured: boolean;
   published: boolean;
   slug?: string;
+  created_at?: string;
 }
 
 interface BlogEditorProps {
@@ -37,7 +38,8 @@ const BlogEditor: React.FC<BlogEditorProps> = ({ editMode = false }) => {
     image_url: '',
     read_time: '5 min read',
     featured: false,
-    published: false
+    published: false,
+    created_at: new Date().toISOString().split('T')[0] // Default to today's date
   });
 
   const [loading, setLoading] = useState(false);
@@ -77,7 +79,8 @@ const BlogEditor: React.FC<BlogEditorProps> = ({ editMode = false }) => {
           image_url: blogPost.image_url || '',
           read_time: blogPost.read_time || '5 min read',
           featured: blogPost.featured || false,
-          published: blogPost.published || false
+          published: blogPost.published || false,
+          created_at: blogPost.created_at ? new Date(blogPost.created_at).toISOString().split('T')[0] : new Date().toISOString().split('T')[0]
         });
         setImagePreview(blogPost.image_url || '');
       }
@@ -346,20 +349,37 @@ const BlogEditor: React.FC<BlogEditorProps> = ({ editMode = false }) => {
             </div>
           </div>
 
-          <div>
-            <label htmlFor="read_time" className="block text-sm font-medium text-[#434C54] mb-1">
-              Read Time *
-            </label>
-            <input
-              type="text"
-              id="read_time"
-              name="read_time"
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div>
+              <label htmlFor="read_time" className="block text-sm font-medium text-[#434C54] mb-1">
+                Read Time *
+              </label>
+              <input
+                type="text"
+                id="read_time"
+                name="read_time"
               value={post.read_time}
               onChange={handleChange}
               required
               className="block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-[#016E4E] focus:border-[#016E4E]"
-              placeholder="e.g., 5 min read"
-            />
+                placeholder="e.g., 5 min read"
+              />
+            </div>
+
+            <div>
+              <label htmlFor="created_at" className="block text-sm font-medium text-[#434C54] mb-1">
+                Publication Date *
+              </label>
+              <input
+                type="date"
+                id="created_at"
+                name="created_at"
+                value={post.created_at}
+                onChange={handleChange}
+                required
+                className="block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-[#016E4E] focus:border-[#016E4E]"
+              />
+            </div>
           </div>
 
           <div>
