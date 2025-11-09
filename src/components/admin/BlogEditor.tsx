@@ -304,9 +304,6 @@ const BlogEditor: React.FC<BlogEditorProps> = ({ editMode = false }) => {
                 className="h-96"
               />
             </div>
-            <p className="mt-2 text-sm text-gray-500">
-              Use the toolbar to format your content with headers, lists, bold, italic, links, and more.
-            </p>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
