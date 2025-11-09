@@ -49,8 +49,8 @@ const LandingPage: React.FC = () => {
               </Link>
             </div>
           </div>
-          <div className="mt-16 max-w-4xl mx-auto relative">
-            <div className="relative w-full h-64 md:h-80">
+          <div className="mt-8 max-w-6xl mx-auto relative">
+            <div className="relative w-full h-80 md:h-96 lg:h-[500px]">
               <img src="/HeroSproutn.svg" alt="Global Supply Chain Network" className="w-full h-full object-contain" />
             </div>
           </div>
