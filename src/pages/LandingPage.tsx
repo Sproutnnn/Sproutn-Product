@@ -36,7 +36,7 @@ const LandingPage: React.FC = () => {
             <h1 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-bold mb-6 bg-clip-text text-transparent bg-gradient-to-r from-white to-gray-300 max-w-7xl mx-auto px-4">
               The Place Where Startup Ideas Come To Life
             </h1>
-            <p className="text-lg sm:text-xl md:text-2xl text-gray-300 max-w-3xl mx-auto mb-10 font-normal">
+            <p className="text-lg sm:text-xl md:text-2xl text-gray-300 max-w-3xl mx-auto mb-10 font-light">
               Bringing your business ideas from concept to market with less risk
             </p>
             <div className="flex flex-col sm:flex-row justify-center items-center space-y-4 sm:space-y-0 sm:space-x-6">
