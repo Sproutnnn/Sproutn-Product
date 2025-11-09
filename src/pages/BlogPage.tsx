@@ -176,7 +176,7 @@ const BlogPage: React.FC = () => {
         <div className="container mx-auto px-6">
           <div className="flex flex-col md:flex-row justify-between">
             <div className="mb-8 md:mb-0">
-              <img src="/IMG_8336.png" alt="Sprout'n Logo" className="h-10 mb-4" />
+              <img src="/IMG_8337.png" alt="Sprout'n Logo" className="h-10 mb-4" />
               <p className="text-gray-400 max-w-xs">
                 From concept to market, we're with you every step of the way.
               </p>

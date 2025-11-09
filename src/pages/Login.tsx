@@ -58,7 +58,7 @@ const Login: React.FC = () => {
             Back to home
           </Link>
           <div className="text-center mb-10">
-            <img src="/IMG_8336.webp" alt="Sprout'n Logo" className="h-40 mx-auto" />
+            <img src="/IMG_8337.png" alt="Sprout'n Logo" className="h-40 mx-auto" />
             <h2 className="mt-8 text-center text-3xl font-extrabold text-charcoal-500">
               Your dream starts here
             </h2>
