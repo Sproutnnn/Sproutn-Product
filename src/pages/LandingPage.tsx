@@ -266,7 +266,7 @@ const LandingPage: React.FC = () => {
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="md:flex md:justify-between">
             <div className="mb-8 md:mb-0">
-              <img src="/IMG_8336.png" alt="Sprout'n Logo" className="h-8 mb-4" />
+              <img src="/IMG_8337.png" alt="Sprout'n Logo" className="h-8 mb-4" />
               <p className="text-gray-500 max-w-xs">
                 From concept to market, we're with you every step of the way.
               </p>
