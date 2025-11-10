@@ -94,7 +94,7 @@ const BlogDetail: React.FC = () => {
   }
 
   return (
-    <div className="bg-gradient-to-br from-charcoal-800 to-charcoal-900 min-h-screen text-white">
+    <div className="bg-gradient-to-br from-charcoal-800 to-charcoal-900 text-white">
       <Navigation />
 
       {/* Header with Back Button */}
@@ -111,7 +111,7 @@ const BlogDetail: React.FC = () => {
       </div>
 
       {/* Two Column Layout */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 pb-0">
         <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
           {/* Main Content Column */}
           <article className="lg:col-span-3">
@@ -198,7 +198,7 @@ const BlogDetail: React.FC = () => {
       </div>
 
       {/* Footer */}
-      <footer className="bg-charcoal-900 border-t border-charcoal-700 py-12 mt-16">
+      <footer className="bg-charcoal-900 border-t border-charcoal-700 py-12 mt-12">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="md:flex md:justify-between">
             <div className="mb-8 md:mb-0">
