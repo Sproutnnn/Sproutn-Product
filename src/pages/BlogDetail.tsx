@@ -151,14 +151,15 @@ const BlogDetail: React.FC = () => {
           {/* Sidebar Column */}
           <aside className="lg:col-span-1">
             <div className="sticky top-24">
-              {/* Author Card */}
-              <div className="bg-charcoal-800 rounded-lg p-6 mb-6 border border-charcoal-700">
+              {/* Combined Author & Post Details Card */}
+              <div className="bg-charcoal-800 rounded-lg p-6 border border-charcoal-700">
+                {/* Author Section */}
                 <h3 className="text-sm font-semibold text-gray-400 uppercase tracking-wider mb-4">
                   About the Author
                 </h3>
 
                 {/* Author Image Placeholder */}
-                <div className="flex items-center mb-4">
+                <div className="flex items-center mb-6 pb-6 border-b border-charcoal-700">
                   <div className="w-16 h-16 rounded-full bg-primary-500 flex items-center justify-center text-2xl font-bold text-white">
                     {post.author.charAt(0).toUpperCase()}
                   </div>
@@ -166,10 +167,8 @@ const BlogDetail: React.FC = () => {
                     <p className="text-lg font-semibold text-white">{post.author}</p>
                   </div>
                 </div>
-              </div>
 
-              {/* Post Details Card */}
-              <div className="bg-charcoal-800 rounded-lg p-6 border border-charcoal-700">
+                {/* Post Details Section */}
                 <h3 className="text-sm font-semibold text-gray-400 uppercase tracking-wider mb-4">
                   Post Details
                 </h3>
