@@ -61,11 +61,11 @@ const BlogDetail: React.FC = () => {
 
   if (loading) {
     return (
-      <div className="bg-white min-h-screen">
+      <div className="bg-gradient-to-br from-charcoal-800 to-charcoal-900 min-h-screen text-white">
         <Navigation />
         <div className="container mx-auto px-6 py-12">
           <div className="flex justify-center items-center h-64">
-            <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-[#016E4E]"></div>
+            <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary-500"></div>
           </div>
         </div>
       </div>
@@ -74,15 +74,15 @@ const BlogDetail: React.FC = () => {
 
   if (error || !post) {
     return (
-      <div className="bg-white min-h-screen">
+      <div className="bg-gradient-to-br from-charcoal-800 to-charcoal-900 min-h-screen text-white">
         <Navigation />
         <div className="container mx-auto px-6 py-12">
           <div className="text-center">
-            <h1 className="text-3xl font-bold text-[#434C54] mb-4">Blog Post Not Found</h1>
-            <p className="text-[#434C54] mb-6">{error || 'The blog post you are looking for does not exist.'}</p>
+            <h1 className="text-3xl font-bold text-white mb-4">Blog Post Not Found</h1>
+            <p className="text-gray-300 mb-6">{error || 'The blog post you are looking for does not exist.'}</p>
             <Link
               to="/blog"
-              className="inline-flex items-center text-[#016E4E] font-medium hover:underline"
+              className="inline-flex items-center text-primary-400 font-medium hover:text-primary-300"
             >
               <ArrowLeftIcon className="h-4 w-4 mr-2" />
               Back to Blog
@@ -94,15 +94,16 @@ const BlogDetail: React.FC = () => {
   }
 
   return (
-    <div className="bg-white min-h-screen">
+    <div className="bg-gradient-to-br from-charcoal-800 to-charcoal-900 min-h-screen text-white">
       <Navigation />
 
       {/* Header */}
-      <div className="bg-[#859CB6] bg-opacity-10 py-8">
-        <div className="container mx-auto px-6">
+      <div className="relative py-12 overflow-hidden">
+        <div className="absolute inset-0 bg-gradient-to-br from-primary-900/30 to-charcoal-800/50 z-0"></div>
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
           <Link
             to="/blog"
-            className="inline-flex items-center text-[#016E4E] font-medium hover:underline mb-4"
+            className="inline-flex items-center text-primary-400 font-medium hover:text-primary-300 mb-4"
           >
             <ArrowLeftIcon className="h-4 w-4 mr-2" />
             Back to Blog
@@ -111,21 +112,21 @@ const BlogDetail: React.FC = () => {
       </div>
 
       {/* Article */}
-      <article className="container mx-auto px-6 py-12 max-w-4xl">
+      <article className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         {/* Category Badge */}
         <div className="mb-4">
-          <span className="inline-block bg-[#016E4E] text-white text-xs font-bold px-3 py-1 rounded-full">
+          <span className="inline-block bg-primary-500 text-white text-xs font-bold px-3 py-1 rounded-full">
             {post.category}
           </span>
         </div>
 
         {/* Title */}
-        <h1 className="text-4xl md:text-5xl font-bold text-[#434C54] mb-6">
+        <h1 className="text-4xl md:text-5xl font-bold text-white mb-6">
           {post.title}
         </h1>
 
         {/* Meta Info */}
-        <div className="flex flex-wrap items-center text-sm text-[#859CB6] mb-8 gap-4">
+        <div className="flex flex-wrap items-center text-sm text-gray-400 mb-8 gap-4">
           <div className="flex items-center">
             <UserIcon className="h-4 w-4 mr-1" />
             <span>{post.author}</span>
@@ -153,80 +154,86 @@ const BlogDetail: React.FC = () => {
         )}
 
         {/* Excerpt */}
-        <div className="text-xl text-[#434C54] mb-8 font-medium border-l-4 border-[#016E4E] pl-4">
+        <div className="text-xl text-gray-300 mb-8 font-medium border-l-4 border-primary-500 pl-4">
           {post.excerpt}
         </div>
 
         {/* Content */}
-        <div className="prose prose-lg max-w-none ql-editor" dangerouslySetInnerHTML={{ __html: post.content }} />
+        <div className="prose prose-lg prose-invert max-w-none ql-editor" dangerouslySetInnerHTML={{ __html: post.content }} />
       </article>
 
       {/* Footer */}
-      <footer className="bg-[#434C54] text-white py-12 mt-16">
-        <div className="container mx-auto px-6">
-          <div className="flex flex-col md:flex-row justify-between">
+      <footer className="bg-charcoal-900 border-t border-charcoal-700 py-12 mt-16">
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="md:flex md:justify-between">
             <div className="mb-8 md:mb-0">
-              <img src="/IMG_8337.png" alt="Sprout'n Logo" className="h-10 mb-4" />
-              <p className="text-gray-400 max-w-xs">
+              <img src="/IMG_8337.png" alt="Sprout'n Logo" className="h-8 mb-4" />
+              <p className="text-gray-500 max-w-xs">
                 From concept to market, we're with you every step of the way.
               </p>
             </div>
             <div className="grid grid-cols-2 md:grid-cols-3 gap-8">
               <div>
-                <h3 className="text-lg font-semibold mb-4">Services</h3>
+                <h3 className="text-sm font-semibold text-white tracking-wider uppercase mb-4">
+                  Services
+                </h3>
                 <ul className="space-y-2">
                   <li>
-                    <Link to="/services/prototyping" className="text-gray-400 hover:text-white transition-colors">
-                      Sampling
+                    <Link to="/services/prototyping" className="text-gray-400 hover:text-primary-400 transition-colors">
+                      Prototyping
                     </Link>
                   </li>
                   <li>
-                    <Link to="/services/sourcing" className="text-gray-400 hover:text-white transition-colors">
-                      Manufacturing & Freight
+                    <Link to="/services/sourcing" className="text-gray-400 hover:text-primary-400 transition-colors">
+                      Sourcing & Manufacturing
                     </Link>
                   </li>
                   <li>
-                    <Link to="/services/photography" className="text-gray-400 hover:text-white transition-colors">
-                      Product Shots
+                    <Link to="/services/photography" className="text-gray-400 hover:text-primary-400 transition-colors">
+                      Photography
                     </Link>
                   </li>
                   <li>
-                    <Link to="/services/marketing" className="text-gray-400 hover:text-white transition-colors">
+                    <Link to="/services/marketing" className="text-gray-400 hover:text-primary-400 transition-colors">
                       Marketing
                     </Link>
                   </li>
                 </ul>
               </div>
               <div>
-                <h3 className="text-lg font-semibold mb-4">Company</h3>
+                <h3 className="text-sm font-semibold text-white tracking-wider uppercase mb-4">
+                  Company
+                </h3>
                 <ul className="space-y-2">
                   <li>
-                    <Link to="/about" className="text-gray-400 hover:text-white transition-colors">
+                    <Link to="/about" className="text-gray-400 hover:text-primary-400 transition-colors">
                       About Us
                     </Link>
                   </li>
                   <li>
-                    <Link to="/blog" className="text-gray-400 hover:text-white transition-colors">
+                    <Link to="/blog" className="text-gray-400 hover:text-primary-400 transition-colors">
                       Blog
                     </Link>
                   </li>
                 </ul>
               </div>
               <div>
-                <h3 className="text-lg font-semibold mb-4">Legal</h3>
+                <h3 className="text-sm font-semibold text-white tracking-wider uppercase mb-4">
+                  Legal
+                </h3>
                 <ul className="space-y-2">
                   <li>
-                    <Link to="/terms" className="text-gray-400 hover:text-white transition-colors">
+                    <Link to="/terms" className="text-gray-400 hover:text-primary-400 transition-colors">
                       Terms
                     </Link>
                   </li>
                   <li>
-                    <Link to="/privacy" className="text-gray-400 hover:text-white transition-colors">
+                    <Link to="/privacy" className="text-gray-400 hover:text-primary-400 transition-colors">
                       Privacy
                     </Link>
                   </li>
                   <li>
-                    <Link to="/cookies" className="text-gray-400 hover:text-white transition-colors">
+                    <Link to="/cookies" className="text-gray-400 hover:text-primary-400 transition-colors">
                       Cookies
                     </Link>
                   </li>
@@ -234,7 +241,7 @@ const BlogDetail: React.FC = () => {
               </div>
             </div>
           </div>
-          <div className="border-t border-gray-700 mt-12 pt-8 text-center text-gray-400">
+          <div className="mt-8 pt-8 border-t border-charcoal-700 text-center md:text-left text-gray-500">
             <p>© {new Date().getFullYear()} Sprout'n. All rights reserved.</p>
           </div>
         </div>

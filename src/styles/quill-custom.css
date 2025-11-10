@@ -194,3 +194,51 @@
 .prose .ql-editor li {
   color: #434C54;
 }
+
+/* Dark theme styles for blog detail page */
+.prose-invert .ql-editor h1,
+.prose-invert .ql-editor h2,
+.prose-invert .ql-editor h3,
+.prose-invert .ql-editor h4,
+.prose-invert .ql-editor h5,
+.prose-invert .ql-editor h6 {
+  color: #ffffff !important;
+}
+
+.prose-invert .ql-editor p,
+.prose-invert .ql-editor li,
+.prose-invert .ql-editor span,
+.prose-invert .ql-editor div {
+  color: #e5e7eb !important;
+}
+
+.prose-invert .ql-editor strong {
+  color: #ffffff !important;
+}
+
+.prose-invert .ql-editor em {
+  color: #d1d5db !important;
+}
+
+.prose-invert .ql-editor a {
+  color: #6ee7b7 !important;
+}
+
+.prose-invert .ql-editor a:hover {
+  color: #34d399 !important;
+}
+
+.prose-invert .ql-editor blockquote {
+  border-left-color: #6ee7b7 !important;
+  color: #d1d5db !important;
+}
+
+.prose-invert .ql-editor code {
+  background-color: #374151 !important;
+  color: #e5e7eb !important;
+}
+
+.prose-invert .ql-editor pre {
+  background-color: #1f2937 !important;
+  color: #e5e7eb !important;
+}
