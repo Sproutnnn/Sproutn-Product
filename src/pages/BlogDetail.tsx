@@ -94,7 +94,7 @@ const BlogDetail: React.FC = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-charcoal-800 to-charcoal-900 text-white flex flex-col">
+    <div className="flex-1 bg-gradient-to-br from-charcoal-800 to-charcoal-900 text-white flex flex-col">
       <Navigation />
 
       {/* Header with Back Button */}
