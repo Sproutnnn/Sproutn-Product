@@ -150,7 +150,7 @@ const BlogDetail: React.FC = () => {
 
           {/* Sidebar Column */}
           <aside className="lg:col-span-1">
-            <div className="sticky top-24">
+            <div>
               {/* Combined Author & Post Details Card */}
               <div className="bg-charcoal-800 rounded-lg p-6 border border-charcoal-700">
                 {/* Author Section */}
