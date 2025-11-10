@@ -99,7 +99,7 @@ const BlogDetail: React.FC = () => {
 
       {/* Header with Back Button */}
       <div className="relative py-6 border-b border-charcoal-700">
-        <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <Link
             to="/blog"
             className="inline-flex items-center text-primary-400 font-medium hover:text-primary-300 transition-colors"
@@ -110,58 +110,100 @@ const BlogDetail: React.FC = () => {
         </div>
       </div>
 
-      {/* Article */}
-      <article className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-        {/* Category Badge */}
-        <div className="mb-6">
-          <span className="inline-block bg-primary-500 text-white text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wider">
-            {post.category}
-          </span>
+      {/* Two Column Layout */}
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-12">
+          {/* Main Content Column */}
+          <article className="lg:col-span-2">
+            {/* Category Badge */}
+            <div className="mb-6">
+              <span className="inline-block bg-primary-500 text-white text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wider">
+                {post.category}
+              </span>
+            </div>
+
+            {/* Title - Mobile only */}
+            <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold text-white mb-8 leading-tight lg:hidden">
+              {post.title}
+            </h1>
+
+            {/* Featured Image */}
+            {post.image_url && (
+              <div className="mb-10 rounded-lg overflow-hidden shadow-xl">
+                <img
+                  src={post.image_url}
+                  alt={post.title}
+                  className="w-full h-64 md:h-96 object-cover"
+                  loading="lazy"
+                />
+              </div>
+            )}
+
+            {/* Excerpt */}
+            <div className="text-xl md:text-2xl text-gray-200 mb-12 leading-relaxed font-light italic">
+              {post.excerpt}
+            </div>
+
+            {/* Content */}
+            <div className="prose prose-lg prose-invert max-w-none ql-editor text-gray-300 leading-relaxed" dangerouslySetInnerHTML={{ __html: post.content }} />
+          </article>
+
+          {/* Sidebar Column */}
+          <aside className="lg:col-span-1">
+            <div className="sticky top-24">
+              {/* Author Card */}
+              <div className="bg-charcoal-800 rounded-lg p-6 mb-6 border border-charcoal-700">
+                <h3 className="text-sm font-semibold text-gray-400 uppercase tracking-wider mb-4">
+                  About the Author
+                </h3>
+
+                {/* Author Image Placeholder */}
+                <div className="flex items-center mb-4">
+                  <div className="w-16 h-16 rounded-full bg-primary-500 flex items-center justify-center text-2xl font-bold text-white">
+                    {post.author.charAt(0).toUpperCase()}
+                  </div>
+                  <div className="ml-4">
+                    <p className="text-lg font-semibold text-white">{post.author}</p>
+                  </div>
+                </div>
+              </div>
+
+              {/* Post Details Card */}
+              <div className="bg-charcoal-800 rounded-lg p-6 border border-charcoal-700">
+                <h3 className="text-sm font-semibold text-gray-400 uppercase tracking-wider mb-4">
+                  Post Details
+                </h3>
+
+                {/* Title - Desktop only */}
+                <div className="mb-6 hidden lg:block">
+                  <h2 className="text-2xl font-bold text-white leading-tight">
+                    {post.title}
+                  </h2>
+                </div>
+
+                {/* Meta Information */}
+                <div className="space-y-4">
+                  <div className="flex items-start">
+                    <CalendarIcon className="h-5 w-5 text-primary-400 mr-3 mt-0.5 flex-shrink-0" />
+                    <div>
+                      <p className="text-xs text-gray-400 uppercase tracking-wider mb-1">Published</p>
+                      <p className="text-sm text-gray-300">{formatDate(post.created_at)}</p>
+                    </div>
+                  </div>
+
+                  <div className="flex items-start">
+                    <ClockIcon className="h-5 w-5 text-primary-400 mr-3 mt-0.5 flex-shrink-0" />
+                    <div>
+                      <p className="text-xs text-gray-400 uppercase tracking-wider mb-1">Read Time</p>
+                      <p className="text-sm text-gray-300">{post.read_time}</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </aside>
         </div>
-
-        {/* Title */}
-        <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold text-white mb-6 leading-tight">
-          {post.title}
-        </h1>
-
-        {/* Meta Info */}
-        <div className="flex flex-wrap items-center text-sm text-gray-400 mb-10 pb-8 border-b border-charcoal-700 gap-4">
-          <div className="flex items-center">
-            <UserIcon className="h-4 w-4 mr-2" />
-            <span>{post.author}</span>
-          </div>
-          <span className="text-gray-600">•</span>
-          <div className="flex items-center">
-            <CalendarIcon className="h-4 w-4 mr-2" />
-            <span>{formatDate(post.created_at)}</span>
-          </div>
-          <span className="text-gray-600">•</span>
-          <div className="flex items-center">
-            <ClockIcon className="h-4 w-4 mr-2" />
-            <span>{post.read_time}</span>
-          </div>
-        </div>
-
-        {/* Featured Image - Smaller and more contained */}
-        {post.image_url && (
-          <div className="mb-10 rounded-lg overflow-hidden shadow-xl">
-            <img
-              src={post.image_url}
-              alt={post.title}
-              className="w-full h-64 md:h-80 object-cover"
-              loading="lazy"
-            />
-          </div>
-        )}
-
-        {/* Excerpt - More prominent */}
-        <div className="text-xl md:text-2xl text-gray-200 mb-12 leading-relaxed font-light italic">
-          {post.excerpt}
-        </div>
-
-        {/* Content - Clean and focused */}
-        <div className="prose prose-lg prose-invert max-w-none ql-editor text-gray-300 leading-relaxed" dangerouslySetInnerHTML={{ __html: post.content }} />
-      </article>
+      </div>
 
       {/* Footer */}
       <footer className="bg-charcoal-900 border-t border-charcoal-700 py-12 mt-16">
