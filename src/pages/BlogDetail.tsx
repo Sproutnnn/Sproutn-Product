@@ -112,9 +112,9 @@ const BlogDetail: React.FC = () => {
 
       {/* Two Column Layout */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-12">
+        <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
           {/* Main Content Column */}
-          <article className="lg:col-span-2">
+          <article className="lg:col-span-3">
             {/* Category Badge */}
             <div className="mb-6">
               <span className="inline-block bg-primary-500 text-white text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wider">
@@ -122,8 +122,8 @@ const BlogDetail: React.FC = () => {
               </span>
             </div>
 
-            {/* Title - Mobile only */}
-            <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold text-white mb-8 leading-tight lg:hidden">
+            {/* Title */}
+            <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold text-white mb-8 leading-tight">
               {post.title}
             </h1>
 
@@ -133,7 +133,7 @@ const BlogDetail: React.FC = () => {
                 <img
                   src={post.image_url}
                   alt={post.title}
-                  className="w-full h-64 md:h-96 object-cover"
+                  className="w-full h-48 md:h-64 object-cover"
                   loading="lazy"
                 />
               </div>
@@ -173,13 +173,6 @@ const BlogDetail: React.FC = () => {
                 <h3 className="text-sm font-semibold text-gray-400 uppercase tracking-wider mb-4">
                   Post Details
                 </h3>
-
-                {/* Title - Desktop only */}
-                <div className="mb-6 hidden lg:block">
-                  <h2 className="text-2xl font-bold text-white leading-tight">
-                    {post.title}
-                  </h2>
-                </div>
 
                 {/* Meta Information */}
                 <div className="space-y-4">
