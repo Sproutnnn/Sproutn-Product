@@ -97,13 +97,12 @@ const BlogDetail: React.FC = () => {
     <div className="bg-gradient-to-br from-charcoal-800 to-charcoal-900 min-h-screen text-white">
       <Navigation />
 
-      {/* Header */}
-      <div className="relative py-12 overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-br from-primary-900/30 to-charcoal-800/50 z-0"></div>
-        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+      {/* Header with Back Button */}
+      <div className="relative py-6 border-b border-charcoal-700">
+        <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
           <Link
             to="/blog"
-            className="inline-flex items-center text-primary-400 font-medium hover:text-primary-300 mb-4"
+            className="inline-flex items-center text-primary-400 font-medium hover:text-primary-300 transition-colors"
           >
             <ArrowLeftIcon className="h-4 w-4 mr-2" />
             Back to Blog
@@ -112,54 +111,56 @@ const BlogDetail: React.FC = () => {
       </div>
 
       {/* Article */}
-      <article className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+      <article className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         {/* Category Badge */}
-        <div className="mb-4">
-          <span className="inline-block bg-primary-500 text-white text-xs font-bold px-3 py-1 rounded-full">
+        <div className="mb-6">
+          <span className="inline-block bg-primary-500 text-white text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wider">
             {post.category}
           </span>
         </div>
 
         {/* Title */}
-        <h1 className="text-4xl md:text-5xl font-bold text-white mb-6">
+        <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold text-white mb-6 leading-tight">
           {post.title}
         </h1>
 
         {/* Meta Info */}
-        <div className="flex flex-wrap items-center text-sm text-gray-400 mb-8 gap-4">
+        <div className="flex flex-wrap items-center text-sm text-gray-400 mb-10 pb-8 border-b border-charcoal-700 gap-4">
           <div className="flex items-center">
-            <UserIcon className="h-4 w-4 mr-1" />
+            <UserIcon className="h-4 w-4 mr-2" />
             <span>{post.author}</span>
           </div>
+          <span className="text-gray-600">•</span>
           <div className="flex items-center">
-            <CalendarIcon className="h-4 w-4 mr-1" />
+            <CalendarIcon className="h-4 w-4 mr-2" />
             <span>{formatDate(post.created_at)}</span>
           </div>
+          <span className="text-gray-600">•</span>
           <div className="flex items-center">
-            <ClockIcon className="h-4 w-4 mr-1" />
+            <ClockIcon className="h-4 w-4 mr-2" />
             <span>{post.read_time}</span>
           </div>
         </div>
 
-        {/* Featured Image */}
+        {/* Featured Image - Smaller and more contained */}
         {post.image_url && (
-          <div className="mb-8 rounded-lg overflow-hidden">
+          <div className="mb-10 rounded-lg overflow-hidden shadow-xl">
             <img
               src={post.image_url}
               alt={post.title}
-              className="w-full h-auto object-cover"
+              className="w-full h-64 md:h-80 object-cover"
               loading="lazy"
             />
           </div>
         )}
 
-        {/* Excerpt */}
-        <div className="text-xl text-gray-300 mb-8 font-medium border-l-4 border-primary-500 pl-4">
+        {/* Excerpt - More prominent */}
+        <div className="text-xl md:text-2xl text-gray-200 mb-12 leading-relaxed font-light italic">
           {post.excerpt}
         </div>
 
-        {/* Content */}
-        <div className="prose prose-lg prose-invert max-w-none ql-editor" dangerouslySetInnerHTML={{ __html: post.content }} />
+        {/* Content - Clean and focused */}
+        <div className="prose prose-lg prose-invert max-w-none ql-editor text-gray-300 leading-relaxed" dangerouslySetInnerHTML={{ __html: post.content }} />
       </article>
 
       {/* Footer */}
