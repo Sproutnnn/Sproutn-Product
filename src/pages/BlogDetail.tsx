@@ -94,11 +94,11 @@ const BlogDetail: React.FC = () => {
   }
 
   return (
-    <div className="bg-gradient-to-br from-charcoal-800 to-charcoal-900 text-white">
+    <>
       <Navigation />
-
-      {/* Header with Back Button */}
-      <div className="relative py-6 border-b border-charcoal-700">
+      <div className="bg-gradient-to-br from-charcoal-800 to-charcoal-900 text-white">
+        {/* Header with Back Button */}
+        <div className="relative py-6 border-b border-charcoal-700">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <Link
             to="/blog"
@@ -281,7 +281,8 @@ const BlogDetail: React.FC = () => {
           </div>
         </div>
       </footer>
-    </div>
+      </div>
+    </>
   );
 };
 
