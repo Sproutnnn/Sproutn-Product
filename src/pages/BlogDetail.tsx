@@ -94,7 +94,7 @@ const BlogDetail: React.FC = () => {
   }
 
   return (
-    <div className="flex-1 bg-gradient-to-br from-charcoal-800 to-charcoal-900 text-white flex flex-col">
+    <div className="bg-gradient-to-br from-charcoal-800 to-charcoal-900 text-white">
       <Navigation />
 
       {/* Header with Back Button */}
@@ -198,7 +198,7 @@ const BlogDetail: React.FC = () => {
       </div>
 
       {/* Footer */}
-      <footer className="bg-charcoal-900 border-t border-charcoal-700 py-12 mt-auto">
+      <footer className="bg-charcoal-900 border-t border-charcoal-700 py-12">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="md:flex md:justify-between">
             <div className="mb-8 md:mb-0">
