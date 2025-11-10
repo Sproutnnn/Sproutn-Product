@@ -5,25 +5,12 @@
 /* DO NOT DELETE THESE TAILWIND IMPORTS, OTHERWISE THE STYLING WILL NOT RENDER AT ALL */
 
 /* Prevent scrolling past content and ensure dark background */
-html {
-  overflow-x: hidden;
-  background: linear-gradient(to bottom right, #2d3748, #1a202c);
-  background-attachment: fixed;
-}
-
-body {
+html, body {
   overflow-x: hidden;
   background: linear-gradient(to bottom right, #2d3748, #1a202c);
   background-attachment: fixed;
   margin: 0;
   padding: 0;
-}
-
-#root {
-  isolation: isolate;
-}
-
-/* Prevent extra space after footer */
-#root > div {
-  display: block;
+  height: auto;
+  min-height: 0;
 }
