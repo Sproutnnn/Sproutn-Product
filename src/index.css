@@ -9,7 +9,6 @@ html {
   overflow-x: hidden;
   background: linear-gradient(to bottom right, #2d3748, #1a202c);
   background-attachment: fixed;
-  overscroll-behavior: none;
 }
 
 body {
@@ -18,9 +17,4 @@ body {
   background-attachment: fixed;
   margin: 0;
   padding: 0;
-  overscroll-behavior: none;
-}
-
-#root {
-  overscroll-behavior: none;
 }
