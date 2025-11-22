@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { ArrowRightIcon, CheckIcon, BarChart2Icon, CameraIcon, PackageIcon, TruckIcon, MonitorIcon } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
@@ -12,8 +12,8 @@ const LandingPage: React.FC = () => {
       {/* Hero Section */}
       <section className="py-20 md:py-28">
         <div className="container max-w-5xl mx-auto px-6">
-          <div className="max-w-3xl mx-auto text-center">
             <div className="text-sm text-primary-400 mb-4 font-medium">PLATFORM HOME PAGE</div>
+          <div className="max-w-3xl mx-auto text-center">
             <h1 className="text-4xl md:text-5xl font-bold leading-tight mb-4">
               The place where startup ideas come to life
             </h1>
@@ -38,13 +38,24 @@ const LandingPage: React.FC = () => {
               </div>
               <div className="p-6 font-mono text-sm">
                 <div className="text-green-400">
-                  $ import platform idea
+                  $ Tell us about your product idea
+                </div>
+                <div className="text-gray-300 ml-2 mt-2">
+                  <span className="text-green-400">&gt;</span> We'll help you
+                  bring it to life - from prototype to market
+                </div>
+                <div className="text-gray-300 ml-2 mt-2">
+                  <span className="text-green-400">&gt;</span> Our experts
+                  handle manufacturing, logistics, and marketing
+                <div className="flex items-center mt-4">
+                  <span className="text-green-400">$ import platform idea</span>
                 </div>
                 <div className="text-gray-300 ml-2 mt-2">
                   <span className="text-green-400">&gt;</span> We'll help you bring it to life cost-effective and fast
                 </div>
                 <div className="text-gray-300 ml-2 mt-2">
                   <span className="text-green-400">&gt;</span> From UI/UX design to full functionality
+                </div>
                 </div>
                 <div className="flex items-center mt-2">
                   <span className="text-green-400">$</span>
@@ -69,7 +80,7 @@ const LandingPage: React.FC = () => {
           <div className="grid md:grid-cols-3 gap-6">
             <div className="bg-[#1A1E21] p-6 rounded-lg border border-gray-800">
               <div className="w-8 h-8 bg-blue-500/10 rounded-full flex items-center justify-center text-blue-400 mb-4">
-                <CheckIcon className="h-4 w-4" />
+                <PackageIcon className="h-4 w-4" />
               </div>
               <h3 className="text-lg font-medium text-white mb-2">
                 Project scope
@@ -80,7 +91,7 @@ const LandingPage: React.FC = () => {
             </div>
             <div className="bg-[#1A1E21] p-6 rounded-lg border border-gray-800">
               <div className="w-8 h-8 bg-teal-500/10 rounded-full flex items-center justify-center text-teal-400 mb-4">
-                <MonitorIcon className="h-4 w-4" />
+                <TruckIcon className="h-4 w-4" />
               </div>
               <h3 className="text-lg font-medium text-white mb-2">UI/UX Design</h3>
               <p className="text-sm text-gray-400">
@@ -89,39 +100,39 @@ const LandingPage: React.FC = () => {
             </div>
             <div className="bg-[#1A1E21] p-6 rounded-lg border border-gray-800">
               <div className="w-8 h-8 bg-purple-500/10 rounded-full flex items-center justify-center text-purple-400 mb-4">
-                <PackageIcon className="h-4 w-4" />
+                <MonitorIcon className="h-4 w-4" />
               </div>
               <h3 className="text-lg font-medium text-white mb-2">
                 User Testing
               </h3>
               <p className="text-sm text-gray-400">
+              <p className="text-sm text-gray-400">
                 Pressure test the platform design and functionalities with real users
               </p>
-            </div>
             <div className="bg-[#1A1E21] p-6 rounded-lg border border-gray-800">
               <div className="w-8 h-8 bg-amber-500/10 rounded-full flex items-center justify-center text-amber-400 mb-4">
-                <TruckIcon className="h-4 w-4" />
+                <CameraIcon className="h-4 w-4" />
               </div>
               <h3 className="text-lg font-medium text-white mb-2">
                 Production
               </h3>
               <p className="text-sm text-gray-400">
+                Professional photography that showcases your products at their
+              <p className="text-sm text-gray-400">
                 Bring your product's UI to life one phase at a time, with rapid MVP turnarounds
               </p>
-            </div>
-            <div className="bg-[#1A1E21] p-6 rounded-lg border border-gray-800">
               <div className="w-8 h-8 bg-green-500/10 rounded-full flex items-center justify-center text-green-400 mb-4">
                 <BarChart2Icon className="h-4 w-4" />
               </div>
               <h3 className="text-lg font-medium text-white mb-2">Marketing</h3>
               <p className="text-sm text-gray-400">
+                Strategic marketing campaigns that connect your products with
+                the right customers
+              <p className="text-sm text-gray-400">
                 Strategic marketing plan that helps you hit the ground running
               </p>
-            </div>
-          </div>
-        </div>
       </section>
-      {/* Why business ideas fail Section */}
+      {/* Why do business ideas fail Section */}
       <section className="py-20 bg-[#1A1E21]">
         <div className="container max-w-5xl mx-auto px-6">
           <div className="text-center mb-12">
@@ -129,25 +140,134 @@ const LandingPage: React.FC = () => {
               Why do business ideas fail
             </h2>
             <p className="text-gray-400 max-w-2xl mx-auto">
+              We've identified the key reasons product businesses fail, and
+              we're here to address them
+            </p>
+            <p className="text-gray-400 max-w-2xl mx-auto">
               Our services are strategically designed to address and prevent the core challenges that lead to startup failure
             </p>
-          </div>
-          <div className="grid md:grid-cols-3 gap-6">
+              <p className="text-gray-400">
+                fail due to unclear product requirements
+              </p>
+            </div>
             <div className="bg-[#171B1E] p-6 rounded-lg border border-gray-800">
-              <div className="text-3xl font-bold text-teal-400 mb-2">42%</div>
+              <div className="text-3xl font-bold text-blue-400 mb-2">42%</div>
               <p className="text-gray-400">
                 of projects don't have market demand
               </p>
             </div>
             <div className="bg-[#171B1E] p-6 rounded-lg border border-gray-800">
-              <div className="text-3xl font-bold text-blue-400 mb-2">39%</div>
+              <div className="text-3xl font-bold text-purple-400 mb-2">54%</div>
+              <p className="text-gray-400">experience a lack of marketing</p>
+            </div>
+          </div>
+            <div className="bg-[#171B1E] p-6 rounded-lg border border-gray-800">
+            <div className="bg-[#171B1E] p-6 rounded-lg border border-gray-800">
+              <div className="text-3xl font-bold text-amber-400 mb-2">39%</div>
               <p className="text-gray-400">
                 fail due to poor requirements gathering
               </p>
             </div>
             <div className="bg-[#171B1E] p-6 rounded-lg border border-gray-800">
-              <div className="text-3xl font-bold text-purple-400 mb-2">30%</div>
-              <p className="text-gray-400">fail due to insufficient funding</p>
+              <div className="text-3xl font-bold text-green-400 mb-2">30%</div>
+              <p className="text-gray-400">
+                fail due to insufficient funding
+              </p>
+            </div>
+        </div>
+      </section>
+      {/* Process Section */}
+      <section className="py-20 bg-[#171B1E]">
+        <div className="container max-w-5xl mx-auto px-6">
+          <div className="text-center mb-12">
+            <h2 className="text-2xl md:text-3xl font-bold text-white mb-4">
+              Our Process
+            </h2>
+            <p className="text-gray-400 max-w-2xl mx-auto">
+              We take your idea through validated solutions tailored to your
+              goals
+            </p>
+          </div>
+          <div className="space-y-4">
+            <div className="bg-[#1A1E21] p-6 rounded-lg border border-gray-800">
+              <div className="flex items-start gap-4">
+                <div className="w-8 h-8 bg-teal-500/10 rounded-full flex items-center justify-center text-teal-400 flex-shrink-0">
+                  <span className="text-sm font-medium">01</span>
+                </div>
+                <div>
+                  <h3 className="text-lg font-medium text-white mb-1">
+                    Prototype your vision
+                  </h3>
+                  <p className="text-sm text-gray-400">
+                    We turn your rough product ideas into expert functioning
+                    prototypes.
+                  </p>
+                </div>
+              </div>
+            </div>
+            <div className="bg-[#1A1E21] p-6 rounded-lg border border-gray-800">
+              <div className="flex items-start gap-4">
+                <div className="w-8 h-8 bg-blue-500/10 rounded-full flex items-center justify-center text-blue-400 flex-shrink-0">
+                  <span className="text-sm font-medium">02</span>
+                </div>
+                <div>
+                  <h3 className="text-lg font-medium text-white mb-1">
+                    Find the best supplier for you
+                  </h3>
+                  <p className="text-sm text-gray-400">
+                    We match you with reliable suppliers that meet your quality,
+                    budget, and margin requirements.
+                  </p>
+                </div>
+              </div>
+            </div>
+            <div className="bg-[#1A1E21] p-6 rounded-lg border border-gray-800">
+              <div className="flex items-start gap-4">
+                <div className="w-8 h-8 bg-purple-500/10 rounded-full flex items-center justify-center text-purple-400 flex-shrink-0">
+                  <span className="text-sm font-medium">03</span>
+                </div>
+                <div>
+                  <h3 className="text-lg font-medium text-white mb-1">
+                    Manufacture & Ship at your scale
+                  </h3>
+                  <p className="text-sm text-gray-400">
+                    From sample production to full-scale manufacturing and
+                    worldwide shipping.
+                  </p>
+                </div>
+              </div>
+            </div>
+            <div className="bg-[#1A1E21] p-6 rounded-lg border border-gray-800">
+              <div className="flex items-start gap-4">
+                <div className="w-8 h-8 bg-amber-500/10 rounded-full flex items-center justify-center text-amber-400 flex-shrink-0">
+                  <span className="text-sm font-medium">04</span>
+                </div>
+                <div>
+                  <h3 className="text-lg font-medium text-white mb-1">
+                    Get professional product shots
+                  </h3>
+                  <p className="text-sm text-gray-400">
+                    Showcase your product with high-quality photography that
+                    sells.
+                  </p>
+                </div>
+              </div>
+            </div>
+            <div className="bg-[#1A1E21] p-6 rounded-lg border border-gray-800">
+              <div className="flex items-start gap-4">
+                <div className="w-8 h-8 bg-green-500/10 rounded-full flex items-center justify-center text-green-400 flex-shrink-0">
+                  <span className="text-sm font-medium">05</span>
+                </div>
+                <div>
+                  <h3 className="text-lg font-medium text-white mb-1">
+                    Plan your marketing launch
+                  </h3>
+                  <p className="text-sm text-gray-400">
+                    Create a comprehensive marketing plan to successfully
+                    introduce your product to the market.
+                  </p>
+                </div>
+              </div>
             </div>
           </div>
         </div>
