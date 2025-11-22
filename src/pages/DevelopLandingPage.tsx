@@ -36,10 +36,10 @@ const LandingPage: React.FC = () => {
             <div className="text-sm text-primary-400 mb-4 font-medium">PLATFORM HOME PAGE</div>
             <h1 className="text-4xl md:text-5xl font-bold leading-tight mb-4">
               The place where startup ideas come to life
-            <p className="text-lg md:text-xl text-gray-400 mb-8 max-w-2xl mx-auto">
-              We make your journey from concept to market smoother, faster, and
-              more successful.
-            </p>
+            </h1>
+            <h2 className="text-2xl md:text-3xl font-semibold text-gray-300 mb-8 max-w-2xl mx-auto">
+              Bring your platform and software ideas from concept to functional
+            </h2>
             <div className="flex flex-col sm:flex-row justify-center space-y-4 sm:space-y-0 sm:space-x-4 mb-16">
               <Link to={isAuthenticated ? '/dashboard' : '/login'} className="inline-flex items-center justify-center px-6 py-2.5 border border-transparent text-sm font-medium rounded-md text-[#1A1E21] bg-primary-400 hover:bg-primary-300 focus:outline-none">
                 Get Started
