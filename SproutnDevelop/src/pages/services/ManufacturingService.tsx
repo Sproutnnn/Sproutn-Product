@@ -1,0 +1,290 @@
+import React from 'react';
+import { Link } from 'react-router-dom';
+import { ArrowRightIcon, CheckIcon, Factory, BarChart3Icon, ShieldIcon } from 'lucide-react';
+import Navigation from '../../components/Navigation';
+const ManufacturingService: React.FC = () => {
+  const packages = [{
+    name: 'Basic',
+    price: '$3,000',
+    description: 'For small production runs with straightforward requirements',
+    features: ['Production management', 'Basic quality control', 'Standard packaging', 'Single shipping destination', '30-day post-production support'],
+    popular: false
+  }, {
+    name: 'Standard',
+    price: '$6,500',
+    description: 'For medium-sized production runs with quality assurance needs',
+    features: ['Complete production management', 'Comprehensive quality control', 'Custom packaging options', 'Multiple shipping destinations', 'Inventory management', '60-day post-production support'],
+    popular: true
+  }, {
+    name: 'Premium',
+    price: '$12,000+',
+    description: 'For large-scale production with complex requirements',
+    features: ['End-to-end production management', 'Advanced quality control protocols', 'Custom packaging & inserts', 'Global distribution coordination', 'Full inventory management system', 'Warehousing options', '90-day post-production support', 'Dedicated account manager'],
+    popular: false
+  }];
+  return <div className="bg-white min-h-screen">
+      <Navigation />
+      {/* Hero Section */}
+      <section className="bg-gradient-to-r from-[#434C54] to-[#016E4E] text-white py-20">
+        <div className="container mx-auto px-6">
+          <div className="max-w-3xl">
+            <h1 className="text-4xl md:text-5xl font-bold mb-6">
+              Manufacturing Excellence
+            </h1>
+            <p className="text-xl mb-8">
+              Transform your product designs into market-ready goods with our
+              comprehensive manufacturing services. We manage the entire
+              production process so you can focus on growing your business.
+            </p>
+            <Link to="/login" className="inline-flex items-center px-6 py-3 border border-transparent text-base font-medium rounded-md text-[#434C54] bg-white hover:bg-gray-100 transition-colors">
+              Get Started
+              <ArrowRightIcon className="ml-2 h-5 w-5" />
+            </Link>
+          </div>
+        </div>
+      </section>
+      {/* Key Features Section */}
+      <section className="py-16">
+        <div className="container mx-auto px-6">
+          <div className="text-center mb-16">
+            <h2 className="text-3xl font-bold text-[#434C54] mb-4">
+              Manufacturing Services
+            </h2>
+            <p className="text-lg text-[#434C54] max-w-3xl mx-auto">
+              We handle every aspect of the manufacturing process to ensure
+              high-quality production at competitive prices
+            </p>
+          </div>
+          <div className="grid md:grid-cols-3 gap-10">
+            <div className="flex flex-col items-center text-center">
+              <div className="w-16 h-16 bg-[#016E4E] bg-opacity-10 rounded-full flex items-center justify-center mb-4">
+                <Factory className="h-8 w-8 text-[#016E4E]" />
+              </div>
+              <h3 className="text-xl font-semibold text-[#434C54] mb-3">
+                Production Management
+              </h3>
+              <p className="text-[#434C54]">
+                Our team oversees the entire production process, from materials
+                procurement to final assembly, ensuring efficient workflows and
+                timely delivery.
+              </p>
+            </div>
+            <div className="flex flex-col items-center text-center">
+              <div className="w-16 h-16 bg-[#859CB6] bg-opacity-10 rounded-full flex items-center justify-center mb-4">
+                <ShieldIcon className="h-8 w-8 text-[#859CB6]" />
+              </div>
+              <h3 className="text-xl font-semibold text-[#434C54] mb-3">
+                Quality Assurance
+              </h3>
+              <p className="text-[#434C54]">
+                We implement rigorous quality control measures at every
+                production stage, conducting thorough inspections to ensure your
+                products meet all specifications.
+              </p>
+            </div>
+            <div className="flex flex-col items-center text-center">
+              <div className="w-16 h-16 bg-[#D1CDC2] bg-opacity-50 rounded-full flex items-center justify-center mb-4">
+                <BarChart3Icon className="h-8 w-8 text-[#434C54]" />
+              </div>
+              <h3 className="text-xl font-semibold text-[#434C54] mb-3">
+                Cost Optimization
+              </h3>
+              <p className="text-[#434C54]">
+                We leverage our industry expertise and supplier relationships to
+                optimize production costs without compromising quality,
+                maximizing your profit margins.
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+      {/* Packages Section */}
+      <section className="py-16 bg-[#D1CDC2] bg-opacity-20">
+        <div className="container mx-auto px-6">
+          <div className="text-center mb-16">
+            <h2 className="text-3xl font-bold text-[#434C54] mb-4">
+              Manufacturing Packages
+            </h2>
+            <p className="text-lg text-[#434C54] max-w-3xl mx-auto">
+              Choose the manufacturing package that aligns with your production
+              needs and budget
+            </p>
+          </div>
+          <div className="grid md:grid-cols-3 gap-8">
+            {packages.map((pkg, index) => <div key={index} className={`bg-white rounded-lg shadow-md overflow-hidden ${pkg.popular ? 'ring-2 ring-[#016E4E] transform scale-105 md:scale-105' : ''}`}>
+                {pkg.popular && <div className="bg-[#016E4E] text-white text-center py-2 font-medium">
+                    Most Popular
+                  </div>}
+                <div className="p-6">
+                  <h3 className="text-2xl font-bold text-[#434C54] mb-2">
+                    {pkg.name}
+                  </h3>
+                  <div className="text-3xl font-bold text-[#016E4E] mb-4">
+                    {pkg.price}
+                  </div>
+                  <p className="text-[#434C54] mb-6">{pkg.description}</p>
+                  <ul className="space-y-3 mb-8">
+                    {pkg.features.map((feature, i) => <li key={i} className="flex items-start">
+                        <CheckIcon className="h-5 w-5 text-[#016E4E] mr-2 flex-shrink-0 mt-0.5" />
+                        <span className="text-[#434C54]">{feature}</span>
+                      </li>)}
+                  </ul>
+                  <Link to="/login" className={`block text-center py-2 px-4 rounded-md font-medium ${pkg.popular ? 'bg-[#016E4E] text-white hover:bg-opacity-90' : 'bg-[#859CB6] bg-opacity-20 text-[#434C54] hover:bg-opacity-30'} transition-colors`}>
+                    Select Package
+                  </Link>
+                </div>
+              </div>)}
+          </div>
+        </div>
+      </section>
+      {/* Process Section */}
+      <section className="py-16">
+        <div className="container mx-auto px-6">
+          <div className="text-center mb-16">
+            <h2 className="text-3xl font-bold text-[#434C54] mb-4">
+              Our Manufacturing Process
+            </h2>
+            <p className="text-lg text-[#434C54] max-w-3xl mx-auto">
+              A systematic approach to bringing your products to life with
+              precision and efficiency
+            </p>
+          </div>
+          <div className="grid md:grid-cols-5 gap-8">
+            {[{
+            step: '1',
+            title: 'Production Planning',
+            description: 'We develop detailed production plans including timelines, materials, and resource allocation'
+          }, {
+            step: '2',
+            title: 'Materials Procurement',
+            description: 'We source high-quality materials and components needed for production'
+          }, {
+            step: '3',
+            title: 'Production Execution',
+            description: 'We oversee the manufacturing process, ensuring adherence to specifications'
+          }, {
+            step: '4',
+            title: 'Quality Control',
+            description: 'We conduct comprehensive quality checks throughout the production process'
+          }, {
+            step: '5',
+            title: 'Packaging & Shipping',
+            description: 'We handle packaging, labeling, and coordinate shipping to your desired destinations'
+          }].map((process, index) => <div key={index} className="flex flex-col items-center text-center">
+                <div className="w-12 h-12 bg-[#434C54] rounded-full flex items-center justify-center text-white text-xl font-bold mb-4">
+                  {process.step}
+                </div>
+                <h3 className="text-xl font-semibold text-[#434C54] mb-2">
+                  {process.title}
+                </h3>
+                <p className="text-[#434C54]">{process.description}</p>
+              </div>)}
+          </div>
+        </div>
+      </section>
+      {/* CTA Section */}
+      <section className="py-16 bg-[#859CB6] bg-opacity-10">
+        <div className="container mx-auto px-6 text-center">
+          <h2 className="text-3xl font-bold text-[#434C54] mb-6">
+            Ready to start production?
+          </h2>
+          <p className="text-xl text-[#434C54] mb-8 max-w-3xl mx-auto">
+            Let our manufacturing experts help bring your product to market with
+            quality and efficiency.
+          </p>
+          <div className="flex flex-col sm:flex-row justify-center space-y-4 sm:space-y-0 sm:space-x-4">
+            <Link to="/login" className="inline-flex items-center justify-center px-6 py-3 border border-transparent text-base font-medium rounded-md text-white bg-[#016E4E] hover:bg-opacity-90 transition-colors">
+              Get Started
+            </Link>
+            <Link to="/services" className="inline-flex items-center justify-center px-6 py-3 border border-[#434C54] text-base font-medium rounded-md text-[#434C54] bg-white hover:bg-gray-50 transition-colors">
+              Explore Other Services
+            </Link>
+          </div>
+        </div>
+      </section>
+      {/* Footer */}
+      <footer className="bg-[#434C54] text-white py-12">
+        <div className="container mx-auto px-6">
+          <div className="flex flex-col md:flex-row justify-between">
+            <div className="mb-8 md:mb-0">
+              <img src="/IMG_8337.png" alt="Sprout'n Logo" className="h-10 mb-4" />
+              <p className="text-gray-400 max-w-xs">
+                From concept to market, we're with you every step of the way.
+              </p>
+            </div>
+            <div className="grid grid-cols-2 md:grid-cols-3 gap-8">
+              <div>
+                <h3 className="text-lg font-semibold mb-4">Services</h3>
+                <ul className="space-y-2">
+                  <li>
+                    <Link to="/services/prototyping" className="text-gray-400 hover:text-white transition-colors">
+                      Prototyping
+                    </Link>
+                  </li>
+                  <li>
+                    <Link to="/services/sourcing" className="text-gray-400 hover:text-white transition-colors">
+                      Sourcing
+                    </Link>
+                  </li>
+                  <li>
+                    <Link to="/services/manufacturing" className="text-gray-400 hover:text-white transition-colors">
+                      Manufacturing
+                    </Link>
+                  </li>
+                  <li>
+                    <Link to="/services/photography" className="text-gray-400 hover:text-white transition-colors">
+                      Photography
+                    </Link>
+                  </li>
+                  <li>
+                    <Link to="/services/marketing" className="text-gray-400 hover:text-white transition-colors">
+                      Marketing
+                    </Link>
+                  </li>
+                </ul>
+              </div>
+              <div>
+                <h3 className="text-lg font-semibold mb-4">Company</h3>
+                <ul className="space-y-2">
+                  <li>
+                    <Link to="/about" className="text-gray-400 hover:text-white transition-colors">
+                      About Us
+                    </Link>
+                  </li>
+                  <li>
+                    <Link to="/blog" className="text-gray-400 hover:text-white transition-colors">
+                      Blog
+                    </Link>
+                  </li>
+                </ul>
+              </div>
+              <div>
+                <h3 className="text-lg font-semibold mb-4">Legal</h3>
+                <ul className="space-y-2">
+                  <li>
+                    <Link to="/terms" className="text-gray-400 hover:text-white transition-colors">
+                      Terms
+                    </Link>
+                  </li>
+                  <li>
+                    <Link to="/privacy" className="text-gray-400 hover:text-white transition-colors">
+                      Privacy
+                    </Link>
+                  </li>
+                  <li>
+                    <Link to="/cookies" className="text-gray-400 hover:text-white transition-colors">
+                      Cookies
+                    </Link>
+                  </li>
+                </ul>
+              </div>
+            </div>
+          </div>
+          <div className="border-t border-gray-700 mt-12 pt-8 text-center text-gray-400">
+            <p>© {new Date().getFullYear()} Sprout'n. All rights reserved.</p>
+          </div>
+        </div>
+      </footer>
+    </div>;
+};
+export default ManufacturingService;
