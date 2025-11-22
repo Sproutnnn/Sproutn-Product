@@ -13,7 +13,6 @@ const LandingPage: React.FC = () => {
       <section className="py-20 md:py-28">
         <div className="container max-w-5xl mx-auto px-6">
           <div className="max-w-3xl mx-auto text-center">
-            <div className="text-sm text-primary-400 mb-4 font-medium">PLATFORM HOME PAGE</div>
             <h1 className="text-4xl md:text-5xl font-bold leading-tight mb-4">
               The place where startup ideas come to life
             </h1>
