@@ -17,6 +17,8 @@ import UserManagement from './pages/UserManagement';
 import Layout from './components/Layout';
 import ProtectedRoute from './components/ProtectedRoute';
 import LandingPage from './pages/LandingPage';
+import SmartLandingPage from './components/SmartLandingPage';
+import DevelopLandingPage from './pages/DevelopLandingPage';
 import BlogPage from './pages/BlogPage';
 import BlogDetail from './pages/BlogDetail';
 import ServicesPage from './pages/ServicesPage';
@@ -38,7 +40,7 @@ export function App() {
   return <Router>
       <AuthProvider>
         <Routes>
-          <Route path="/" element={<LandingPage />} />
+          <Route path="/" element={<SmartLandingPage />} />
           <Route path="/login" element={<Login />} />
           <Route path="/blog" element={<BlogPage />} />
           <Route path="/blog/:slug" element={<BlogDetail />} />
