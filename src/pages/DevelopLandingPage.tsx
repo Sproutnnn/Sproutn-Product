@@ -32,6 +32,7 @@ const LandingPage: React.FC = () => {
       {/* Hero Section */}
       <section className="py-20 md:py-28">
         <div className="container max-w-5xl mx-auto px-6">
+            <div className="text-sm text-primary-400 mb-4 font-medium">PLATFORM HOME PAGE</div>
           <div className="max-w-3xl mx-auto text-center">
             <h1 className="text-4xl md:text-5xl font-bold leading-tight mb-4">
               Grow your ideas into reality
@@ -39,6 +40,9 @@ const LandingPage: React.FC = () => {
             <p className="text-lg md:text-xl text-gray-400 mb-8 max-w-2xl mx-auto">
               We make your journey from concept to market smoother, faster, and
               more successful.
+            <p className="text-md text-gray-500 mb-8">
+              Bring your platform and software ideas from concept to functional
+            </p>
             </p>
             <div className="flex flex-col sm:flex-row justify-center space-y-4 sm:space-y-0 sm:space-x-4 mb-16">
               <Link to={isAuthenticated ? '/dashboard' : '/login'} className="inline-flex items-center justify-center px-6 py-2.5 border border-transparent text-sm font-medium rounded-md text-[#1A1E21] bg-primary-400 hover:bg-primary-300 focus:outline-none">
@@ -67,6 +71,15 @@ const LandingPage: React.FC = () => {
                 <div className="text-gray-300 ml-2 mt-2">
                   <span className="text-green-400">&gt;</span> Our experts
                   handle manufacturing, logistics, and marketing
+                <div className="flex items-center mt-4">
+                  <span className="text-green-400">$ import platform idea</span>
+                </div>
+                <div className="text-gray-300 ml-2 mt-2">
+                  <span className="text-green-400">&gt;</span> We'll help you bring it to life cost-effective and fast
+                </div>
+                <div className="text-gray-300 ml-2 mt-2">
+                  <span className="text-green-400">&gt;</span> From UI/UX design to full functionality
+                </div>
                 </div>
                 <div className="flex items-center mt-2">
                   <span className="text-green-400">$</span>
@@ -148,12 +161,12 @@ const LandingPage: React.FC = () => {
           </div>
         </div>
       </section>
-      {/* Why businesses fail Section */}
+      {/* Why do business ideas fail Section */}
       <section className="py-20 bg-[#1A1E21]">
         <div className="container max-w-5xl mx-auto px-6">
           <div className="text-center mb-12">
             <h2 className="text-2xl md:text-3xl font-bold text-white mb-4">
-              Why businesses fail
+              Why do business ideas fail
             </h2>
             <p className="text-gray-400 max-w-2xl mx-auto">
               We've identified the key reasons product businesses fail, and
@@ -168,9 +181,9 @@ const LandingPage: React.FC = () => {
               </p>
             </div>
             <div className="bg-[#171B1E] p-6 rounded-lg border border-gray-800">
-              <div className="text-3xl font-bold text-blue-400 mb-2">38%</div>
+              <div className="text-3xl font-bold text-blue-400 mb-2">42%</div>
               <p className="text-gray-400">
-                struggle with finding a good business model
+                of projects don't have market demand
               </p>
             </div>
             <div className="bg-[#171B1E] p-6 rounded-lg border border-gray-800">
@@ -178,6 +191,18 @@ const LandingPage: React.FC = () => {
               <p className="text-gray-400">experience a lack of marketing</p>
             </div>
           </div>
+            <div className="bg-[#171B1E] p-6 rounded-lg border border-gray-800">
+              <div className="text-3xl font-bold text-amber-400 mb-2">39%</div>
+              <p className="text-gray-400">
+                fail due to poor requirements gathering
+              </p>
+            </div>
+            <div className="bg-[#171B1E] p-6 rounded-lg border border-gray-800">
+              <div className="text-3xl font-bold text-green-400 mb-2">30%</div>
+              <p className="text-gray-400">
+                fail due to insufficient funding
+              </p>
+            </div>
         </div>
       </section>
       {/* Process Section */}
