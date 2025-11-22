@@ -51,14 +51,17 @@ const Navigation: React.FC = () => {
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between h-16">
           <div className="flex items-center">
-            <Link to="/" className="flex-shrink-0 flex items-center">
+            <a href="https://sproutn.ca" className="flex-shrink-0 flex items-center">
               <img src="/IMG_8337.png" alt="Sprout'n Logo" className="h-8 w-auto" />
-            </Link>
+            </a>
           </div>
           <div className="hidden md:flex md:items-center md:space-x-8">
-            <Link to="/" className={`px-2 py-1 text-sm font-medium ${location.pathname === '/' ? 'text-primary-300 border-b-2 border-primary-300' : 'text-gray-300 hover:text-primary-300'}`}>
-              Home
-            </Link>
+            <a href="https://sproutn.ca" className="px-2 py-1 text-sm font-medium text-gray-300 hover:text-primary-300">
+              Product
+            </a>
+            <a href="https://develop.sproutn.ca" className="px-2 py-1 text-sm font-medium text-gray-300 hover:text-primary-300">
+              Platforms
+            </a>
             <div className="relative" ref={servicesRef}>
               <button onClick={toggleServices} className={`flex items-center px-2 py-1 text-sm font-medium focus:outline-none ${location.pathname.includes('/services') ? 'text-primary-300 border-b-2 border-primary-300' : 'text-gray-300 hover:text-primary-300'}`}>
                 Services
@@ -101,9 +104,12 @@ const Navigation: React.FC = () => {
       {/* Mobile menu */}
       {isMenuOpen && <div className="md:hidden border-t border-charcoal-400">
           <div className="px-2 pt-2 pb-3 space-y-1">
-            <Link to="/" className={`block px-3 py-2 text-base font-medium rounded-md ${location.pathname === '/' ? 'text-primary-300 bg-charcoal-600' : 'text-gray-300 hover:bg-charcoal-600 hover:text-primary-300'}`}>
-              Home
-            </Link>
+            <a href="https://sproutn.ca" className="block px-3 py-2 text-base font-medium rounded-md text-gray-300 hover:bg-charcoal-600 hover:text-primary-300">
+              Product
+            </a>
+            <a href="https://develop.sproutn.ca" className="block px-3 py-2 text-base font-medium rounded-md text-gray-300 hover:bg-charcoal-600 hover:text-primary-300">
+              Platforms
+            </a>
             <button onClick={() => setIsServicesOpen(!isServicesOpen)} className={`flex items-center justify-between w-full px-3 py-2 text-base font-medium rounded-md ${location.pathname.includes('/services') ? 'text-primary-300 bg-charcoal-600' : 'text-gray-300 hover:bg-charcoal-600 hover:text-primary-300'}`}>
               <span>Services</span>
               <ChevronDownIcon className={`h-5 w-5 transition-transform duration-300 ${isServicesOpen ? 'rotate-180' : ''}`} />
