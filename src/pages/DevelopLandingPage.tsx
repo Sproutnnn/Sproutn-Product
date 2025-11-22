@@ -83,20 +83,19 @@ const LandingPage: React.FC = () => {
                 <PackageIcon className="h-4 w-4" />
               </div>
               <h3 className="text-lg font-medium text-white mb-2">
-                Prototyping
-              </h3>
-              <p className="text-sm text-gray-400">
-              <h3 className="text-lg font-medium text-white mb-2">
                 Project scope
               </h3>
               <p className="text-sm text-gray-400">
                 Validate your idea, define the project scope, and outline its key phases
               </p>
+            </div>
+            <div className="bg-[#1A1E21] p-6 rounded-lg border border-gray-800">
+              <div className="w-8 h-8 bg-teal-500/10 rounded-full flex items-center justify-center text-teal-400 mb-4">
+                <TruckIcon className="h-4 w-4" />
               </div>
               <h3 className="text-lg font-medium text-white mb-2">UI/UX Design</h3>
               <p className="text-sm text-gray-400">
-                We connect you with reliable manufacturing partners worldwide to
-                produce your product
+                Design your platform for the best user experience and clean aesthetic
               </p>
             </div>
             <div className="bg-[#1A1E21] p-6 rounded-lg border border-gray-800">
@@ -107,10 +106,9 @@ const LandingPage: React.FC = () => {
                 User Testing
               </h3>
               <p className="text-sm text-gray-400">
-                Custom software solutions that streamline operations and enhance
-                your digital presence
+              <p className="text-sm text-gray-400">
+                Pressure test the platform design and functionalities with real users
               </p>
-            </div>
             <div className="bg-[#1A1E21] p-6 rounded-lg border border-gray-800">
               <div className="w-8 h-8 bg-amber-500/10 rounded-full flex items-center justify-center text-amber-400 mb-4">
                 <CameraIcon className="h-4 w-4" />
@@ -120,10 +118,9 @@ const LandingPage: React.FC = () => {
               </h3>
               <p className="text-sm text-gray-400">
                 Professional photography that showcases your products at their
-                very best
+              <p className="text-sm text-gray-400">
+                Bring your product's UI to life one phase at a time, with rapid MVP turnarounds
               </p>
-            </div>
-            <div className="bg-[#1A1E21] p-6 rounded-lg border border-gray-800">
               <div className="w-8 h-8 bg-green-500/10 rounded-full flex items-center justify-center text-green-400 mb-4">
                 <BarChart2Icon className="h-4 w-4" />
               </div>
@@ -131,10 +128,9 @@ const LandingPage: React.FC = () => {
               <p className="text-sm text-gray-400">
                 Strategic marketing campaigns that connect your products with
                 the right customers
+              <p className="text-sm text-gray-400">
+                Strategic marketing plan that helps you hit the ground running
               </p>
-            </div>
-          </div>
-        </div>
       </section>
       {/* Why do business ideas fail Section */}
       <section className="py-20 bg-[#1A1E21]">
@@ -147,10 +143,9 @@ const LandingPage: React.FC = () => {
               We've identified the key reasons product businesses fail, and
               we're here to address them
             </p>
-          </div>
-          <div className="grid md:grid-cols-3 gap-6">
-            <div className="bg-[#171B1E] p-6 rounded-lg border border-gray-800">
-              <div className="text-3xl font-bold text-teal-400 mb-2">82%</div>
+            <p className="text-gray-400 max-w-2xl mx-auto">
+              Our services are strategically designed to address and prevent the core challenges that lead to startup failure
+            </p>
               <p className="text-gray-400">
                 fail due to unclear product requirements
               </p>
@@ -166,6 +161,7 @@ const LandingPage: React.FC = () => {
               <p className="text-gray-400">experience a lack of marketing</p>
             </div>
           </div>
+            <div className="bg-[#171B1E] p-6 rounded-lg border border-gray-800">
             <div className="bg-[#171B1E] p-6 rounded-lg border border-gray-800">
               <div className="text-3xl font-bold text-amber-400 mb-2">39%</div>
               <p className="text-gray-400">
