@@ -3,6 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { ArrowLeftIcon, TruckIcon, PackageIcon, ClipboardCheckIcon, CheckCircleIcon, PlusIcon, SaveIcon, XIcon } from 'lucide-react';
 import ProjectSteps from '../components/ProjectSteps';
 import { useAuth } from '../context/AuthContext';
+import { projectsService } from '../services/projects.service';
 const Tracking: React.FC = () => {
   const {
     id
@@ -14,13 +15,8 @@ const Tracking: React.FC = () => {
     user
   } = useAuth();
   const [loading, setLoading] = useState(true);
-  const [project, setProject] = useState({
-    id: '',
-    name: '',
-    status: 'production' as const,
-    createdAt: '',
-    updatedAt: ''
-  });
+  const [project, setProject] = useState<any>(null);
+  const [error, setError] = useState<string | null>(null);
   const [trackingEvents, setTrackingEvents] = useState([{
     date: '2023-06-15',
     title: 'Order Confirmed',
@@ -67,18 +63,41 @@ const Tracking: React.FC = () => {
   const [estimatedDeliveryDate, setEstimatedDeliveryDate] = useState('August 10, 2023');
   const [isEditingDeliveryDate, setIsEditingDeliveryDate] = useState(false);
   useEffect(() => {
-    // In a real app, this would fetch from an API
-    // For demo purposes, we'll use mock data
-    setTimeout(() => {
-      setProject({
-        id: id || '1',
-        name: 'Smart Home Controller',
-        status: 'production',
-        createdAt: '2023-05-15T10:30:00Z',
-        updatedAt: '2023-05-20T14:45:00Z'
-      });
-      setLoading(false);
-    }, 500);
+    const loadProject = async () => {
+      if (!id) return;
+
+      try {
+        setLoading(true);
+        setError(null);
+        const projectData = await projectsService.getById(id);
+
+        if (!projectData) {
+          setError('Project not found');
+          return;
+        }
+
+        setProject(projectData);
+
+        // Load estimated delivery date from project
+        if (projectData.estimated_delivery) {
+          setEstimatedDeliveryDate(new Date(projectData.estimated_delivery).toLocaleDateString('en-US', {
+            year: 'numeric',
+            month: 'long',
+            day: 'numeric'
+          }));
+        }
+
+        // TODO: Load tracking events from database when migration is ready
+        // For now, tracking events use mock data
+      } catch (err) {
+        console.error('Error loading project:', err);
+        setError('Failed to load project');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadProject();
   }, [id]);
   const handleDeliveryDateChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setEstimatedDeliveryDate(e.target.value);
@@ -126,6 +145,12 @@ const Tracking: React.FC = () => {
   if (loading) {
     return <div className="flex justify-center items-center h-64">
         <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
+      </div>;
+  }
+
+  if (error || !project) {
+    return <div className="flex justify-center items-center h-64">
+        <div className="text-red-600">{error || 'Project not found'}</div>
       </div>;
   }
   const getStatusIcon = (index: number, completed: boolean) => {

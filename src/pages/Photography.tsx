@@ -4,6 +4,7 @@ import { ArrowLeftIcon, UploadIcon, DownloadIcon, CreditCardIcon, FileTextIcon, 
 import ProjectSteps from '../components/ProjectSteps';
 import ModuleNavigation from '../components/ModuleNavigation';
 import { useAuth } from '../context/AuthContext';
+import { projectsService } from '../services/projects.service';
 const Photography: React.FC = () => {
   const {
     id
@@ -15,17 +16,8 @@ const Photography: React.FC = () => {
     user
   } = useAuth();
   const [loading, setLoading] = useState(true);
-  const [project, setProject] = useState({
-    id: '',
-    name: '',
-    status: 'production' as const,
-    createdAt: '',
-    updatedAt: '',
-    customer: {
-      name: 'John Doe',
-      email: 'john@example.com'
-    }
-  });
+  const [project, setProject] = useState<any>(null);
+  const [error, setError] = useState<string | null>(null);
   const [selectedPackage, setSelectedPackage] = useState<string | null>(null);
   const [uploadedFiles, setUploadedFiles] = useState<File[]>([]);
   const [uploadedQuestionnaire, setUploadedQuestionnaire] = useState<File | null>(null);
@@ -72,21 +64,32 @@ const Photography: React.FC = () => {
     }
   };
   useEffect(() => {
-    // Mock data loading
-    setTimeout(() => {
-      setProject({
-        id: id || '1',
-        name: 'Smart Home Controller',
-        status: 'production',
-        createdAt: '2023-05-15T10:30:00Z',
-        updatedAt: '2023-05-20T14:45:00Z',
-        customer: {
-          name: 'John Doe',
-          email: 'john@example.com'
+    const loadProject = async () => {
+      if (!id) return;
+
+      try {
+        setLoading(true);
+        setError(null);
+        const projectData = await projectsService.getById(id);
+
+        if (!projectData) {
+          setError('Project not found');
+          return;
         }
-      });
-      setLoading(false);
-    }, 500);
+
+        setProject(projectData);
+
+        // TODO: Load photography data (packages, assets) from database when migration is ready
+        // For now, packages and completed assets use mock data
+      } catch (err) {
+        console.error('Error loading project:', err);
+        setError('Failed to load project');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadProject();
   }, [id]);
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files) {
@@ -107,6 +110,13 @@ const Photography: React.FC = () => {
         <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
       </div>;
   }
+
+  if (error || !project) {
+    return <div className="flex justify-center items-center h-64">
+        <div className="text-red-600">{error || 'Project not found'}</div>
+      </div>;
+  }
+
   return <div>
       <button onClick={() => navigate(-1)} className="flex items-center text-sm text-gray-600 hover:text-gray-900 mb-2">
         <ArrowLeftIcon className="h-4 w-4 mr-1" />

@@ -3,6 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { ArrowLeftIcon, ArrowRightIcon, CheckIcon } from 'lucide-react';
 import ProjectSteps from '../components/ProjectSteps';
 import { useAuth } from '../context/AuthContext';
+import { projectsService } from '../services/projects.service';
 interface Manufacturer {
   id: string;
   name: string;
@@ -25,13 +26,8 @@ const Sourcing: React.FC = () => {
     user
   } = useAuth();
   const [loading, setLoading] = useState(true);
-  const [project, setProject] = useState({
-    id: '',
-    name: '',
-    status: 'sourcing' as const,
-    createdAt: '',
-    updatedAt: ''
-  });
+  const [project, setProject] = useState<any>(null);
+  const [error, setError] = useState<string | null>(null);
   const [manufacturers, setManufacturers] = useState<Manufacturer[]>([]);
   const [selectedManufacturer, setSelectedManufacturer] = useState<string | null>(null);
   // For admin form
@@ -45,56 +41,66 @@ const Sourcing: React.FC = () => {
     disadvantages: ['']
   });
   useEffect(() => {
-    // In a real app, this would fetch from an API
-    // For demo purposes, we'll use mock data
-    setTimeout(() => {
-      setProject({
-        id: id || '1',
-        name: 'Smart Home Controller',
-        status: 'sourcing',
-        createdAt: '2023-05-15T10:30:00Z',
-        updatedAt: '2023-05-20T14:45:00Z'
-      });
-      // Mock manufacturers data
-      if (user?.role === 'admin') {
-        // Empty list for admin to fill
-        setManufacturers([]);
-      } else {
-        // Populated list for customer to choose from
-        setManufacturers([{
-          id: 'm1',
-          name: 'TechPro Manufacturing',
-          minOrderQuantity: 500,
-          leadTime: '30-45 days',
-          price: 15.75,
-          details: 'Established in 2005, specializes in consumer electronics with a focus on smart home devices.',
-          advantages: ['Excellent quality control', 'Competitive pricing', 'Experience with similar products'],
-          disadvantages: ['Longer lead time', 'Higher minimum order quantity'],
-          recommended: true
-        }, {
-          id: 'm2',
-          name: 'QuickTurn Electronics',
-          minOrderQuantity: 300,
-          leadTime: '20-30 days',
-          price: 18.5,
-          details: 'Mid-sized manufacturer focused on quick turnaround and flexibility for startups and small businesses.',
-          advantages: ['Faster production time', 'Lower minimum order quantity', 'Good communication'],
-          disadvantages: ['Slightly higher unit cost', 'Less experience with complex products'],
-          recommended: false
-        }, {
-          id: 'm3',
-          name: 'Premium Tech Solutions',
-          minOrderQuantity: 250,
-          leadTime: '25-35 days',
-          price: 22.0,
-          details: 'High-end manufacturer with cutting-edge facilities and premium quality standards.',
-          advantages: ['Superior build quality', 'Advanced testing procedures', 'Premium components used'],
-          disadvantages: ['Higher cost', 'Less flexibility with design changes'],
-          recommended: false
-        }]);
+    const loadProject = async () => {
+      if (!id) return;
+
+      try {
+        setLoading(true);
+        setError(null);
+        const projectData = await projectsService.getById(id);
+
+        if (!projectData) {
+          setError('Project not found');
+          return;
+        }
+
+        setProject(projectData);
+
+        // TODO: Load manufacturers from database when migration is ready
+        // For now, use mock data if admin hasn't added any
+        if (user?.role !== 'admin') {
+          // Show mock manufacturers for customer
+          setManufacturers([{
+            id: 'm1',
+            name: 'TechPro Manufacturing',
+            minOrderQuantity: 500,
+            leadTime: '30-45 days',
+            price: 15.75,
+            details: 'Established in 2005, specializes in consumer electronics with a focus on smart home devices.',
+            advantages: ['Excellent quality control', 'Competitive pricing', 'Experience with similar products'],
+            disadvantages: ['Longer lead time', 'Higher minimum order quantity'],
+            recommended: true
+          }, {
+            id: 'm2',
+            name: 'QuickTurn Electronics',
+            minOrderQuantity: 300,
+            leadTime: '20-30 days',
+            price: 18.5,
+            details: 'Mid-sized manufacturer focused on quick turnaround and flexibility for startups and small businesses.',
+            advantages: ['Faster production time', 'Lower minimum order quantity', 'Good communication'],
+            disadvantages: ['Slightly higher unit cost', 'Less experience with complex products'],
+            recommended: false
+          }, {
+            id: 'm3',
+            name: 'Premium Tech Solutions',
+            minOrderQuantity: 250,
+            leadTime: '25-35 days',
+            price: 22.0,
+            details: 'High-end manufacturer with cutting-edge facilities and premium quality standards.',
+            advantages: ['Superior build quality', 'Advanced testing procedures', 'Premium components used'],
+            disadvantages: ['Higher cost', 'Less flexibility with design changes'],
+            recommended: false
+          }]);
+        }
+      } catch (err) {
+        console.error('Error loading project:', err);
+        setError('Failed to load project');
+      } finally {
+        setLoading(false);
       }
-      setLoading(false);
-    }, 500);
+    };
+
+    loadProject();
   }, [id, user]);
   const handleManufacturerSelect = (manufacturerId: string) => {
     setSelectedManufacturer(manufacturerId);
@@ -169,6 +175,13 @@ const Sourcing: React.FC = () => {
         <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary-500"></div>
       </div>;
   }
+
+  if (error || !project) {
+    return <div className="flex justify-center items-center h-64">
+        <div className="text-red-600">{error || 'Project not found'}</div>
+      </div>;
+  }
+
   return <div>
       <button onClick={() => navigate(-1)} className="flex items-center text-sm text-gray-600 hover:text-gray-900 mb-2">
         <ArrowLeftIcon className="h-4 w-4 mr-1" />
