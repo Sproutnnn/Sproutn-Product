@@ -34,6 +34,7 @@ import BlogEditor from './components/admin/BlogEditor';
 import BlogManagement from './components/admin/BlogManagement';
 import PageEditor from './components/admin/PageEditor';
 import PageManagement from './components/admin/PageManagement';
+import ProductManagement from './components/admin/ProductManagement';
 import About from './pages/About';
 import './styles/animations.css';
 export function App() {
@@ -108,6 +109,9 @@ export function App() {
                 </ProtectedRoute>} />
             <Route path="/admin/pages/edit/:slug" element={<ProtectedRoute roleRequired="admin">
                   <PageEditor editMode={true} />
+                </ProtectedRoute>} />
+            <Route path="/admin/products" element={<ProtectedRoute roleRequired="admin">
+                  <ProductManagement />
                 </ProtectedRoute>} />
           </Route>
         </Routes>
