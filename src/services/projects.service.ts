@@ -258,12 +258,13 @@ export const projectsService = {
       admin_notes: updates.notes || null
     };
 
-    // Auto-unlock photography and marketing when sample is delivered
-    // Also update main status to 'production' when sample reaches 'delivered' or 'feedback' stage
-    if (updates.prototypeStatus === 'delivered' || updates.prototypeStatus === 'feedback') {
+    // Auto-unlock photography and marketing when sample is shipped or beyond
+    // Also update main status to 'production' when sample reaches 'shipping' stage or beyond
+    if (updates.prototypeStatus === 'shipping' || updates.prototypeStatus === 'delivered' || updates.prototypeStatus === 'feedback') {
       updateData.photography_unlocked = true;
       updateData.marketing_unlocked = true;
       updateData.status = 'production';
+      console.log('Unlocking photography and marketing for project:', id);
     }
 
     const { data, error } = await supabase
