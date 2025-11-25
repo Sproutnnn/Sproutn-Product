@@ -41,7 +41,7 @@ const ModuleNavigation: React.FC<ModuleNavigationProps> = ({
     name: 'Sampling',
     icon: <BoxIcon className="w-5 h-5" />,
     path: `/project/${id}/prototyping`,
-    available: isAdmin || ['brief', 'prototyping', 'sourcing', 'payment', 'production', 'shipping', 'completed'].includes(project?.status || '')
+    available: isAdmin || ['details', 'prototyping', 'sourcing', 'payment', 'production', 'shipping', 'completed'].includes(project?.status || '')
   }, {
     id: 'sourcing',
     name: 'Sourcing',

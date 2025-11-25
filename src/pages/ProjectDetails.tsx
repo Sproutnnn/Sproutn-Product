@@ -188,7 +188,7 @@ const ProjectDetails: React.FC = () => {
             }
           }} className="block border border-blue-300 bg-white rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
                 <option value="draft">Draft</option>
-                <option value="brief">Brief</option>
+                <option value="details">Brief</option>
                 <option value="prototyping">Prototyping</option>
                 <option value="sourcing">Sourcing</option>
                 <option value="payment">To Pay</option>
