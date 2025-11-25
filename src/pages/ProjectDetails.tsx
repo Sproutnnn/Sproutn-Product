@@ -177,20 +177,20 @@ const ProjectDetails: React.FC = () => {
                     {project.description}
                   </p>
                 </div>}
-              {project.keyFeatures.length > 0 && project.keyFeatures[0] !== '' && <div className="mb-4">
+              {project.key_features && project.key_features.length > 0 && project.key_features[0] !== '' && <div className="mb-4">
                     <h4 className="text-sm font-medium text-gray-700">
                       Key Features
                     </h4>
                     <ul className="mt-1 list-disc list-inside text-sm text-gray-600 p-3 bg-gray-50 rounded-md border border-gray-200">
-                      {project.keyFeatures.map((feature, index) => <li key={index}>{feature}</li>)}
+                      {project.key_features.map((feature, index) => <li key={index}>{feature}</li>)}
                     </ul>
                   </div>}
-              {project.targetMarket && <div className="mb-4">
+              {project.target_market && <div className="mb-4">
                   <h4 className="text-sm font-medium text-gray-700">
                     Target Market
                   </h4>
                   <p className="mt-1 text-sm text-gray-600 p-3 bg-gray-50 rounded-md border border-gray-200">
-                    {project.targetMarket}
+                    {project.target_market}
                   </p>
                 </div>}
               <div className="mt-6">
@@ -254,7 +254,7 @@ const ProjectDetails: React.FC = () => {
                     </button>
                   </div>
                   <div className="space-y-2 mt-1">
-                    {formData.keyFeatures.map((feature, index) => <input key={index} type="text" required value={feature} onChange={e => handleFeatureChange(index, e.target.value)} className="block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-primary-500 focus:border-primary-500 sm:text-sm" placeholder={`Feature ${index + 1}`} />)}
+                    {formData.keyFeatures && formData.keyFeatures.map((feature, index) => <input key={index} type="text" required value={feature} onChange={e => handleFeatureChange(index, e.target.value)} className="block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-primary-500 focus:border-primary-500 sm:text-sm" placeholder={`Feature ${index + 1}`} />)}
                   </div>
                 </div>
                 <div>
