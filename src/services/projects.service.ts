@@ -280,8 +280,10 @@ export const projectsService = {
     if (['production', 'shipping', 'completed'].includes(status)) {
       updateData.photography_unlocked = true;
       updateData.marketing_unlocked = true;
-      console.log('Unlocking photography and marketing for project:', id);
+      console.log('Unlocking photography and marketing for project:', id, 'New status:', status);
     }
+
+    console.log('Updating project with data:', updateData);
 
     const { data, error } = await supabase
       .from('projects')
@@ -291,9 +293,11 @@ export const projectsService = {
       .single();
 
     if (error) {
+      console.error('Error updating project status:', error);
       throw new Error(error.message);
     }
 
+    console.log('Project updated successfully:', data);
     return data;
   },
 
