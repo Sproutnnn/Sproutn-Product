@@ -99,6 +99,11 @@ export const projectsService = {
       .single();
 
     if (error) {
+      console.error('Error fetching project:', error);
+      throw new Error(error.message);
+    }
+
+    if (!data) {
       return null;
     }
 
