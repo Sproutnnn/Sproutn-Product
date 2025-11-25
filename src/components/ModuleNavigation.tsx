@@ -14,6 +14,14 @@ const ModuleNavigation: React.FC<ModuleNavigationProps> = ({
     id: string;
   }>();
   const location = useLocation();
+
+  // Debug logging
+  console.log('ModuleNavigation - Project:', {
+    status: project.status,
+    photography_unlocked: project.photography_unlocked,
+    marketing_unlocked: project.marketing_unlocked
+  });
+
   // Define all modules with their properties
   const modules = [{
     id: 'brief',

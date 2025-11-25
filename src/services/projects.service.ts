@@ -251,14 +251,24 @@ export const projectsService = {
     estimatedDelivery?: string;
     notes?: string;
   }): Promise<Project> {
+    const updateData: any = {
+      prototype_status: updates.prototypeStatus,
+      tracking_number: updates.trackingNumber || null,
+      estimated_delivery: updates.estimatedDelivery || null,
+      admin_notes: updates.notes || null
+    };
+
+    // Auto-unlock photography and marketing when sample is delivered
+    // Also update main status to 'production' when sample reaches 'delivered' or 'feedback' stage
+    if (updates.prototypeStatus === 'delivered' || updates.prototypeStatus === 'feedback') {
+      updateData.photography_unlocked = true;
+      updateData.marketing_unlocked = true;
+      updateData.status = 'production';
+    }
+
     const { data, error } = await supabase
       .from('projects')
-      .update({
-        prototype_status: updates.prototypeStatus,
-        tracking_number: updates.trackingNumber || null,
-        estimated_delivery: updates.estimatedDelivery || null,
-        admin_notes: updates.notes || null
-      })
+      .update(updateData)
       .eq('id', id)
       .select()
       .single();
