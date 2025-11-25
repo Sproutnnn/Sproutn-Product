@@ -3,6 +3,7 @@ import { useParams, useNavigate, Link } from 'react-router-dom';
 import { ArrowLeftIcon, ArrowRightIcon, CreditCardIcon, UploadIcon, XIcon, PlusIcon } from 'lucide-react';
 import ModuleNavigation from '../components/ModuleNavigation';
 import { useAuth } from '../context/AuthContext';
+import { projectsService } from '../services/projects.service';
 const ProjectDetails: React.FC = () => {
   const {
     id
@@ -15,20 +16,8 @@ const ProjectDetails: React.FC = () => {
   } = useAuth();
   const [loading, setLoading] = useState(true);
   const [showPaymentModal, setShowPaymentModal] = useState(false);
-  const [project, setProject] = useState({
-    id: '',
-    name: '',
-    status: 'details' as const,
-    description: '',
-    keyFeatures: ['', '', ''],
-    targetMarket: '',
-    createdAt: '',
-    updatedAt: '',
-    customer: {
-      name: 'John Doe',
-      email: 'john@example.com'
-    }
-  });
+  const [project, setProject] = useState<any>(null);
+  const [error, setError] = useState<string | null>(null);
   const [formData, setFormData] = useState({
     description: '',
     keyFeatures: ['', '', ''],
@@ -36,31 +25,42 @@ const ProjectDetails: React.FC = () => {
   });
   const [uploadedFiles, setUploadedFiles] = useState<File[]>([]);
   useEffect(() => {
-    // In a real app, this would fetch from an API
-    // For demo purposes, we'll use mock data
-    setTimeout(() => {
-      const mockProject = {
-        id: id || '1',
-        name: 'Smart Home Controller',
-        status: 'details' as const,
-        description: 'A smart home controller that allows users to control all their smart devices from a single interface. Includes voice control and scheduling features.',
-        keyFeatures: ['Voice control integration with major platforms', 'Scheduling and automation capabilities', 'Energy usage monitoring and optimization'],
-        targetMarket: 'Tech-savvy homeowners and smart home enthusiasts',
-        createdAt: '2023-05-15T10:30:00Z',
-        updatedAt: '2023-05-20T14:45:00Z',
-        customer: {
-          name: 'John Doe',
-          email: 'john@example.com'
+    const loadProject = async () => {
+      if (!id) return;
+
+      try {
+        setLoading(true);
+        setError(null);
+        const projectData = await projectsService.getById(id);
+
+        if (!projectData) {
+          setError('Project not found');
+          return;
         }
-      };
-      setProject(mockProject);
-      setFormData({
-        description: mockProject.description,
-        keyFeatures: mockProject.keyFeatures,
-        targetMarket: mockProject.targetMarket
-      });
-      setLoading(false);
-    }, 500);
+
+        setProject(projectData);
+
+        // Load form data from database
+        setFormData({
+          description: projectData.description || '',
+          keyFeatures: projectData.key_features || ['', '', ''],
+          targetMarket: projectData.target_market || ''
+        });
+
+        // Load uploaded files URLs if they exist
+        if (projectData.uploaded_files && projectData.uploaded_files.length > 0) {
+          // Note: These are URLs, not File objects
+          // You may want to display them differently
+        }
+
+      } catch (err) {
+        setError(err instanceof Error ? err.message : 'Failed to load project');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadProject();
   }, [id]);
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const {
@@ -94,14 +94,29 @@ const ProjectDetails: React.FC = () => {
       setUploadedFiles(prev => [...prev, ...filesArray]);
     }
   };
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    // In a real app, this would send data to an API
-    // For demo purposes, we'll simulate an API call
-    setTimeout(() => {
+    if (!id) return;
+
+    try {
+      // TODO: Upload files to storage and get URLs
+      const fileUrls: string[] = [];
+      // For now, we'll just save the form data without files
+
+      await projectsService.update(id, {
+        description: formData.description,
+        key_features: formData.keyFeatures.filter(f => f.trim() !== ''),
+        target_market: formData.targetMarket,
+        uploaded_files: fileUrls,
+        status: 'prototyping' // Move to next step
+      });
+
+      alert('Brief saved successfully!');
       // Navigate to the next step
       navigate(`/project/${id}/prototyping`);
-    }, 500);
+    } catch (err) {
+      alert(err instanceof Error ? err.message : 'Failed to save brief');
+    }
   };
   const handlePayment = () => {
     setShowPaymentModal(true);
@@ -120,6 +135,13 @@ const ProjectDetails: React.FC = () => {
         <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary-500"></div>
       </div>;
   }
+
+  if (error || !project) {
+    return <div className="flex justify-center items-center h-64">
+        <div className="text-red-600">{error || 'Project not found'}</div>
+      </div>;
+  }
+
   return <div>
       <button onClick={() => navigate(-1)} className="flex items-center text-sm text-gray-600 hover:text-gray-900 mb-2">
         <ArrowLeftIcon className="h-4 w-4 mr-1" />
@@ -129,7 +151,7 @@ const ProjectDetails: React.FC = () => {
         <div className="px-6 py-4 border-b border-gray-200">
           <h1 className="text-2xl font-bold text-gray-900">{project.name}</h1>
           <p className="text-sm text-gray-500 mt-1">
-            Created on {new Date(project.createdAt).toLocaleDateString()}
+            Created on {new Date(project.created_at).toLocaleDateString()}
           </p>
         </div>
       </div>

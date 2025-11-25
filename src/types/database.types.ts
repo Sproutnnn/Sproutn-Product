@@ -297,11 +297,14 @@ export type Database = {
           estimated_delivery: string | null
           feedback_images: string[] | null
           id: string
+          key_features: string[] | null
           name: string
           prototype_status: string | null
+          starter_fee: number | null
           status: string
           target_market: string | null
           tracking_number: string | null
+          uploaded_files: string[] | null
           updated_at: string | null
         }
         Insert: {
@@ -323,11 +326,14 @@ export type Database = {
           estimated_delivery?: string | null
           feedback_images?: string[] | null
           id?: string
+          key_features?: string[] | null
           name: string
           prototype_status?: string | null
+          starter_fee?: number | null
           status?: string
           target_market?: string | null
           tracking_number?: string | null
+          uploaded_files?: string[] | null
           updated_at?: string | null
         }
         Update: {
@@ -349,11 +355,14 @@ export type Database = {
           estimated_delivery?: string | null
           feedback_images?: string[] | null
           id?: string
+          key_features?: string[] | null
           name?: string
           prototype_status?: string | null
+          starter_fee?: number | null
           status?: string
           target_market?: string | null
           tracking_number?: string | null
+          uploaded_files?: string[] | null
           updated_at?: string | null
         }
         Relationships: [
