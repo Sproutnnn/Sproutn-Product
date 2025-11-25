@@ -19,51 +19,53 @@ const ModuleNavigation: React.FC<ModuleNavigationProps> = ({
   const { user } = useAuth();
   const isAdmin = user?.role === 'admin';
 
-  // Debug logging
-  console.log('ModuleNavigation - Project:', {
-    status: project.status,
-    photography_unlocked: project.photography_unlocked,
-    marketing_unlocked: project.marketing_unlocked,
-    isAdmin: isAdmin
-  });
+  // Debug logging - log everything to console
+  console.log('=== ModuleNavigation Debug ===');
+  console.log('Project object:', project);
+  console.log('User:', user);
+  console.log('Is Admin:', isAdmin);
+  console.log('Project Status:', project?.status);
+  console.log('Photography Unlocked:', project?.photography_unlocked);
+  console.log('Marketing Unlocked:', project?.marketing_unlocked);
 
   // Define all modules with their properties
+  // Simple logic: Admin sees all, Customer sees based on status
   const modules = [{
     id: 'brief',
     name: 'Brief',
     icon: <FileTextIcon className="w-5 h-5" />,
     path: `/project/${id}`,
-    available: true // Always available as the first step
+    available: true // Always available
   }, {
     id: 'prototyping',
     name: 'Sampling',
     icon: <BoxIcon className="w-5 h-5" />,
     path: `/project/${id}/prototyping`,
-    available: isAdmin || ['details', 'prototyping', 'sourcing', 'payment', 'production', 'shipping', 'completed'].includes(project.status)
+    available: true // Always available
   }, {
     id: 'sourcing',
     name: 'Sourcing',
     icon: <TruckIcon className="w-5 h-5" />,
     path: `/project/${id}/sourcing`,
-    available: isAdmin || ['sourcing', 'payment', 'production', 'shipping', 'completed'].includes(project.status)
+    available: true // Always available
   }, {
     id: 'order',
     name: 'Order & Delivery',
     icon: <PackageIcon className="w-5 h-5" />,
     path: `/project/${id}/tracking`,
-    available: isAdmin || ['payment', 'production', 'shipping', 'completed'].includes(project.status)
+    available: true // Always available
   }, {
     id: 'photography',
     name: 'Photography',
     icon: <CameraIcon className="w-5 h-5" />,
     path: `/project/${id}/photography`,
-    available: isAdmin || project.photography_unlocked === true || ['production', 'shipping', 'completed'].includes(project.status)
+    available: true // Temporarily make always available for debugging
   }, {
     id: 'marketing',
     name: 'Marketing Plan',
     icon: <MegaphoneIcon className="w-5 h-5" />,
     path: `/project/${id}/marketing`,
-    available: isAdmin || project.marketing_unlocked === true || ['production', 'shipping', 'completed'].includes(project.status)
+    available: true // Temporarily make always available for debugging
   }];
   const isActive = (path: string) => {
     return location.pathname === path;
