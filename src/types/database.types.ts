@@ -298,7 +298,9 @@ export type Database = {
           feedback_images: string[] | null
           id: string
           key_features: string[] | null
+          marketing_unlocked: boolean | null
           name: string
+          photography_unlocked: boolean | null
           prototype_status: string | null
           starter_fee: number | null
           status: string
@@ -327,7 +329,9 @@ export type Database = {
           feedback_images?: string[] | null
           id?: string
           key_features?: string[] | null
+          marketing_unlocked?: boolean | null
           name: string
+          photography_unlocked?: boolean | null
           prototype_status?: string | null
           starter_fee?: number | null
           status?: string
@@ -356,7 +360,9 @@ export type Database = {
           feedback_images?: string[] | null
           id?: string
           key_features?: string[] | null
+          marketing_unlocked?: boolean | null
           name?: string
+          photography_unlocked?: boolean | null
           prototype_status?: string | null
           starter_fee?: number | null
           status?: string

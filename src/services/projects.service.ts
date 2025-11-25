@@ -139,6 +139,12 @@ export const projectsService = {
    * Update a project
    */
   async update(id: string, updates: ProjectUpdate): Promise<Project> {
+    // Auto-unlock photography and marketing when status is set to production or beyond
+    if (updates.status && ['production', 'shipping', 'completed'].includes(updates.status)) {
+      updates.photography_unlocked = true;
+      updates.marketing_unlocked = true;
+    }
+
     const { data, error } = await supabase
       .from('projects')
       .update(updates)
