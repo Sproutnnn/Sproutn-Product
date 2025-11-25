@@ -2,7 +2,6 @@ import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { ArrowLeftIcon, UploadIcon, CreditCardIcon, LinkIcon, CheckIcon } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
-import ProjectSteps from '../components/ProjectSteps';
 import ModuleNavigation from '../components/ModuleNavigation';
 import { projectsService } from '../services/projects.service';
 const Marketing: React.FC = () => {
@@ -142,7 +141,6 @@ const Marketing: React.FC = () => {
         <ArrowLeftIcon className="h-4 w-4 mr-1" />
         Back
       </button>
-      <ProjectSteps currentStep={project.status} />
       <div className="bg-white shadow rounded-lg overflow-hidden mt-4 mb-6">
         <div className="px-6 py-4 border-b border-gray-200">
           <h1 className="text-2xl font-bold text-gray-900">{project.name}</h1>
