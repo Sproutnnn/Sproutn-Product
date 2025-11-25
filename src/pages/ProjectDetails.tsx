@@ -170,17 +170,21 @@ const ProjectDetails: React.FC = () => {
             <div className="flex items-center gap-3">
               <select value={project.status} onChange={async (e) => {
             const newStatus = e.target.value;
+            console.log('Attempting to update status to:', newStatus);
+            console.log('Project ID:', id);
+
             try {
               const updatedProject = await projectsService.updateProjectStatus(id!, newStatus);
-              console.log('Status updated, new project data:', updatedProject);
+              console.log('Status updated successfully, new project data:', updatedProject);
               // Update local state with new data
               setProject(updatedProject);
               alert(`Project status updated to "${newStatus}" successfully!`);
               // Force reload the page to ensure all components get new data
               window.location.reload();
             } catch (err) {
-              console.error('Failed to update status:', err);
-              alert('Failed to update project status');
+              console.error('Failed to update status - Full error:', err);
+              const errorMessage = err instanceof Error ? err.message : 'Unknown error';
+              alert(`Failed to update project status: ${errorMessage}`);
             }
           }} className="block border border-blue-300 bg-white rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
                 <option value="draft">Draft</option>
