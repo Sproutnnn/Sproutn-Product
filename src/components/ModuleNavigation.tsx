@@ -29,43 +29,43 @@ const ModuleNavigation: React.FC<ModuleNavigationProps> = ({
   console.log('Marketing Unlocked:', project?.marketing_unlocked);
 
   // Define all modules with their properties
-  // Simple logic: Admin sees all, Customer sees based on status
+  // Admin sees all sections unlocked, Customer sees based on project status
   const modules = [{
     id: 'brief',
     name: 'Brief',
     icon: <FileTextIcon className="w-5 h-5" />,
     path: `/project/${id}`,
-    available: true // Always available
+    available: true // Always available to everyone
   }, {
     id: 'prototyping',
     name: 'Sampling',
     icon: <BoxIcon className="w-5 h-5" />,
     path: `/project/${id}/prototyping`,
-    available: true // Always available
+    available: isAdmin || ['brief', 'prototyping', 'sourcing', 'payment', 'production', 'shipping', 'completed'].includes(project?.status || '')
   }, {
     id: 'sourcing',
     name: 'Sourcing',
     icon: <TruckIcon className="w-5 h-5" />,
     path: `/project/${id}/sourcing`,
-    available: true // Always available
+    available: isAdmin || ['sourcing', 'payment', 'production', 'shipping', 'completed'].includes(project?.status || '')
   }, {
     id: 'order',
     name: 'Order & Delivery',
     icon: <PackageIcon className="w-5 h-5" />,
     path: `/project/${id}/tracking`,
-    available: true // Always available
+    available: isAdmin || ['payment', 'production', 'shipping', 'completed'].includes(project?.status || '')
   }, {
     id: 'photography',
     name: 'Photography',
     icon: <CameraIcon className="w-5 h-5" />,
     path: `/project/${id}/photography`,
-    available: true // Temporarily make always available for debugging
+    available: isAdmin || ['production', 'shipping', 'completed'].includes(project?.status || '')
   }, {
     id: 'marketing',
     name: 'Marketing Plan',
     icon: <MegaphoneIcon className="w-5 h-5" />,
     path: `/project/${id}/marketing`,
-    available: true // Temporarily make always available for debugging
+    available: isAdmin || ['production', 'shipping', 'completed'].includes(project?.status || '')
   }];
   const isActive = (path: string) => {
     return location.pathname === path;
