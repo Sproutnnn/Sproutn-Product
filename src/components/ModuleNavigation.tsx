@@ -44,13 +44,13 @@ const ModuleNavigation: React.FC<ModuleNavigationProps> = ({
     name: 'Photography',
     icon: <CameraIcon className="w-5 h-5" />,
     path: `/project/${id}/photography`,
-    available: ['production', 'shipping', 'completed'].includes(project.status)
+    available: project.status === 'production' || project.status === 'shipping' || project.status === 'completed'
   }, {
     id: 'marketing',
     name: 'Marketing Plan',
     icon: <MegaphoneIcon className="w-5 h-5" />,
     path: `/project/${id}/marketing`,
-    available: ['production', 'shipping', 'completed'].includes(project.status)
+    available: project.status === 'production' || project.status === 'shipping' || project.status === 'completed'
   }];
   const isActive = (path: string) => {
     return location.pathname === path;
