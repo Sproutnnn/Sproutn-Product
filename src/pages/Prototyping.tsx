@@ -3,6 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { ArrowLeftIcon, ArrowRightIcon, CheckIcon, BoxIcon, MapPinIcon, CameraIcon, MessageCircleIcon } from 'lucide-react';
 import ProjectSteps from '../components/ProjectSteps';
 import { useAuth } from '../context/AuthContext';
+import { projectsService } from '../services/projects.service';
 const Prototyping: React.FC = () => {
   const {
     id
@@ -14,14 +15,8 @@ const Prototyping: React.FC = () => {
     user
   } = useAuth();
   const [loading, setLoading] = useState(true);
-  const [project, setProject] = useState({
-    id: '',
-    name: '',
-    status: 'prototyping' as const,
-    prototypeStatus: 'producing' as 'producing' | 'shipping' | 'delivered' | 'feedback',
-    createdAt: '',
-    updatedAt: ''
-  });
+  const [project, setProject] = useState<any>(null);
+  const [error, setError] = useState<string | null>(null);
   const [deliveryAddress, setDeliveryAddress] = useState({
     fullName: '',
     addressLine1: '',
@@ -42,20 +37,59 @@ const Prototyping: React.FC = () => {
   const [feedback, setFeedback] = useState('');
   const [feedbackImages, setFeedbackImages] = useState<File[]>([]);
   useEffect(() => {
-    // In a real app, this would fetch from an API
-    // For demo purposes, we'll use mock data
-    setTimeout(() => {
-      const mockProject = {
-        id: id || '1',
-        name: 'Smart Home Controller',
-        status: 'prototyping' as const,
-        prototypeStatus: 'producing' as const,
-        createdAt: '2023-05-15T10:30:00Z',
-        updatedAt: '2023-05-20T14:45:00Z'
-      };
-      setProject(mockProject);
-      setLoading(false);
-    }, 500);
+    const loadProject = async () => {
+      if (!id) return;
+
+      try {
+        setLoading(true);
+        setError(null);
+        const projectData = await projectsService.getById(id);
+
+        if (!projectData) {
+          setError('Project not found');
+          return;
+        }
+
+        setProject(projectData);
+
+        // Load delivery address if it exists
+        if (projectData.delivery_full_name) {
+          setDeliveryAddress({
+            fullName: projectData.delivery_full_name || '',
+            addressLine1: projectData.delivery_address_line1 || '',
+            addressLine2: projectData.delivery_address_line2 || '',
+            city: projectData.delivery_city || '',
+            state: projectData.delivery_state || '',
+            zipCode: projectData.delivery_zip_code || '',
+            country: projectData.delivery_country || '',
+            phoneNumber: projectData.delivery_phone_number || ''
+          });
+          setAddressSubmitted(true);
+        }
+
+        // Load admin data if it exists
+        if (projectData.prototype_status) {
+          setAdminData({
+            prototypeStatus: projectData.prototype_status as any,
+            trackingNumber: projectData.tracking_number || '',
+            estimatedDelivery: projectData.estimated_delivery || '',
+            notes: projectData.admin_notes || ''
+          });
+        }
+
+        // Load feedback if it exists
+        if (projectData.customer_feedback) {
+          setFeedback(projectData.customer_feedback);
+        }
+
+      } catch (err) {
+        setError(err instanceof Error ? err.message : 'Failed to load project');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadProject();
   }, [id]);
   const handleFeedbackChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     setFeedback(e.target.value);
@@ -65,18 +99,25 @@ const Prototyping: React.FC = () => {
       setFeedbackImages(Array.from(e.target.files));
     }
   };
-  const handleFeedbackSubmit = (e: React.FormEvent) => {
+  const handleFeedbackSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    // In a real app, this would send the feedback and images to an API
-    console.log('Feedback submitted:', {
-      feedback,
-      images: feedbackImages
-    });
-    // Clear the form
-    setFeedback('');
-    setFeedbackImages([]);
-    // Optionally show a success message
-    alert('Feedback submitted successfully!');
+    if (!id) return;
+
+    try {
+      // TODO: Upload images to storage and get URLs
+      // For now, we'll just save the feedback text
+      const imageUrls: string[] = [];
+
+      await projectsService.submitFeedback(id, feedback, imageUrls);
+
+      // Clear the form
+      setFeedback('');
+      setFeedbackImages([]);
+
+      alert('Feedback submitted successfully!');
+    } catch (err) {
+      alert(err instanceof Error ? err.message : 'Failed to submit feedback');
+    }
   };
   const handleAddressChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const {
@@ -98,19 +139,42 @@ const Prototyping: React.FC = () => {
       [name]: value
     }));
   };
-  const handleCustomerSubmit = (e: React.FormEvent) => {
+  const handleCustomerSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    // In a real app, this would send data to an API
-    setAddressSubmitted(true);
+    if (!id) return;
+
+    try {
+      await projectsService.updateDeliveryAddress(id, deliveryAddress);
+      setAddressSubmitted(true);
+      alert('Delivery address saved successfully!');
+    } catch (err) {
+      alert(err instanceof Error ? err.message : 'Failed to save delivery address');
+    }
   };
-  const handleAdminSubmit = (e: React.FormEvent) => {
+  const handleAdminSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    // In a real app, this would send data to an API
-    // If status is feedback, move to the next step
-    if (adminData.prototypeStatus === 'feedback') {
-      navigate(`/project/${id}/sourcing`);
-    } else {
-      alert('Prototype status updated successfully!');
+    if (!id) return;
+
+    try {
+      await projectsService.updatePrototypeStatus(id, {
+        prototypeStatus: adminData.prototypeStatus,
+        trackingNumber: adminData.trackingNumber,
+        estimatedDelivery: adminData.estimatedDelivery,
+        notes: adminData.notes
+      });
+
+      // If status is feedback, move to the next step
+      if (adminData.prototypeStatus === 'feedback') {
+        // Also update the project status to sourcing
+        await projectsService.update(id, { status: 'sourcing' });
+        navigate(`/project/${id}/sourcing`);
+      } else {
+        alert('Prototype status updated successfully!');
+        // Reload project data to show updated info
+        window.location.reload();
+      }
+    } catch (err) {
+      alert(err instanceof Error ? err.message : 'Failed to update prototype status');
     }
   };
   // Prototype steps
@@ -125,11 +189,19 @@ const Prototyping: React.FC = () => {
     label: 'Sample Feedback'
   }];
   const getCurrentStepIndex = () => {
-    return prototypeSteps.findIndex(step => step.id === project.prototypeStatus);
+    if (!project || !project.prototype_status) return 0;
+    return prototypeSteps.findIndex(step => step.id === project.prototype_status);
   };
+
   if (loading) {
     return <div className="flex justify-center items-center h-64">
         <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary-500"></div>
+      </div>;
+  }
+
+  if (error || !project) {
+    return <div className="flex justify-center items-center h-64">
+        <div className="text-red-600">{error || 'Project not found'}</div>
       </div>;
   }
   return <div>
@@ -183,7 +255,7 @@ const Prototyping: React.FC = () => {
                   <p className="text-sm text-blue-700">
                     Current Status:{' '}
                     <span className="font-medium capitalize">
-                      {project.prototypeStatus}
+                      {project.prototype_status || 'producing'}
                     </span>
                   </p>
                 </div>
@@ -338,11 +410,40 @@ const Prototyping: React.FC = () => {
                   </button>
                 </div>
               </div>}
-            {user?.role === 'admin' && <div className="bg-gray-50 border rounded-md p-4">
+            {user?.role === 'admin' && !project.delivery_full_name && <div className="bg-gray-50 border rounded-md p-4">
                 <p className="text-sm text-gray-500">
                   Waiting for customer to provide delivery address. You'll be
                   notified once the address is submitted.
                 </p>
+              </div>}
+            {user?.role === 'admin' && project.delivery_full_name && <div className="bg-white border rounded-md p-4">
+                <div className="flex items-start">
+                  <MapPinIcon className="h-5 w-5 text-primary-500 mt-0.5 mr-2" />
+                  <div>
+                    <h3 className="text-md font-medium text-gray-900 mb-1">
+                      Customer Delivery Address
+                    </h3>
+                    <p className="text-sm text-gray-700">
+                      {project.delivery_full_name}
+                    </p>
+                    <p className="text-sm text-gray-700">
+                      {project.delivery_phone_number}
+                    </p>
+                    <p className="text-sm text-gray-700">
+                      {project.delivery_address_line1}
+                    </p>
+                    {project.delivery_address_line2 && <p className="text-sm text-gray-700">
+                        {project.delivery_address_line2}
+                      </p>}
+                    <p className="text-sm text-gray-700">
+                      {project.delivery_city}, {project.delivery_state}{' '}
+                      {project.delivery_zip_code}
+                    </p>
+                    <p className="text-sm text-gray-700">
+                      {project.delivery_country}
+                    </p>
+                  </div>
+                </div>
               </div>}
           </div>
           {user?.role === 'customer' && <div className="mt-8 border-t border-gray-200 pt-6">

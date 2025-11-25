@@ -279,39 +279,81 @@ export type Database = {
       }
       projects: {
         Row: {
+          admin_notes: string | null
           category: string | null
           created_at: string | null
+          customer_feedback: string | null
           customer_id: string
+          delivery_address_line1: string | null
+          delivery_address_line2: string | null
+          delivery_city: string | null
+          delivery_country: string | null
+          delivery_full_name: string | null
+          delivery_phone_number: string | null
+          delivery_state: string | null
+          delivery_zip_code: string | null
           description: string | null
           estimated_budget: string | null
+          estimated_delivery: string | null
+          feedback_images: string[] | null
           id: string
           name: string
+          prototype_status: string | null
           status: string
           target_market: string | null
+          tracking_number: string | null
           updated_at: string | null
         }
         Insert: {
+          admin_notes?: string | null
           category?: string | null
           created_at?: string | null
+          customer_feedback?: string | null
           customer_id: string
+          delivery_address_line1?: string | null
+          delivery_address_line2?: string | null
+          delivery_city?: string | null
+          delivery_country?: string | null
+          delivery_full_name?: string | null
+          delivery_phone_number?: string | null
+          delivery_state?: string | null
+          delivery_zip_code?: string | null
           description?: string | null
           estimated_budget?: string | null
+          estimated_delivery?: string | null
+          feedback_images?: string[] | null
           id?: string
           name: string
+          prototype_status?: string | null
           status?: string
           target_market?: string | null
+          tracking_number?: string | null
           updated_at?: string | null
         }
         Update: {
+          admin_notes?: string | null
           category?: string | null
           created_at?: string | null
+          customer_feedback?: string | null
           customer_id?: string
+          delivery_address_line1?: string | null
+          delivery_address_line2?: string | null
+          delivery_city?: string | null
+          delivery_country?: string | null
+          delivery_full_name?: string | null
+          delivery_phone_number?: string | null
+          delivery_state?: string | null
+          delivery_zip_code?: string | null
           description?: string | null
           estimated_budget?: string | null
+          estimated_delivery?: string | null
+          feedback_images?: string[] | null
           id?: string
           name?: string
+          prototype_status?: string | null
           status?: string
           target_market?: string | null
+          tracking_number?: string | null
           updated_at?: string | null
         }
         Relationships: [
