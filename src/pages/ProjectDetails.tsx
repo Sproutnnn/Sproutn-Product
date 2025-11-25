@@ -157,6 +157,44 @@ const ProjectDetails: React.FC = () => {
       </div>
       {/* Module Navigation */}
       <ModuleNavigation project={project} />
+
+      {/* Admin Project Status Control */}
+      {user?.role === 'admin' && <div className="bg-blue-50 border-l-4 border-blue-400 p-4 mb-6">
+          <div className="flex items-center justify-between">
+            <div>
+              <h3 className="text-sm font-medium text-blue-800">Project Status</h3>
+              <p className="text-xs text-blue-700 mt-1">
+                Change to "Production" to unlock Photography and Marketing for customer
+              </p>
+            </div>
+            <div className="flex items-center gap-3">
+              <select value={project.status} onChange={async (e) => {
+            const newStatus = e.target.value;
+            try {
+              await projectsService.updateProjectStatus(id!, newStatus);
+              // Reload project to get updated data
+              const updatedProject = await projectsService.getById(id!);
+              if (updatedProject) {
+                setProject(updatedProject);
+              }
+              alert('Project status updated successfully!');
+            } catch (err) {
+              alert('Failed to update project status');
+            }
+          }} className="block border border-blue-300 bg-white rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
+                <option value="draft">Draft</option>
+                <option value="brief">Brief</option>
+                <option value="prototyping">Prototyping</option>
+                <option value="sourcing">Sourcing</option>
+                <option value="payment">To Pay</option>
+                <option value="production">Production</option>
+                <option value="shipping">Shipping</option>
+                <option value="completed">Completed</option>
+              </select>
+            </div>
+          </div>
+        </div>}
+
       <div className="bg-white shadow rounded-lg overflow-hidden">
         <div className="px-6 py-4 border-b border-gray-200">
           <h2 className="text-xl font-semibold text-gray-900">Brief</h2>

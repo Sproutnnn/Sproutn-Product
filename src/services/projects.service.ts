@@ -251,19 +251,35 @@ export const projectsService = {
     estimatedDelivery?: string;
     notes?: string;
   }): Promise<Project> {
-    const updateData: any = {
-      prototype_status: updates.prototypeStatus,
-      tracking_number: updates.trackingNumber || null,
-      estimated_delivery: updates.estimatedDelivery || null,
-      admin_notes: updates.notes || null
-    };
+    const { data, error } = await supabase
+      .from('projects')
+      .update({
+        prototype_status: updates.prototypeStatus,
+        tracking_number: updates.trackingNumber || null,
+        estimated_delivery: updates.estimatedDelivery || null,
+        admin_notes: updates.notes || null
+      })
+      .eq('id', id)
+      .select()
+      .single();
 
-    // Auto-unlock photography and marketing when sample is shipped or beyond
-    // Also update main status to 'production' when sample reaches 'shipping' stage or beyond
-    if (updates.prototypeStatus === 'shipping' || updates.prototypeStatus === 'delivered' || updates.prototypeStatus === 'feedback') {
+    if (error) {
+      throw new Error(error.message);
+    }
+
+    return data;
+  },
+
+  /**
+   * Update main project status (admin only)
+   */
+  async updateProjectStatus(id: string, status: string): Promise<Project> {
+    const updateData: any = { status };
+
+    // Auto-unlock photography and marketing when status is set to production or beyond
+    if (['production', 'shipping', 'completed'].includes(status)) {
       updateData.photography_unlocked = true;
       updateData.marketing_unlocked = true;
-      updateData.status = 'production';
       console.log('Unlocking photography and marketing for project:', id);
     }
 
