@@ -1,6 +1,6 @@
-import React from 'react';
+import React, { Fragment } from 'react';
 import { Link, useParams, useLocation } from 'react-router-dom';
-import { FileTextIcon, BoxIcon, TruckIcon, PackageIcon, CameraIcon, MegaphoneIcon, LockIcon, CheckCircleIcon } from 'lucide-react';
+import { FileTextIcon, BoxIcon, TruckIcon, PackageIcon, CameraIcon, MegaphoneIcon, CheckIcon } from 'lucide-react';
 import { Project } from './ProjectCard';
 interface ModuleNavigationProps {
   project: Project;
@@ -23,7 +23,7 @@ const ModuleNavigation: React.FC<ModuleNavigationProps> = ({
     available: true // Always available as the first step
   }, {
     id: 'prototyping',
-    name: 'Prototyping',
+    name: 'Sampling',
     icon: <BoxIcon className="w-5 h-5" />,
     path: `/project/${id}/prototyping`,
     available: ['details', 'prototyping', 'sourcing', 'payment', 'production', 'shipping', 'completed'].includes(project.status)
@@ -55,25 +55,38 @@ const ModuleNavigation: React.FC<ModuleNavigationProps> = ({
   const isActive = (path: string) => {
     return location.pathname === path;
   };
-  return <div className="bg-white shadow rounded-lg mb-6">
-      <div className="grid grid-cols-3 md:grid-cols-6 gap-1 p-1">
-        {modules.map(module => <div key={module.id} className="relative">
-            {module.available ? <Link to={module.path} className={`flex flex-col items-center p-3 rounded-md transition-colors ${isActive(module.path) ? 'bg-primary-50 text-primary-700' : 'text-charcoal-500 hover:bg-gray-50'}`}>
-                <div className="mb-2">{module.icon}</div>
-                <span className="text-xs font-medium text-center">
-                  {module.name}
-                </span>
-                {isActive(module.path) && <div className="absolute -bottom-1 left-1/2 transform -translate-x-1/2 w-2 h-2 rounded-full bg-primary-500"></div>}
-              </Link> : <div className="flex flex-col items-center p-3 rounded-md text-gray-400 cursor-not-allowed">
-                <div className="mb-2 relative">
-                  {module.icon}
-                  <LockIcon className="w-3 h-3 absolute -top-1 -right-1 text-gray-400" />
-                </div>
-                <span className="text-xs font-medium text-center">
-                  {module.name}
-                </span>
-              </div>}
-          </div>)}
+
+  return <div className="py-4 mb-6">
+      <div className="flex items-start justify-between w-full">
+        {modules.map((module, index) => {
+        const active = isActive(module.path);
+        const isClickable = module.available;
+        // Determine link or div based on clickability
+        const Element = isClickable ? Link : 'div';
+        const elementProps = isClickable ? {
+          to: module.path
+        } : {};
+        // Calculate progress bar color for the connector
+        const progressBarColor = module.available ? 'bg-primary-500' : 'bg-gray-200';
+        return <Fragment key={module.id}>
+              <div className="flex flex-col items-center">
+                <Element {...elementProps} className={`flex flex-col items-center ${isClickable ? 'cursor-pointer' : 'cursor-not-allowed opacity-60'}`}>
+                  <div className={`w-12 h-12 rounded-full ${active ? 'bg-primary-50' : module.available ? 'bg-primary-50' : 'bg-gray-100'} flex items-center justify-center`}>
+                    <div className={`${active ? 'text-primary-600' : module.available ? 'text-charcoal-500' : 'text-gray-400'}`}>
+                      {module.icon}
+                    </div>
+                  </div>
+                  <span className={`mt-2 text-xs text-center ${active ? 'text-primary-600 font-medium' : module.available ? 'text-charcoal-500' : 'text-gray-400'}`}>
+                    {module.name}
+                  </span>
+                </Element>
+              </div>
+              {/* Connector line between steps */}
+              {index < modules.length - 1 && <div className="flex-1 h-1 mx-2 mt-6">
+                  <div className={`h-full ${progressBarColor}`}></div>
+                </div>}
+            </Fragment>;
+      })}
       </div>
     </div>;
 };
