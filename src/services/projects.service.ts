@@ -232,7 +232,7 @@ export const projectsService = {
   },
 
   /**
-   * Update prototype status and admin data
+   * Update sample status and admin data
    */
   async updatePrototypeStatus(id: string, updates: {
     prototypeStatus: string;
@@ -260,7 +260,7 @@ export const projectsService = {
   },
 
   /**
-   * Submit customer feedback for prototype
+   * Submit customer feedback for sample
    */
   async submitFeedback(id: string, feedback: string, imageUrls?: string[]): Promise<Project> {
     const { data, error } = await supabase

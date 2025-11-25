@@ -213,12 +213,12 @@ const Prototyping: React.FC = () => {
       <div className="bg-white shadow rounded-lg overflow-hidden">
         <div className="px-6 py-4 border-b border-gray-200">
           <h1 className="text-2xl font-bold text-gray-900">{project.name}</h1>
-          <p className="text-sm text-gray-500 mt-1">Prototyping Phase</p>
+          <p className="text-sm text-gray-500 mt-1">Sampling Phase</p>
         </div>
         <div className="p-6">
           <div className="mb-8">
             <h2 className="text-lg font-medium text-gray-900 mb-4">
-              Prototype Status
+              Sample Status
             </h2>
             {/* Step Progress Indicator */}
             <div className="mb-8">
@@ -263,7 +263,7 @@ const Prototyping: React.FC = () => {
             </div>
             {user?.role === 'admin' && <form onSubmit={handleAdminSubmit} className="border rounded-md p-4 bg-gray-50">
                 <h3 className="text-md font-medium text-gray-900 mb-4">
-                  Update Prototype Status
+                  Update Sample Status
                 </h3>
                 <div className="space-y-4">
                   <div>
@@ -448,7 +448,7 @@ const Prototyping: React.FC = () => {
           </div>
           {user?.role === 'customer' && <div className="mt-8 border-t border-gray-200 pt-6">
               <h2 className="text-lg font-medium text-gray-900 mb-4">
-                Prototype Feedback
+                Sample Feedback
               </h2>
               <div className="bg-white border rounded-md p-4">
                 <form onSubmit={handleFeedbackSubmit}>
@@ -456,14 +456,14 @@ const Prototyping: React.FC = () => {
                     <label htmlFor="feedback" className="block text-sm font-medium text-gray-700 mb-1">
                       Your Feedback
                     </label>
-                    <textarea id="feedback" name="feedback" rows={4} value={feedback} onChange={handleFeedbackChange} placeholder="Share your thoughts on the prototype. What works well? What could be improved?" className="block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-primary-500 focus:border-primary-500 sm:text-sm" />
+                    <textarea id="feedback" name="feedback" rows={4} value={feedback} onChange={handleFeedbackChange} placeholder="Share your thoughts on the sample. What works well? What could be improved?" className="block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-primary-500 focus:border-primary-500 sm:text-sm" />
                   </div>
                   <div className="mb-4">
                     <label className="block text-sm font-medium text-gray-700 mb-1">
                       Upload Images
                     </label>
                     <p className="text-xs text-gray-500 mb-2">
-                      Share photos of the prototype with annotations or showing
+                      Share photos of the sample with annotations or showing
                       specific issues
                     </p>
                     <div className="border-2 border-dashed border-gray-300 rounded-lg p-4 text-center">

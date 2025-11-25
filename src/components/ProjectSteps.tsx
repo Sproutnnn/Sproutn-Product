@@ -22,7 +22,7 @@ const ProjectSteps: React.FC<ProjectStepsProps> = ({
       // Brief
       case 'prototyping':
         return 1;
-      // Prototyping
+      // Sampling
       case 'sourcing':
         return 2;
       // Sourcing
@@ -45,7 +45,7 @@ const ProjectSteps: React.FC<ProjectStepsProps> = ({
     path: `/project/${id}`
   }, {
     key: 'prototyping',
-    label: 'Prototyping',
+    label: 'Sampling',
     icon: <BoxIcon className="w-5 h-5" />,
     path: `/project/${id}/prototyping`
   }, {
