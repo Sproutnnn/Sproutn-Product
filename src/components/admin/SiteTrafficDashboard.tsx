@@ -8,7 +8,9 @@ import {
   DateRangePreset,
   TrafficSourcesTable,
   TrafficChart,
-  UserTypeChart
+  UserTypeChart,
+  PageViewsTable,
+  PageViewData
 } from './traffic';
 
 function getDateRange(preset: DateRangePreset, customRange: { startDate: string; endDate: string }) {
@@ -50,6 +52,7 @@ const SiteTrafficDashboard: React.FC = () => {
   const [overviewStats, setOverviewStats] = useState<OverviewStats | null>(null);
   const [trafficSources, setTrafficSources] = useState<TrafficSource[]>([]);
   const [dailyTraffic, setDailyTraffic] = useState<DailyTraffic[]>([]);
+  const [topPages, setTopPages] = useState<PageViewData[]>([]);
 
   const dateRange = useMemo(
     () => getDateRange(selectedPreset, customRange),
@@ -63,15 +66,17 @@ const SiteTrafficDashboard: React.FC = () => {
         setLoading(true);
         setError(null);
 
-        const [stats, sources, daily] = await Promise.all([
+        const [stats, sources, daily, pages] = await Promise.all([
           analyticsService.getOverviewStats(dateRange),
           analyticsService.getTrafficSourceBreakdown(dateRange),
-          analyticsService.getDailyTraffic(dateRange)
+          analyticsService.getDailyTraffic(dateRange),
+          analyticsService.getTopPages(dateRange, 15)
         ]);
 
         setOverviewStats(stats);
         setTrafficSources(sources);
         setDailyTraffic(daily);
+        setTopPages(pages);
       } catch (err) {
         console.error('Error fetching analytics:', err);
         setError(err instanceof Error ? err.message : 'Failed to load analytics data');
@@ -155,8 +160,11 @@ const SiteTrafficDashboard: React.FC = () => {
         </div>
       </div>
 
-      {/* Traffic Sources Table */}
-      <TrafficSourcesTable sources={trafficSources} isLoading={loading} />
+      {/* Traffic Sources and Page Views Tables */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <TrafficSourcesTable sources={trafficSources} isLoading={loading} />
+        <PageViewsTable pages={topPages} isLoading={loading} />
+      </div>
     </div>
   );
 };
