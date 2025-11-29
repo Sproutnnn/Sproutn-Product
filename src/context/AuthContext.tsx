@@ -1,5 +1,7 @@
 import React, { useEffect, useState, createContext, useContext } from 'react';
 import { authService, type User } from '../services/auth.service';
+import { analyticsService } from '../services/analytics.service';
+import { analyticsStorage } from '../lib/analytics/storage';
 interface AuthContextType {
   user: User | null;
   isAuthenticated: boolean;
@@ -37,6 +39,12 @@ export const AuthProvider: React.FC<{
       setUser(loggedInUser);
       setIsAuthenticated(true);
       localStorage.setItem('userId', loggedInUser.id);
+
+      // Link analytics visitor to authenticated user
+      if (analyticsStorage.hasConsent()) {
+        const visitorId = analyticsStorage.getVisitorId();
+        analyticsService.linkVisitorToUser(visitorId, loggedInUser.id).catch(console.error);
+      }
     } catch (error) {
       throw error;
     }
@@ -71,6 +79,12 @@ export const AuthProvider: React.FC<{
       setUser(newUser);
       setIsAuthenticated(true);
       localStorage.setItem('userId', newUser.id);
+
+      // Link analytics visitor to new user
+      if (analyticsStorage.hasConsent()) {
+        const visitorId = analyticsStorage.getVisitorId();
+        analyticsService.linkVisitorToUser(visitorId, newUser.id).catch(console.error);
+      }
     } catch (error) {
       throw error;
     }

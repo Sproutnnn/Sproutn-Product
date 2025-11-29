@@ -1,6 +1,9 @@
 import React, { useState } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider } from './context/AuthContext';
+import { AnalyticsProvider } from './context/AnalyticsContext';
+import { AnalyticsTracker } from './components/AnalyticsTracker';
+import { CookieConsentBanner } from './components/CookieConsentBanner';
 import Login from './pages/Login';
 import Dashboard from './pages/Dashboard';
 import ProjectCreation from './pages/ProjectCreation';
@@ -35,13 +38,16 @@ import BlogManagement from './components/admin/BlogManagement';
 import PageEditor from './components/admin/PageEditor';
 import PageManagement from './components/admin/PageManagement';
 import ProductManagement from './components/admin/ProductManagement';
+import SiteTrafficDashboard from './components/admin/SiteTrafficDashboard';
 import About from './pages/About';
 import './styles/animations.css';
 export function App() {
   return <Router>
       <AuthProvider>
-        <Routes>
-          <Route path="/" element={<SmartLandingPage />} />
+        <AnalyticsProvider>
+          <AnalyticsTracker />
+          <Routes>
+            <Route path="/" element={<SmartLandingPage />} />
           <Route path="/login" element={<Login />} />
           <Route path="/blog" element={<BlogPage />} />
           <Route path="/blog/:slug" element={<BlogDetail />} />
@@ -113,8 +119,13 @@ export function App() {
             <Route path="/admin/products" element={<ProtectedRoute roleRequired="admin">
                   <ProductManagement />
                 </ProtectedRoute>} />
+            <Route path="/admin/traffic" element={<ProtectedRoute roleRequired="admin">
+                  <SiteTrafficDashboard />
+                </ProtectedRoute>} />
           </Route>
         </Routes>
+          <CookieConsentBanner />
+        </AnalyticsProvider>
       </AuthProvider>
     </Router>;
 }

@@ -414,6 +414,222 @@ export type Database = {
         }
         Relationships: []
       }
+      site_visitors: {
+        Row: {
+          id: string
+          visitor_cookie_id: string
+          user_id: string | null
+          first_seen_at: string
+          last_seen_at: string
+          total_visits: number
+          first_referrer: string | null
+          first_utm_source: string | null
+          first_utm_medium: string | null
+          first_utm_campaign: string | null
+          first_utm_term: string | null
+          first_utm_content: string | null
+          first_landing_page: string | null
+          created_at: string
+        }
+        Insert: {
+          id?: string
+          visitor_cookie_id: string
+          user_id?: string | null
+          first_seen_at?: string
+          last_seen_at?: string
+          total_visits?: number
+          first_referrer?: string | null
+          first_utm_source?: string | null
+          first_utm_medium?: string | null
+          first_utm_campaign?: string | null
+          first_utm_term?: string | null
+          first_utm_content?: string | null
+          first_landing_page?: string | null
+          created_at?: string
+        }
+        Update: {
+          id?: string
+          visitor_cookie_id?: string
+          user_id?: string | null
+          first_seen_at?: string
+          last_seen_at?: string
+          total_visits?: number
+          first_referrer?: string | null
+          first_utm_source?: string | null
+          first_utm_medium?: string | null
+          first_utm_campaign?: string | null
+          first_utm_term?: string | null
+          first_utm_content?: string | null
+          first_landing_page?: string | null
+          created_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "site_visitors_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          }
+        ]
+      }
+      site_sessions: {
+        Row: {
+          id: string
+          session_cookie_id: string
+          visitor_id: string
+          user_id: string | null
+          started_at: string
+          ended_at: string | null
+          duration_seconds: number | null
+          page_view_count: number
+          is_bounce: boolean | null
+          referrer: string | null
+          referrer_domain: string | null
+          utm_source: string | null
+          utm_medium: string | null
+          utm_campaign: string | null
+          utm_term: string | null
+          utm_content: string | null
+          landing_page: string
+          exit_page: string | null
+          device_type: string | null
+          browser: string | null
+          os: string | null
+          screen_resolution: string | null
+          created_at: string
+        }
+        Insert: {
+          id?: string
+          session_cookie_id: string
+          visitor_id: string
+          user_id?: string | null
+          started_at?: string
+          ended_at?: string | null
+          duration_seconds?: number | null
+          page_view_count?: number
+          is_bounce?: boolean | null
+          referrer?: string | null
+          referrer_domain?: string | null
+          utm_source?: string | null
+          utm_medium?: string | null
+          utm_campaign?: string | null
+          utm_term?: string | null
+          utm_content?: string | null
+          landing_page: string
+          exit_page?: string | null
+          device_type?: string | null
+          browser?: string | null
+          os?: string | null
+          screen_resolution?: string | null
+          created_at?: string
+        }
+        Update: {
+          id?: string
+          session_cookie_id?: string
+          visitor_id?: string
+          user_id?: string | null
+          started_at?: string
+          ended_at?: string | null
+          duration_seconds?: number | null
+          page_view_count?: number
+          is_bounce?: boolean | null
+          referrer?: string | null
+          referrer_domain?: string | null
+          utm_source?: string | null
+          utm_medium?: string | null
+          utm_campaign?: string | null
+          utm_term?: string | null
+          utm_content?: string | null
+          landing_page?: string
+          exit_page?: string | null
+          device_type?: string | null
+          browser?: string | null
+          os?: string | null
+          screen_resolution?: string | null
+          created_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "site_sessions_visitor_id_fkey"
+            columns: ["visitor_id"]
+            isOneToOne: false
+            referencedRelation: "site_visitors"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "site_sessions_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          }
+        ]
+      }
+      site_page_views: {
+        Row: {
+          id: string
+          session_id: string
+          visitor_id: string
+          user_id: string | null
+          page_path: string
+          page_url: string | null
+          page_title: string | null
+          previous_page_path: string | null
+          time_on_page_seconds: number | null
+          viewed_at: string
+          created_at: string
+        }
+        Insert: {
+          id?: string
+          session_id: string
+          visitor_id: string
+          user_id?: string | null
+          page_path: string
+          page_url?: string | null
+          page_title?: string | null
+          previous_page_path?: string | null
+          time_on_page_seconds?: number | null
+          viewed_at?: string
+          created_at?: string
+        }
+        Update: {
+          id?: string
+          session_id?: string
+          visitor_id?: string
+          user_id?: string | null
+          page_path?: string
+          page_url?: string | null
+          page_title?: string | null
+          previous_page_path?: string | null
+          time_on_page_seconds?: number | null
+          viewed_at?: string
+          created_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "site_page_views_session_id_fkey"
+            columns: ["session_id"]
+            isOneToOne: false
+            referencedRelation: "site_sessions"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "site_page_views_visitor_id_fkey"
+            columns: ["visitor_id"]
+            isOneToOne: false
+            referencedRelation: "site_visitors"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "site_page_views_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          }
+        ]
+      }
     }
     Views: {
       [_ in never]: never

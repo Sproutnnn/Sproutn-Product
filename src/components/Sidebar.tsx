@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { HomeIcon, FolderPlusIcon, MessageCircleIcon, SettingsIcon, UserIcon, UsersIcon, FileTextIcon, PencilIcon, LayoutIcon, BookOpenIcon } from 'lucide-react';
+import { HomeIcon, FolderPlusIcon, MessageCircleIcon, SettingsIcon, UserIcon, UsersIcon, FileTextIcon, PencilIcon, LayoutIcon, BookOpenIcon, BarChart2Icon } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 const Sidebar: React.FC = () => {
   const location = useLocation();
@@ -39,6 +39,11 @@ const Sidebar: React.FC = () => {
     path: '/admin/blogs',
     label: 'Manage Blogs',
     icon: <BookOpenIcon className="h-5 w-5" />,
+    roles: ['admin']
+  }, {
+    path: '/admin/traffic',
+    label: 'Site Traffic',
+    icon: <BarChart2Icon className="h-5 w-5" />,
     roles: ['admin']
   }, {
     path: '/profile',

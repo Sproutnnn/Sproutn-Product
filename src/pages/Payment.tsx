@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { ArrowLeftIcon, ArrowRightIcon, CreditCardIcon, LockIcon } from 'lucide-react';
-import ProjectSteps from '../components/ProjectSteps';
+import ModuleNavigation from '../components/ModuleNavigation';
+import { projectsService } from '../services/projects.service';
 const Payment: React.FC = () => {
   const {
     id
@@ -10,13 +11,8 @@ const Payment: React.FC = () => {
   }>();
   const navigate = useNavigate();
   const [loading, setLoading] = useState(true);
-  const [project, setProject] = useState({
-    id: '',
-    name: '',
-    status: 'payment' as const,
-    createdAt: '',
-    updatedAt: ''
-  });
+  const [project, setProject] = useState<any>(null);
+  const [error, setError] = useState<string | null>(null);
   const [manufacturer, setManufacturer] = useState({
     name: 'TechPro Manufacturing',
     price: 15.75,
@@ -35,18 +31,29 @@ const Payment: React.FC = () => {
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
   useEffect(() => {
-    // In a real app, this would fetch from an API
-    // For demo purposes, we'll use mock data
-    setTimeout(() => {
-      setProject({
-        id: id || '1',
-        name: 'Smart Home Controller',
-        status: 'payment',
-        createdAt: '2023-05-15T10:30:00Z',
-        updatedAt: '2023-05-20T14:45:00Z'
-      });
-      setLoading(false);
-    }, 500);
+    const loadProject = async () => {
+      if (!id) return;
+
+      try {
+        setLoading(true);
+        setError(null);
+        const projectData = await projectsService.getById(id);
+
+        if (!projectData) {
+          setError('Project not found');
+          return;
+        }
+
+        setProject(projectData);
+      } catch (err) {
+        console.error('Error loading project:', err);
+        setError('Failed to load project');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadProject();
   }, [id]);
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const {
@@ -77,12 +84,19 @@ const Payment: React.FC = () => {
         <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary-500"></div>
       </div>;
   }
+
+  if (error || !project) {
+    return <div className="flex justify-center items-center h-64">
+        <div className="text-red-600">{error || 'Project not found'}</div>
+      </div>;
+  }
+
   return <div>
       <button onClick={() => navigate(-1)} className="flex items-center text-sm text-gray-600 hover:text-gray-900 mb-4">
         <ArrowLeftIcon className="h-4 w-4 mr-1" />
         Back
       </button>
-      <ProjectSteps currentStep={project.status} />
+      <ModuleNavigation project={project} />
       <div className="bg-white shadow rounded-lg overflow-hidden">
         <div className="px-6 py-4 border-b border-gray-200">
           <h1 className="text-2xl font-bold text-gray-900">{project.name}</h1>

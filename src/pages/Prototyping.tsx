@@ -1,7 +1,7 @@
 import React, { useEffect, useState, Fragment } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { ArrowLeftIcon, ArrowRightIcon, CheckIcon, BoxIcon, MapPinIcon, CameraIcon, MessageCircleIcon } from 'lucide-react';
-import ProjectSteps from '../components/ProjectSteps';
+import ModuleNavigation from '../components/ModuleNavigation';
 import { useAuth } from '../context/AuthContext';
 import { projectsService } from '../services/projects.service';
 const Prototyping: React.FC = () => {
@@ -209,7 +209,7 @@ const Prototyping: React.FC = () => {
         <ArrowLeftIcon className="h-4 w-4 mr-1" />
         Back
       </button>
-      <ProjectSteps currentStep={project.status} />
+      <ModuleNavigation project={project} />
       <div className="bg-white shadow rounded-lg overflow-hidden">
         <div className="px-6 py-4 border-b border-gray-200">
           <h1 className="text-2xl font-bold text-gray-900">{project.name}</h1>
