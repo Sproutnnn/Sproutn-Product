@@ -71,20 +71,34 @@ const Chat: React.FC = () => {
 
     try {
       // Send user message
-      await chatService.sendMessage({
+      const newMessage = await chatService.sendMessage({
         sender: 'user',
         text: messageText,
         user_id: user.id
       });
 
+      // Immediately add the message to local state
+      setMessages(prev => [...prev, {
+        id: newMessage.id,
+        sender: newMessage.sender,
+        text: newMessage.text,
+        timestamp: newMessage.created_at || new Date().toISOString()
+      }]);
+
       // Simulate auto-response after a short delay
       setTimeout(async () => {
         try {
-          await chatService.sendMessage({
+          const autoResponse = await chatService.sendMessage({
             sender: 'system',
             text: 'Thanks for your message. Our team will get back to you shortly.',
             user_id: user.id
           });
+          setMessages(prev => [...prev, {
+            id: autoResponse.id,
+            sender: autoResponse.sender,
+            text: autoResponse.text,
+            timestamp: autoResponse.created_at || new Date().toISOString()
+          }]);
         } catch (error) {
           console.error('Error sending auto-response:', error);
         }

@@ -37,42 +37,57 @@ export const chatService = {
    * Get all chat threads (for admin view)
    */
   async getAllChatThreads(): Promise<ChatThread[]> {
-    // Get all users who have sent messages
+    // First get all unique user_ids from chat_messages
     const { data: messages, error } = await supabase
       .from('chat_messages')
-      .select(`
-        user_id,
-        text,
-        created_at,
-        deleted_at,
-        users!chat_messages_user_id_fkey (
-          id,
-          name,
-          email
-        )
-      `)
+      .select('*')
+      .is('deleted_at', null)
       .order('created_at', { ascending: false });
 
     if (error) {
+      console.error('Error fetching chat messages:', error);
       throw new Error(error.message);
     }
+
+    // Get unique user IDs
+    const userIds = [...new Set((messages || []).map(m => m.user_id).filter(Boolean))];
+
+    if (userIds.length === 0) {
+      return [];
+    }
+
+    // Fetch user details
+    const { data: users, error: usersError } = await supabase
+      .from('users')
+      .select('id, name, email')
+      .in('id', userIds);
+
+    if (usersError) {
+      console.error('Error fetching users:', usersError);
+      throw new Error(usersError.message);
+    }
+
+    // Create a map of users
+    const userMap = new Map((users || []).map(u => [u.id, u]));
 
     // Group messages by user and get the latest message for each
     const threadMap = new Map<string, ChatThread>();
 
     for (const msg of messages || []) {
       const userId = msg.user_id;
-      if (!userId || !msg.users) continue;
+      if (!userId) continue;
+
+      const user = userMap.get(userId);
 
       if (!threadMap.has(userId)) {
         threadMap.set(userId, {
           userId,
-          userName: (msg.users as any).name || 'Unknown',
-          userEmail: (msg.users as any).email || '',
-          lastMessage: msg.deleted_at ? '[Deleted]' : msg.text,
+          userName: user?.name || 'Unknown',
+          userEmail: user?.email || '',
+          lastMessage: msg.text,
           lastMessageTime: msg.created_at || new Date().toISOString(),
           unreadCount: 0,
-          isDeleted: !!msg.deleted_at
+          isDeleted: false
         });
       }
     }

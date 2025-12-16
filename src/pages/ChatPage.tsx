@@ -114,11 +114,14 @@ const ChatPage: React.FC = () => {
     setMessage('');
 
     try {
-      await chatService.sendMessage({
+      const newMessage = await chatService.sendMessage({
         sender: user?.role === 'admin' ? 'admin' : 'user',
         text: messageText,
         user_id: targetUserId
       });
+
+      // Immediately add the message to local state
+      setMessages(prev => [...prev, newMessage]);
     } catch (error) {
       console.error('Error sending message:', error);
       alert('Failed to send message. Please try again.');
