@@ -232,5 +232,59 @@ export const chatService = {
     }
 
     return data;
+  },
+
+  /**
+   * Update typing indicator for a user
+   */
+  async setTypingStatus(userId: string): Promise<void> {
+    const { error } = await supabase
+      .from('typing_indicators')
+      .upsert({
+        user_id: userId,
+        updated_at: new Date().toISOString()
+      });
+
+    if (error) {
+      console.error('Error setting typing status:', error);
+    }
+  },
+
+  /**
+   * Get typing status for a specific user (for admin)
+   */
+  async getTypingStatus(userId: string): Promise<boolean> {
+    const { data, error } = await supabase
+      .from('typing_indicators')
+      .select('updated_at')
+      .eq('user_id', userId)
+      .single();
+
+    if (error || !data) {
+      return false;
+    }
+
+    // Consider typing if updated within last 3 seconds
+    const updatedAt = new Date(data.updated_at).getTime();
+    const now = Date.now();
+    return (now - updatedAt) < 3000;
+  },
+
+  /**
+   * Get all users currently typing (for admin)
+   */
+  async getAllTypingUsers(): Promise<string[]> {
+    const threeSecondsAgo = new Date(Date.now() - 3000).toISOString();
+
+    const { data, error } = await supabase
+      .from('typing_indicators')
+      .select('user_id')
+      .gte('updated_at', threeSecondsAgo);
+
+    if (error || !data) {
+      return [];
+    }
+
+    return data.map(d => d.user_id);
   }
 };

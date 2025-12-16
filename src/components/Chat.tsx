@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { MessageCircleIcon, SendIcon, XIcon } from 'lucide-react';
 import { chatService } from '../services/chat.service';
 import { useAuth } from '../context/AuthContext';
@@ -6,6 +6,7 @@ const Chat: React.FC = () => {
   const { user } = useAuth();
   const [isOpen, setIsOpen] = useState(false);
   const [message, setMessage] = useState('');
+  const typingTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   const [messages, setMessages] = useState<Array<{
     id: string | number;
     sender: string;
@@ -71,6 +72,27 @@ const Chat: React.FC = () => {
       clearInterval(interval);
     };
   }, [user]);
+
+  // Handle typing indicator
+  const handleTyping = (value: string) => {
+    setMessage(value);
+
+    if (!user?.id || !value.trim()) return;
+
+    // Debounce typing indicator updates
+    if (typingTimeoutRef.current) {
+      clearTimeout(typingTimeoutRef.current);
+    }
+
+    // Send typing status
+    chatService.setTypingStatus(user.id);
+
+    // Clear typing status after 2 seconds of no typing
+    typingTimeoutRef.current = setTimeout(() => {
+      // Typing stopped - status will expire on its own
+    }, 2000);
+  };
+
   const handleSendMessage = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!message.trim() || !user?.id) return;
@@ -148,7 +170,7 @@ const Chat: React.FC = () => {
           </div>
           <form onSubmit={handleSendMessage} className="p-4 border-t">
             <div className="flex items-center">
-              <input type="text" value={message} onChange={e => setMessage(e.target.value)} placeholder="Type your message..." className="flex-1 border rounded-l-md py-2 px-3 focus:outline-none focus:ring-2 focus:ring-primary-500" />
+              <input type="text" value={message} onChange={e => handleTyping(e.target.value)} placeholder="Type your message..." className="flex-1 border rounded-l-md py-2 px-3 focus:outline-none focus:ring-2 focus:ring-primary-500" />
               <button type="submit" className="bg-primary-500 text-white rounded-r-md p-2 hover:bg-primary-600">
                 <SendIcon className="h-5 w-5" />
               </button>

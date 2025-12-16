@@ -12,6 +12,7 @@ const ChatPage: React.FC = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [loading, setLoading] = useState(true);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState<string | null>(null);
+  const [isTyping, setIsTyping] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   // Load chat threads for admin
@@ -72,6 +73,7 @@ const ChatPage: React.FC = () => {
 
   const loadChatMessages = async (userId: string) => {
     try {
+      setIsTyping(false); // Reset typing indicator when switching chats
       const chatMessages = await chatService.getUserMessages(userId);
       setMessages(chatMessages);
     } catch (error) {
@@ -98,10 +100,14 @@ const ChatPage: React.FC = () => {
           const threads = await chatService.getAllChatThreads();
           setChatThreads(threads);
 
-          // If viewing a chat, refresh messages
+          // If viewing a chat, refresh messages and typing status
           if (activeChat) {
             const chatMessages = await chatService.getUserMessages(activeChat);
             setMessages(chatMessages);
+
+            // Check if user is typing
+            const typing = await chatService.getTypingStatus(activeChat);
+            setIsTyping(typing);
           }
         } else {
           // Customer: refresh their messages
@@ -354,6 +360,16 @@ const ChatPage: React.FC = () => {
                   </div>
                 </div>
                 <div className="p-4 border-t border-gray-200 bg-gray-50">
+                  {isTyping && (
+                    <div className="flex items-center mb-2 text-sm text-gray-500">
+                      <div className="flex space-x-1 mr-2">
+                        <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '0ms' }}></div>
+                        <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '150ms' }}></div>
+                        <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '300ms' }}></div>
+                      </div>
+                      <span>{chatThreads.find(t => t.userId === activeChat)?.userName || 'Customer'} is typing...</span>
+                    </div>
+                  )}
                   <form onSubmit={handleSendMessage} className="flex items-center">
                     <input
                       type="text"
