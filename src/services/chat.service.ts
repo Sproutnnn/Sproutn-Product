@@ -243,10 +243,12 @@ export const chatService = {
       .upsert({
         user_id: userId,
         updated_at: new Date().toISOString()
+      }, {
+        onConflict: 'user_id'
       });
 
     if (error) {
-      console.error('Error setting typing status:', error);
+      console.error('Error setting typing status:', error.message, error.details);
     }
   },
 
