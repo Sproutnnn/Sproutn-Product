@@ -100,14 +100,10 @@ const ChatPage: React.FC = () => {
           const threads = await chatService.getAllChatThreads();
           setChatThreads(threads);
 
-          // If viewing a chat, refresh messages and typing status
+          // If viewing a chat, refresh messages
           if (activeChat) {
             const chatMessages = await chatService.getUserMessages(activeChat);
             setMessages(chatMessages);
-
-            // Check if user is typing
-            const typing = await chatService.getTypingStatus(activeChat);
-            setIsTyping(typing);
           }
         } else {
           // Customer: refresh their messages
@@ -123,6 +119,28 @@ const ChatPage: React.FC = () => {
 
     // Poll every 3 seconds
     const interval = setInterval(pollMessages, 3000);
+
+    return () => {
+      clearInterval(interval);
+    };
+  }, [user, activeChat]);
+
+  // Faster polling for typing indicator (admin only)
+  useEffect(() => {
+    if (!user?.id || user.role !== 'admin' || !activeChat) return;
+
+    const pollTyping = async () => {
+      try {
+        const typing = await chatService.getTypingStatus(activeChat);
+        setIsTyping(typing);
+      } catch (error) {
+        console.error('Error polling typing status:', error);
+      }
+    };
+
+    // Poll typing status every second for responsiveness
+    pollTyping(); // Check immediately
+    const interval = setInterval(pollTyping, 1000);
 
     return () => {
       clearInterval(interval);
