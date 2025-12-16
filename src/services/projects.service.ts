@@ -16,7 +16,7 @@ export interface ProjectWithCustomer extends Project {
 
 export const projectsService = {
   /**
-   * Get all projects
+   * Get all projects (excluding deleted)
    */
   async getAll(): Promise<ProjectWithCustomer[]> {
     const { data, error } = await supabase
@@ -30,6 +30,7 @@ export const projectsService = {
           company_name
         )
       `)
+      .is('deleted_at', null)
       .order('created_at', { ascending: false });
 
     if (error) {
@@ -68,6 +69,7 @@ export const projectsService = {
           company_name
         )
       `)
+      .is('deleted_at', null)
       .or(`name.ilike.%${searchTerm}%,project_code.ilike.%${searchTerm}%`)
       .order('created_at', { ascending: false });
 
@@ -108,6 +110,7 @@ export const projectsService = {
         )
       `)
       .eq('customer_id', customerId)
+      .is('deleted_at', null)
       .or(`name.ilike.%${searchTerm}%,project_code.ilike.%${searchTerm}%`)
       .order('created_at', { ascending: false });
 
@@ -127,7 +130,7 @@ export const projectsService = {
   },
 
   /**
-   * Get projects for a specific customer
+   * Get projects for a specific customer (excluding deleted)
    */
   async getByCustomerId(customerId: string): Promise<ProjectWithCustomer[]> {
     const { data, error } = await supabase
@@ -142,6 +145,7 @@ export const projectsService = {
         )
       `)
       .eq('customer_id', customerId)
+      .is('deleted_at', null)
       .order('created_at', { ascending: false });
 
     if (error) {
@@ -399,5 +403,22 @@ export const projectsService = {
     }
 
     return data;
+  },
+
+  /**
+   * Soft delete a project (keeps record but marks as deleted)
+   */
+  async softDelete(id: string, deletedByUserId: string): Promise<void> {
+    const { error } = await supabase
+      .from('projects')
+      .update({
+        deleted_at: new Date().toISOString(),
+        deleted_by: deletedByUserId
+      })
+      .eq('id', id);
+
+    if (error) {
+      throw new Error(error.message);
+    }
   }
 };

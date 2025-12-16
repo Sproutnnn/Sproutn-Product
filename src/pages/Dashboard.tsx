@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useCallback } from 'react';
 import { Link } from 'react-router-dom';
-import { PlusIcon, SearchIcon, XIcon } from 'lucide-react';
+import { PlusIcon, SearchIcon, XIcon, Trash2Icon } from 'lucide-react';
 import ProjectCard, { Project } from '../components/ProjectCard';
 import { useAuth } from '../context/AuthContext';
 import { projectsService } from '../services/projects.service';
@@ -15,6 +15,7 @@ const Dashboard: React.FC = () => {
   const [newStatus, setNewStatus] = useState('');
   const [searchQuery, setSearchQuery] = useState('');
   const [isSearching, setIsSearching] = useState(false);
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState<Project | null>(null);
 
   const fetchProjects = useCallback(async (query: string = '') => {
     try {
@@ -89,6 +90,20 @@ const Dashboard: React.FC = () => {
       }
     }
   };
+
+  const handleDeleteProject = async () => {
+    if (!showDeleteConfirm || !user?.id) return;
+
+    try {
+      await projectsService.softDelete(showDeleteConfirm.id, user.id);
+      setProjects(prev => prev.filter(p => p.id !== showDeleteConfirm.id));
+      setShowDeleteConfirm(null);
+      alert('Project deleted successfully');
+    } catch (error) {
+      console.error('Error deleting project:', error);
+      alert('Failed to delete project');
+    }
+  };
   return <div>
       <div className="flex justify-between items-center mb-6">
         <h1 className="text-2xl font-bold text-gray-900">Dashboard</h1>
@@ -146,11 +161,20 @@ const Dashboard: React.FC = () => {
             </div> : <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {projects.map(project => <div key={project.id}>
                   <ProjectCard project={project} />
-                  {user?.role === 'admin' && <div className="mt-2 flex justify-end">
+                  <div className="mt-2 flex justify-between items-center">
+                    {user?.role === 'admin' && (
                       <button onClick={() => handleStatusChange(project)} className="text-xs text-primary-600 hover:text-primary-800">
                         Change Status
                       </button>
-                    </div>}
+                    )}
+                    <button
+                      onClick={() => setShowDeleteConfirm(project)}
+                      className="text-xs text-red-500 hover:text-red-700 flex items-center ml-auto"
+                    >
+                      <Trash2Icon className="h-3 w-3 mr-1" />
+                      Delete
+                    </button>
+                  </div>
                 </div>)}
             </div>}
         </>}
@@ -193,6 +217,35 @@ const Dashboard: React.FC = () => {
             </div>
           </div>
         </div>}
+
+      {/* Delete Confirmation Modal */}
+      {showDeleteConfirm && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white rounded-lg shadow-xl max-w-md w-full mx-4 p-6">
+            <h3 className="text-lg font-medium text-gray-900 mb-2">Delete Project</h3>
+            <p className="text-sm text-gray-500 mb-2">
+              Are you sure you want to delete <span className="font-medium">"{showDeleteConfirm.name}"</span>?
+            </p>
+            <p className="text-sm text-gray-500 mb-4">
+              The project will be hidden from view but records will be kept for administrative purposes.
+            </p>
+            <div className="flex justify-end space-x-3">
+              <button
+                onClick={() => setShowDeleteConfirm(null)}
+                className="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 rounded-md hover:bg-gray-200"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleDeleteProject}
+                className="px-4 py-2 text-sm font-medium text-white bg-red-600 rounded-md hover:bg-red-700"
+              >
+                Delete Project
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>;
 };
 export default Dashboard;

@@ -82,6 +82,8 @@ export type Database = {
       chat_messages: {
         Row: {
           created_at: string | null
+          deleted_at: string | null
+          deleted_by: string | null
           id: string
           project_id: string | null
           sender: string
@@ -90,6 +92,8 @@ export type Database = {
         }
         Insert: {
           created_at?: string | null
+          deleted_at?: string | null
+          deleted_by?: string | null
           id?: string
           project_id?: string | null
           sender: string
@@ -98,6 +102,8 @@ export type Database = {
         }
         Update: {
           created_at?: string | null
+          deleted_at?: string | null
+          deleted_by?: string | null
           id?: string
           project_id?: string | null
           sender?: string
@@ -284,6 +290,8 @@ export type Database = {
           created_at: string | null
           customer_feedback: string | null
           customer_id: string
+          deleted_at: string | null
+          deleted_by: string | null
           delivery_address_line1: string | null
           delivery_address_line2: string | null
           delivery_city: string | null
@@ -328,6 +336,8 @@ export type Database = {
           created_at?: string | null
           customer_feedback?: string | null
           customer_id: string
+          deleted_at?: string | null
+          deleted_by?: string | null
           delivery_address_line1?: string | null
           delivery_address_line2?: string | null
           delivery_city?: string | null
@@ -372,6 +382,8 @@ export type Database = {
           created_at?: string | null
           customer_feedback?: string | null
           customer_id?: string
+          deleted_at?: string | null
+          deleted_by?: string | null
           delivery_address_line1?: string | null
           delivery_address_line2?: string | null
           delivery_city?: string | null
