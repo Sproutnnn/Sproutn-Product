@@ -301,6 +301,7 @@ export type Database = {
           marketing_unlocked: boolean | null
           name: string
           photography_unlocked: boolean | null
+          project_code: string
           prototype_status: string | null
           starter_fee: number | null
           status: string
@@ -332,6 +333,7 @@ export type Database = {
           marketing_unlocked?: boolean | null
           name: string
           photography_unlocked?: boolean | null
+          project_code?: string
           prototype_status?: string | null
           starter_fee?: number | null
           status?: string
@@ -363,6 +365,7 @@ export type Database = {
           marketing_unlocked?: boolean | null
           name?: string
           photography_unlocked?: boolean | null
+          project_code?: string
           prototype_status?: string | null
           starter_fee?: number | null
           status?: string

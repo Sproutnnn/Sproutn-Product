@@ -48,6 +48,85 @@ export const projectsService = {
   },
 
   /**
+   * Search projects by name or project code
+   */
+  async search(query: string): Promise<ProjectWithCustomer[]> {
+    const searchTerm = query.trim();
+
+    if (!searchTerm) {
+      return this.getAll();
+    }
+
+    const { data, error } = await supabase
+      .from('projects')
+      .select(`
+        *,
+        customer:users!customer_id (
+          id,
+          name,
+          email,
+          company_name
+        )
+      `)
+      .or(`name.ilike.%${searchTerm}%,project_code.ilike.%${searchTerm}%`)
+      .order('created_at', { ascending: false });
+
+    if (error) {
+      throw new Error(error.message);
+    }
+
+    return data.map(project => ({
+      ...project,
+      customer: {
+        id: project.customer.id,
+        name: project.customer.name,
+        email: project.customer.email,
+        companyName: project.customer.company_name
+      }
+    }));
+  },
+
+  /**
+   * Search projects for a specific customer
+   */
+  async searchByCustomerId(customerId: string, query: string): Promise<ProjectWithCustomer[]> {
+    const searchTerm = query.trim();
+
+    if (!searchTerm) {
+      return this.getByCustomerId(customerId);
+    }
+
+    const { data, error } = await supabase
+      .from('projects')
+      .select(`
+        *,
+        customer:users!customer_id (
+          id,
+          name,
+          email,
+          company_name
+        )
+      `)
+      .eq('customer_id', customerId)
+      .or(`name.ilike.%${searchTerm}%,project_code.ilike.%${searchTerm}%`)
+      .order('created_at', { ascending: false });
+
+    if (error) {
+      throw new Error(error.message);
+    }
+
+    return data.map(project => ({
+      ...project,
+      customer: {
+        id: project.customer.id,
+        name: project.customer.name,
+        email: project.customer.email,
+        companyName: project.customer.company_name
+      }
+    }));
+  },
+
+  /**
    * Get projects for a specific customer
    */
   async getByCustomerId(customerId: string): Promise<ProjectWithCustomer[]> {

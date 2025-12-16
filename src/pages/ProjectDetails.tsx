@@ -153,6 +153,11 @@ const ProjectDetails: React.FC = () => {
           <p className="text-sm text-gray-500 mt-1">
             Created on {new Date(project.created_at).toLocaleDateString()}
           </p>
+          {project.project_code && (
+            <p className="text-sm text-gray-600 mt-1 font-mono bg-gray-100 inline-block px-2 py-1 rounded">
+              {project.project_code}
+            </p>
+          )}
         </div>
       </div>
       {/* Module Navigation */}

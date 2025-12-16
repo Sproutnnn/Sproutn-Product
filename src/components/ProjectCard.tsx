@@ -106,6 +106,11 @@ const ProjectCard: React.FC<ProjectCardProps> = ({
           <p className="text-sm text-gray-500 mt-1">
             Created on {new Date(project.createdAt).toLocaleDateString()}
           </p>
+          {project.project_code && (
+            <p className="text-xs text-gray-600 mt-1 font-mono bg-gray-100 inline-block px-1.5 py-0.5 rounded">
+              {project.project_code}
+            </p>
+          )}
         </div>
         <div className={`px-2 py-0.5 rounded-full text-xs font-medium ${getStatusColor(project.status)} whitespace-nowrap`}>
           <div className="flex items-center space-x-1">
