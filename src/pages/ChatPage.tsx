@@ -147,6 +147,16 @@ const ChatPage: React.FC = () => {
     };
   }, [user, activeChat]);
 
+  // Handle typing indicator for customers
+  const handleTyping = (value: string) => {
+    setMessage(value);
+
+    if (!user?.id || user.role === 'admin' || !value.trim()) return;
+
+    // Send typing status
+    chatService.setTypingStatus(user.id);
+  };
+
   const handleSendMessage = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!message.trim()) return;
@@ -476,7 +486,7 @@ const ChatPage: React.FC = () => {
               <input
                 type="text"
                 value={message}
-                onChange={e => setMessage(e.target.value)}
+                onChange={e => handleTyping(e.target.value)}
                 placeholder="Type your message..."
                 className="flex-1 border rounded-l-md py-2 px-3 focus:outline-none focus:ring-2 focus:ring-primary-500"
               />
