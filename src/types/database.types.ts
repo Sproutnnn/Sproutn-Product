@@ -303,6 +303,18 @@ export type Database = {
           photography_unlocked: boolean | null
           project_code: string
           prototype_status: string | null
+          selected_manufacturer: {
+            id: string;
+            name: string;
+            minOrderQuantity: number;
+            leadTime: string;
+            price: number;
+            details: string;
+            advantages: string[];
+            disadvantages: string[];
+            recommended?: boolean;
+            selectedAt?: string;
+          } | null
           starter_fee: number | null
           status: string
           target_market: string | null
@@ -335,6 +347,18 @@ export type Database = {
           photography_unlocked?: boolean | null
           project_code?: string
           prototype_status?: string | null
+          selected_manufacturer?: {
+            id: string;
+            name: string;
+            minOrderQuantity: number;
+            leadTime: string;
+            price: number;
+            details: string;
+            advantages: string[];
+            disadvantages: string[];
+            recommended?: boolean;
+            selectedAt?: string;
+          } | null
           starter_fee?: number | null
           status?: string
           target_market?: string | null
@@ -367,6 +391,18 @@ export type Database = {
           photography_unlocked?: boolean | null
           project_code?: string
           prototype_status?: string | null
+          selected_manufacturer?: {
+            id: string;
+            name: string;
+            minOrderQuantity: number;
+            leadTime: string;
+            price: number;
+            details: string;
+            advantages: string[];
+            disadvantages: string[];
+            recommended?: boolean;
+            selectedAt?: string;
+          } | null
           starter_fee?: number | null
           status?: string
           target_market?: string | null

@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { ArrowLeftIcon, ArrowRightIcon, CheckIcon } from 'lucide-react';
+import { ArrowLeftIcon, ArrowRightIcon, CheckIcon, CheckCircleIcon } from 'lucide-react';
 import ModuleNavigation from '../components/ModuleNavigation';
 import { useAuth } from '../context/AuthContext';
 import { projectsService } from '../services/projects.service';
@@ -105,13 +105,33 @@ const Sourcing: React.FC = () => {
   const handleManufacturerSelect = (manufacturerId: string) => {
     setSelectedManufacturer(manufacturerId);
   };
-  const handleCustomerSubmit = () => {
+  const handleCustomerSubmit = async () => {
     if (!selectedManufacturer) {
       alert('Please select a manufacturer');
       return;
     }
-    // In a real app, this would send data to an API
-    navigate(`/project/${id}/payment`);
+
+    try {
+      // Find the selected manufacturer details
+      const selectedMan = manufacturers.find(m => m.id === selectedManufacturer);
+      if (!selectedMan) {
+        alert('Selected manufacturer not found');
+        return;
+      }
+
+      // Save the selected manufacturer to the database
+      await projectsService.update(id!, {
+        selected_manufacturer: {
+          ...selectedMan,
+          selectedAt: new Date().toISOString()
+        }
+      });
+
+      navigate(`/project/${id}/payment`);
+    } catch (err) {
+      console.error('Error saving manufacturer selection:', err);
+      alert('Failed to save manufacturer selection');
+    }
   };
   // Admin form handlers
   const handleManufacturerChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
@@ -198,6 +218,66 @@ const Sourcing: React.FC = () => {
             Manufacturer Selection
           </h2>
           {user?.role === 'admin' && <div className="mb-8">
+              {/* Show Selected Manufacturer if customer has made a selection */}
+              {project.selected_manufacturer && (
+                <div className="bg-green-50 border border-green-200 rounded-lg p-4 mb-6">
+                  <h3 className="text-md font-medium text-gray-900 mb-3 flex items-center">
+                    <CheckCircleIcon className="h-5 w-5 mr-2 text-green-600" />
+                    Customer Selected Manufacturer
+                  </h3>
+                  <div className="bg-white rounded-lg border border-green-200 p-4">
+                    <div className="flex justify-between items-start mb-3">
+                      <div>
+                        <h4 className="text-lg font-semibold text-gray-900">{project.selected_manufacturer.name}</h4>
+                        {project.selected_manufacturer.recommended && (
+                          <span className="inline-block bg-primary-100 text-primary-700 text-xs font-medium px-2 py-0.5 rounded mt-1">
+                            RECOMMENDED
+                          </span>
+                        )}
+                      </div>
+                      <div className="text-right">
+                        <span className="text-xl font-bold text-gray-900">${project.selected_manufacturer.price.toFixed(2)}</span>
+                        <span className="text-sm text-gray-500 block">per unit</span>
+                      </div>
+                    </div>
+                    <p className="text-sm text-gray-600 mb-3">{project.selected_manufacturer.details}</p>
+                    <div className="grid grid-cols-2 gap-4 text-sm">
+                      <div>
+                        <span className="font-medium text-gray-700">Minimum Order:</span>{' '}
+                        <span className="text-gray-600">{project.selected_manufacturer.minOrderQuantity} units</span>
+                      </div>
+                      <div>
+                        <span className="font-medium text-gray-700">Lead Time:</span>{' '}
+                        <span className="text-gray-600">{project.selected_manufacturer.leadTime}</span>
+                      </div>
+                    </div>
+                    <div className="mt-3 grid grid-cols-2 gap-4">
+                      <div>
+                        <h5 className="text-sm font-medium text-green-700 mb-1">Advantages</h5>
+                        <ul className="list-disc list-inside text-sm text-gray-600">
+                          {project.selected_manufacturer.advantages.map((adv: string, idx: number) => (
+                            <li key={idx}>{adv}</li>
+                          ))}
+                        </ul>
+                      </div>
+                      <div>
+                        <h5 className="text-sm font-medium text-red-700 mb-1">Disadvantages</h5>
+                        <ul className="list-disc list-inside text-sm text-gray-600">
+                          {project.selected_manufacturer.disadvantages.map((dis: string, idx: number) => (
+                            <li key={idx}>{dis}</li>
+                          ))}
+                        </ul>
+                      </div>
+                    </div>
+                    {project.selected_manufacturer.selectedAt && (
+                      <p className="text-xs text-gray-400 mt-3">
+                        Selected on {new Date(project.selected_manufacturer.selectedAt).toLocaleDateString()}
+                      </p>
+                    )}
+                  </div>
+                </div>
+              )}
+
               <div className="bg-blue-50 border-l-4 border-blue-400 p-4 mb-6">
                 <div className="flex">
                   <div className="ml-3">

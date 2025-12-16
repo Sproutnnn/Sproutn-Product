@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
-import { ArrowLeftIcon, ArrowRightIcon, CreditCardIcon, UploadIcon, XIcon, PlusIcon } from 'lucide-react';
+import { ArrowLeftIcon, ArrowRightIcon, CreditCardIcon, UploadIcon, XIcon, PlusIcon, DownloadIcon, ImageIcon } from 'lucide-react';
 import ModuleNavigation from '../components/ModuleNavigation';
 import { useAuth } from '../context/AuthContext';
 import { projectsService } from '../services/projects.service';
@@ -23,6 +23,7 @@ const ProjectDetails: React.FC = () => {
     keyFeatures: ['', '', ''],
     targetMarket: ''
   });
+  const [starterFee, setStarterFee] = useState<number>(399);
   const [uploadedFiles, setUploadedFiles] = useState<File[]>([]);
   useEffect(() => {
     const loadProject = async () => {
@@ -47,10 +48,9 @@ const ProjectDetails: React.FC = () => {
           targetMarket: projectData.target_market || ''
         });
 
-        // Load uploaded files URLs if they exist
-        if (projectData.uploaded_files && projectData.uploaded_files.length > 0) {
-          // Note: These are URLs, not File objects
-          // You may want to display them differently
+        // Load starter fee
+        if (projectData.starter_fee) {
+          setStarterFee(projectData.starter_fee);
         }
 
       } catch (err) {
@@ -99,15 +99,11 @@ const ProjectDetails: React.FC = () => {
     if (!id) return;
 
     try {
-      // TODO: Upload files to storage and get URLs
-      const fileUrls: string[] = [];
-      // For now, we'll just save the form data without files
-
       await projectsService.update(id, {
         description: formData.description,
         key_features: formData.keyFeatures.filter(f => f.trim() !== ''),
         target_market: formData.targetMarket,
-        uploaded_files: fileUrls,
+        starter_fee: starterFee,
         status: 'prototyping' // Move to next step
       });
 
@@ -116,6 +112,19 @@ const ProjectDetails: React.FC = () => {
       navigate(`/project/${id}/prototyping`);
     } catch (err) {
       alert(err instanceof Error ? err.message : 'Failed to save brief');
+    }
+  };
+
+  const handleSaveStarterFee = async () => {
+    if (!id) return;
+
+    try {
+      await projectsService.update(id, {
+        starter_fee: starterFee
+      });
+      alert('Starter fee updated successfully!');
+    } catch (err) {
+      alert(err instanceof Error ? err.message : 'Failed to update starter fee');
     }
   };
   const handlePayment = () => {
@@ -283,7 +292,51 @@ const ProjectDetails: React.FC = () => {
                   </div>}
               </div>
             </div>}
-          {user?.role === 'admin' && <form onSubmit={handleSubmit}>
+          {user?.role === 'admin' && <>
+              {/* Customer Uploaded Files Section */}
+              {project.uploaded_files && project.uploaded_files.length > 0 && (
+                <div className="mb-8 bg-blue-50 border border-blue-200 rounded-lg p-4">
+                  <h3 className="text-lg font-medium text-gray-900 mb-3 flex items-center">
+                    <ImageIcon className="h-5 w-5 mr-2 text-blue-600" />
+                    Customer Uploaded Files ({project.uploaded_files.length})
+                  </h3>
+                  <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
+                    {project.uploaded_files.map((fileUrl: string, index: number) => (
+                      <div key={index} className="bg-white border rounded-lg overflow-hidden shadow-sm">
+                        <div className="aspect-square bg-gray-100 flex items-center justify-center">
+                          <img
+                            src={fileUrl}
+                            alt={`Uploaded file ${index + 1}`}
+                            className="w-full h-full object-cover"
+                            onError={(e) => {
+                              (e.target as HTMLImageElement).style.display = 'none';
+                              (e.target as HTMLImageElement).nextElementSibling?.classList.remove('hidden');
+                            }}
+                          />
+                          <div className="hidden flex-col items-center justify-center text-gray-400">
+                            <ImageIcon className="h-8 w-8 mb-1" />
+                            <span className="text-xs">Image</span>
+                          </div>
+                        </div>
+                        <div className="p-2">
+                          <a
+                            href={fileUrl}
+                            download
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="inline-flex items-center text-xs text-primary-600 hover:text-primary-800"
+                          >
+                            <DownloadIcon className="h-3 w-3 mr-1" />
+                            Download
+                          </a>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              <form onSubmit={handleSubmit}>
               <div className="space-y-6">
                 <div>
                   <label htmlFor="description" className="block text-sm font-medium text-gray-700">
@@ -323,8 +376,23 @@ const ProjectDetails: React.FC = () => {
                         One-time fee for project setup and brief creation
                       </p>
                     </div>
-                    <div className="text-xl font-bold text-gray-900">
-                      $399.00
+                    <div className="flex items-center gap-2">
+                      <span className="text-lg text-gray-500">$</span>
+                      <input
+                        type="number"
+                        min="0"
+                        step="0.01"
+                        value={starterFee}
+                        onChange={(e) => setStarterFee(parseFloat(e.target.value) || 0)}
+                        className="w-28 text-xl font-bold text-gray-900 border border-gray-300 rounded-md px-2 py-1 focus:outline-none focus:ring-primary-500 focus:border-primary-500"
+                      />
+                      <button
+                        type="button"
+                        onClick={handleSaveStarterFee}
+                        className="text-xs px-2 py-1 bg-gray-200 hover:bg-gray-300 rounded text-gray-700"
+                      >
+                        Save
+                      </button>
                     </div>
                   </div>
                 </div>
@@ -335,7 +403,8 @@ const ProjectDetails: React.FC = () => {
                   </button>
                 </div>
               </div>
-            </form>}
+            </form>
+            </>}
           {user?.role === 'customer' && <div className="bg-gray-50 p-4 rounded-lg border border-gray-200 mb-6">
               <div className="flex justify-between items-center">
                 <div>
@@ -346,7 +415,7 @@ const ProjectDetails: React.FC = () => {
                     One-time fee for project setup and brief creation
                   </p>
                 </div>
-                <div className="text-xl font-bold text-gray-900">$399.00</div>
+                <div className="text-xl font-bold text-gray-900">${(project.starter_fee || 399).toFixed(2)}</div>
               </div>
               <div className="mt-4">
                 <button type="button" onClick={handlePayment} className="w-full inline-flex items-center justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-primary-500 hover:bg-primary-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500">
@@ -397,14 +466,14 @@ const ProjectDetails: React.FC = () => {
                 <div className="bg-gray-50 p-3 rounded-md">
                   <div className="flex justify-between text-sm font-medium text-gray-700">
                     <span>Starter Fee</span>
-                    <span>$399.00</span>
+                    <span>${(project.starter_fee || 399).toFixed(2)}</span>
                   </div>
                   <div className="flex justify-between items-center mt-2 pt-2 border-t border-gray-200">
                     <span className="text-base font-medium text-gray-900">
                       Total
                     </span>
                     <span className="text-base font-medium text-gray-900">
-                      $399.00
+                      ${(project.starter_fee || 399).toFixed(2)}
                     </span>
                   </div>
                 </div>
@@ -412,7 +481,7 @@ const ProjectDetails: React.FC = () => {
               <div className="mt-6">
                 <button type="submit" className="w-full inline-flex items-center justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-primary-500 hover:bg-primary-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500">
                   <CreditCardIcon className="mr-2 h-5 w-5" />
-                  Pay $399.00
+                  Pay ${(project.starter_fee || 399).toFixed(2)}
                 </button>
               </div>
             </form>

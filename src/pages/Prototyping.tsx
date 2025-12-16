@@ -1,6 +1,6 @@
 import React, { useEffect, useState, Fragment } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { ArrowLeftIcon, ArrowRightIcon, CheckIcon, BoxIcon, MapPinIcon, CameraIcon, MessageCircleIcon } from 'lucide-react';
+import { ArrowLeftIcon, ArrowRightIcon, CheckIcon, BoxIcon, MapPinIcon, CameraIcon, MessageCircleIcon, ImageIcon, DownloadIcon } from 'lucide-react';
 import ModuleNavigation from '../components/ModuleNavigation';
 import { useAuth } from '../context/AuthContext';
 import { projectsService } from '../services/projects.service';
@@ -261,7 +261,8 @@ const Prototyping: React.FC = () => {
                 </div>
               </div>
             </div>
-            {user?.role === 'admin' && <form onSubmit={handleAdminSubmit} className="border rounded-md p-4 bg-gray-50">
+            {user?.role === 'admin' && <>
+              <form onSubmit={handleAdminSubmit} className="border rounded-md p-4 bg-gray-50">
                 <h3 className="text-md font-medium text-gray-900 mb-4">
                   Update Sample Status
                 </h3>
@@ -306,7 +307,66 @@ const Prototyping: React.FC = () => {
                       </> : 'Update Status'}
                   </button>
                 </div>
-              </form>}
+              </form>
+
+              {/* Customer Sample Feedback Section for Admin */}
+              <div className="mt-6 border rounded-md p-4 bg-green-50 border-green-200">
+                <h3 className="text-md font-medium text-gray-900 mb-4 flex items-center">
+                  <MessageCircleIcon className="h-5 w-5 mr-2 text-green-600" />
+                  Customer Sample Feedback
+                </h3>
+                {project.customer_feedback ? (
+                  <div>
+                    <div className="bg-white rounded-md p-4 border border-green-200 mb-4">
+                      <p className="text-sm text-gray-700 whitespace-pre-wrap">{project.customer_feedback}</p>
+                    </div>
+                    {project.feedback_images && project.feedback_images.length > 0 && (
+                      <div>
+                        <h4 className="text-sm font-medium text-gray-700 mb-2 flex items-center">
+                          <ImageIcon className="h-4 w-4 mr-1" />
+                          Feedback Images ({project.feedback_images.length})
+                        </h4>
+                        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
+                          {project.feedback_images.map((imageUrl: string, index: number) => (
+                            <div key={index} className="bg-white border rounded-lg overflow-hidden shadow-sm">
+                              <div className="aspect-square bg-gray-100 flex items-center justify-center">
+                                <img
+                                  src={imageUrl}
+                                  alt={`Feedback image ${index + 1}`}
+                                  className="w-full h-full object-cover"
+                                  onError={(e) => {
+                                    (e.target as HTMLImageElement).style.display = 'none';
+                                    (e.target as HTMLImageElement).nextElementSibling?.classList.remove('hidden');
+                                  }}
+                                />
+                                <div className="hidden flex-col items-center justify-center text-gray-400">
+                                  <ImageIcon className="h-8 w-8 mb-1" />
+                                  <span className="text-xs">Image</span>
+                                </div>
+                              </div>
+                              <div className="p-2">
+                                <a
+                                  href={imageUrl}
+                                  download
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                  className="inline-flex items-center text-xs text-primary-600 hover:text-primary-800"
+                                >
+                                  <DownloadIcon className="h-3 w-3 mr-1" />
+                                  Download
+                                </a>
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                ) : (
+                  <p className="text-sm text-gray-500 italic">No feedback submitted yet by customer.</p>
+                )}
+              </div>
+            </>}
           </div>
           <div>
             <h2 className="text-lg font-medium text-gray-900 mb-4">
