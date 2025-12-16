@@ -9,6 +9,7 @@ const Chat: React.FC = () => {
   const [isClosing, setIsClosing] = useState(false);
   const [message, setMessage] = useState('');
   const typingTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const messagesEndRef = useRef<HTMLDivElement>(null);
   const [messages, setMessages] = useState<Array<{
     id: string | number;
     sender: string;
@@ -74,6 +75,26 @@ const Chat: React.FC = () => {
       clearInterval(interval);
     };
   }, [user]);
+
+  // Scroll to bottom when messages change
+  const scrollToBottom = () => {
+    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+  };
+
+  useEffect(() => {
+    scrollToBottom();
+  }, [messages]);
+
+  // Mark messages as read when customer views them
+  useEffect(() => {
+    if (!user?.id || !isOpen) return;
+
+    const markAsRead = async () => {
+      await chatService.markAsReadByCustomer(user.id);
+    };
+
+    markAsRead();
+  }, [user, isOpen, messages]);
 
   // Handle typing indicator
   const handleTyping = (value: string) => {
@@ -300,6 +321,7 @@ const Chat: React.FC = () => {
                 </div>
               </div>
             ))}
+            <div ref={messagesEndRef} />
           </div>
           <form onSubmit={handleSendMessage} className="chat-footer p-4 border-t">
             <div className="flex items-center">

@@ -328,5 +328,21 @@ export const chatService = {
     if (error) {
       console.error('Error marking messages as read:', error);
     }
+  },
+
+  /**
+   * Mark admin/system messages as read by customer
+   */
+  async markAsReadByCustomer(userId: string): Promise<void> {
+    const { error } = await supabase
+      .from('chat_messages')
+      .update({ read_by_customer: new Date().toISOString() })
+      .eq('user_id', userId)
+      .in('sender', ['admin', 'system'])
+      .is('read_by_customer', null);
+
+    if (error) {
+      console.error('Error marking messages as read by customer:', error);
+    }
   }
 };

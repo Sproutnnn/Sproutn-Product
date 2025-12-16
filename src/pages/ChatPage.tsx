@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useRef, Fragment } from 'react';
-import { SendIcon, UserIcon, SearchIcon, XIcon, Trash2Icon } from 'lucide-react';
+import { SendIcon, UserIcon, SearchIcon, XIcon, Trash2Icon, CheckCheckIcon } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { chatService, ChatThread, ChatMessage } from '../services/chat.service';
 
@@ -93,6 +93,17 @@ const ChatPage: React.FC = () => {
   useEffect(() => {
     scrollToBottom();
   }, [messages]);
+
+  // Mark messages as read by customer when viewing
+  useEffect(() => {
+    if (!user?.id || user.role === 'admin') return;
+
+    const markAsRead = async () => {
+      await chatService.markAsReadByCustomer(user.id);
+    };
+
+    markAsRead();
+  }, [user, messages]);
 
   // Poll for new messages every 3 seconds (since realtime requires paid Supabase plan)
   useEffect(() => {
@@ -372,9 +383,15 @@ const ChatPage: React.FC = () => {
                                 <span className="text-xs font-medium text-gray-700">
                                   {msg.sender === 'user' ? 'Customer' : msg.sender === 'admin' ? 'Admin' : 'System'}
                                 </span>
-                                <span className="text-xs text-gray-500 ml-2">
-                                  {formatTime(msg.created_at || '')}
-                                </span>
+                                <div className="flex items-center">
+                                  <span className="text-xs text-gray-500 ml-2">
+                                    {formatTime(msg.created_at || '')}
+                                  </span>
+                                  {/* Seen checkmark for admin/system messages */}
+                                  {msg.sender !== 'user' && (msg as any).read_by_customer && (
+                                    <CheckCheckIcon className="h-3 w-3 text-blue-500 ml-1" title="Seen" />
+                                  )}
+                                </div>
                               </div>
                               <p className="text-sm">{msg.text}</p>
                             </div>
