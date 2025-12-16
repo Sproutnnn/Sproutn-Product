@@ -8,27 +8,17 @@ DROP POLICY IF EXISTS "Allow authenticated uploads" ON storage.objects;
 DROP POLICY IF EXISTS "Allow public read access" ON storage.objects;
 DROP POLICY IF EXISTS "Allow authenticated deletes" ON storage.objects;
 DROP POLICY IF EXISTS "Allow authenticated updates" ON storage.objects;
+DROP POLICY IF EXISTS "Allow anon uploads" ON storage.objects;
+DROP POLICY IF EXISTS "Allow anon read" ON storage.objects;
 
--- Allow any authenticated user to upload files to project-files bucket
-CREATE POLICY "Allow authenticated uploads"
+-- Allow anonymous uploads (app uses anon key without session persistence)
+CREATE POLICY "Allow anon uploads"
 ON storage.objects FOR INSERT
-TO authenticated
+TO anon
 WITH CHECK (bucket_id = 'project-files');
 
--- Allow public read access to all files in project-files bucket
-CREATE POLICY "Allow public read access"
+-- Allow anonymous read access
+CREATE POLICY "Allow anon read"
 ON storage.objects FOR SELECT
-TO public
-USING (bucket_id = 'project-files');
-
--- Allow authenticated users to update their files
-CREATE POLICY "Allow authenticated updates"
-ON storage.objects FOR UPDATE
-TO authenticated
-USING (bucket_id = 'project-files');
-
--- Allow authenticated users to delete files
-CREATE POLICY "Allow authenticated deletes"
-ON storage.objects FOR DELETE
-TO authenticated
+TO anon
 USING (bucket_id = 'project-files');
