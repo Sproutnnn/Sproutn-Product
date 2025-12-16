@@ -75,9 +75,9 @@ const Sidebar: React.FC = () => {
     roles: ['admin', 'customer']
   }];
   return <div className="hidden md:flex md:flex-col md:w-48 md:bg-charcoal-500 md:text-white">
-      <div className="flex items-center justify-center h-16 bg-charcoal-600">
+      <Link to="/" className="flex items-center justify-center h-16 bg-charcoal-600 hover:bg-charcoal-500 transition-colors cursor-pointer">
         <img src="/IMG_8337.png" alt="Logo" className="h-10" />
-      </div>
+      </Link>
       <div className="flex flex-col flex-1 overflow-y-auto">
         <nav className="flex-1 px-2 py-4 space-y-1">
           {navItems.map(item => {
