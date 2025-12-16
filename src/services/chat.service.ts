@@ -264,13 +264,10 @@ export const chatService = {
       .from('typing_indicators')
       .select('updated_at')
       .eq('user_id', userId)
-      .single();
+      .maybeSingle();
 
     if (error) {
-      // No record found is not an error we need to log
-      if (error.code !== 'PGRST116') {
-        console.error('Error getting typing status:', error.message);
-      }
+      console.error('Error getting typing status:', error.message);
       return false;
     }
 
