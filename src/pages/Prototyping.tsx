@@ -1,9 +1,11 @@
 import React, { useEffect, useState, Fragment } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { ArrowLeftIcon, ArrowRightIcon, CheckIcon, BoxIcon, MapPinIcon, CameraIcon, MessageCircleIcon, ImageIcon, DownloadIcon } from 'lucide-react';
+import { ArrowLeftIcon, ArrowRightIcon, CheckIcon, BoxIcon, MapPinIcon, CameraIcon, MessageCircleIcon, ImageIcon, DownloadIcon, XIcon } from 'lucide-react';
 import ModuleNavigation from '../components/ModuleNavigation';
+import AdminStatusControl from '../components/AdminStatusControl';
 import { useAuth } from '../context/AuthContext';
 import { projectsService } from '../services/projects.service';
+import { supabase } from '../lib/supabase';
 const Prototyping: React.FC = () => {
   const {
     id
@@ -99,14 +101,36 @@ const Prototyping: React.FC = () => {
       setFeedbackImages(Array.from(e.target.files));
     }
   };
+  const [submittingFeedback, setSubmittingFeedback] = useState(false);
+
   const handleFeedbackSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!id) return;
 
+    setSubmittingFeedback(true);
     try {
-      // TODO: Upload images to storage and get URLs
-      // For now, we'll just save the feedback text
+      // Upload images to storage and get URLs
       const imageUrls: string[] = [];
+
+      for (const file of feedbackImages) {
+        const fileExt = file.name.split('.').pop();
+        const fileName = `${id}/feedback_${Date.now()}_${Math.random().toString(36).substring(7)}.${fileExt}`;
+
+        const { error: uploadError } = await supabase.storage
+          .from('project-files')
+          .upload(fileName, file);
+
+        if (uploadError) {
+          console.error('Upload error:', uploadError);
+          throw uploadError;
+        }
+
+        const { data: urlData } = supabase.storage
+          .from('project-files')
+          .getPublicUrl(fileName);
+
+        imageUrls.push(urlData.publicUrl);
+      }
 
       await projectsService.submitFeedback(id, feedback, imageUrls);
 
@@ -115,9 +139,17 @@ const Prototyping: React.FC = () => {
       setFeedbackImages([]);
 
       alert('Feedback submitted successfully!');
+      // Reload to show updated feedback
+      window.location.reload();
     } catch (err) {
       alert(err instanceof Error ? err.message : 'Failed to submit feedback');
+    } finally {
+      setSubmittingFeedback(false);
     }
+  };
+
+  const handleRemoveFeedbackImage = (index: number) => {
+    setFeedbackImages(prev => prev.filter((_, i) => i !== index));
   };
   const handleAddressChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const {
@@ -210,6 +242,15 @@ const Prototyping: React.FC = () => {
         Back
       </button>
       <ModuleNavigation project={project} />
+
+      {/* Admin Status Control */}
+      {user?.role === 'admin' && id && (
+        <AdminStatusControl
+          projectId={id}
+          currentStatus={project.status}
+        />
+      )}
+
       <div className="bg-white shadow rounded-lg overflow-hidden">
         <div className="px-6 py-4 border-b border-gray-200">
           <h1 className="text-2xl font-bold text-gray-900">{project.name}</h1>
@@ -537,10 +578,17 @@ const Prototyping: React.FC = () => {
                     </div>
                     {feedbackImages.length > 0 && <div className="mt-3">
                         <h4 className="text-sm font-medium text-gray-700 mb-2">
-                          Uploaded Images ({feedbackImages.length})
+                          Images to Upload ({feedbackImages.length})
                         </h4>
                         <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
-                          {feedbackImages.map((file, index) => <div key={index} className="border rounded-md p-2 flex items-center">
+                          {feedbackImages.map((file, index) => <div key={index} className="border rounded-md p-2 flex items-center relative">
+                              <button
+                                type="button"
+                                onClick={() => handleRemoveFeedbackImage(index)}
+                                className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full p-0.5 hover:bg-red-600"
+                              >
+                                <XIcon className="h-3 w-3" />
+                              </button>
                               <div className="flex-shrink-0 w-8 h-8 bg-gray-100 rounded-md flex items-center justify-center mr-2">
                                 <span className="text-xs text-gray-500">
                                   IMG
@@ -559,9 +607,22 @@ const Prototyping: React.FC = () => {
                       </div>}
                   </div>
                   <div className="flex justify-end">
-                    <button type="submit" className="inline-flex items-center justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-primary-500 hover:bg-primary-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500">
-                      <MessageCircleIcon className="mr-2 h-4 w-4" />
-                      Submit Feedback
+                    <button
+                      type="submit"
+                      disabled={submittingFeedback}
+                      className="inline-flex items-center justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-primary-500 hover:bg-primary-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 disabled:bg-gray-400"
+                    >
+                      {submittingFeedback ? (
+                        <>
+                          <div className="animate-spin rounded-full h-4 w-4 border-2 border-white border-t-transparent mr-2"></div>
+                          Submitting...
+                        </>
+                      ) : (
+                        <>
+                          <MessageCircleIcon className="mr-2 h-4 w-4" />
+                          Submit Feedback
+                        </>
+                      )}
                     </button>
                   </div>
                 </form>

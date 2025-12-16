@@ -97,7 +97,7 @@ const ProjectCard: React.FC<ProjectCardProps> = ({
         return `/project/${project.id}`;
     }
   };
-  return <div className="bg-white rounded-lg shadow p-5 border border-gray-100 h-full flex flex-col">
+  return <Link to={getNextPageLink(project)} className="block bg-white rounded-lg shadow p-5 border border-gray-100 h-full flex flex-col hover:shadow-md hover:border-primary-200 transition-all cursor-pointer">
       <div className="flex justify-between items-start">
         <div className="max-w-[70%]">
           <h3 className="text-base font-semibold text-gray-900 line-clamp-2">
@@ -136,12 +136,12 @@ const ProjectCard: React.FC<ProjectCardProps> = ({
         </p>
       </div>
       <div className="mt-5 flex justify-end">
-        <Link to={getNextPageLink(project)} className="inline-flex items-center text-sm font-medium text-primary-600 hover:text-primary-800">
+        <span className="inline-flex items-center text-sm font-medium text-primary-600 hover:text-primary-800">
           View Details
           <ArrowRightIcon className="ml-1 h-4 w-4" />
-        </Link>
+        </span>
       </div>
-    </div>;
+    </Link>;
 };
 // Helper function to calculate progress percentage based on status
 function getProgressPercentage(status: Project['status']): number {

@@ -323,6 +323,82 @@ export type Database = {
             recommended?: boolean;
             selectedAt?: string;
           } | null
+          manufacturers: Array<{
+            id: string;
+            name: string;
+            minOrderQuantity: number;
+            leadTime: string;
+            price: number;
+            details: string;
+            advantages: string[];
+            disadvantages: string[];
+            recommended?: boolean;
+          }> | null
+          tracking_events: Array<{
+            date: string;
+            title: string;
+            description: string;
+            completed: boolean;
+            trackingNumber?: string;
+            carrier?: string;
+          }> | null
+          photography_packages: Array<{
+            id: string;
+            name: string;
+            price: number;
+            imageCount: number;
+            videoIncluded?: boolean;
+            description: string;
+            features: string[];
+            recommended: boolean;
+          }> | null
+          selected_photography_package: {
+            id: string;
+            name: string;
+            price: number;
+            selectedAt?: string;
+          } | null
+          photography_inspiration_files: string[] | null
+          photography_questionnaire_url: string | null
+          completed_photography_assets: Array<{
+            id: string;
+            name: string;
+            type: string;
+            size: number;
+            url: string;
+          }> | null
+          marketing_packages: Array<{
+            id: string;
+            name: string;
+            price: number;
+            description: string;
+            features: string[];
+            recommended: boolean;
+          }> | null
+          selected_marketing_package: {
+            id: string;
+            name: string;
+            price: number;
+            selectedAt?: string;
+          } | null
+          marketing_plan_data: {
+            targetAudience?: string;
+            brandDescription?: string;
+            competitors?: string;
+            goals?: string;
+            marketingBudget?: string;
+            websiteUrls?: string[];
+            brandInspirationFiles?: string[];
+          } | null
+          deposit_paid: boolean | null
+          deposit_paid_at: string | null
+          remaining_paid: boolean | null
+          remaining_paid_at: string | null
+          freight_paid: boolean | null
+          freight_paid_at: string | null
+          stripe_deposit_payment_id: string | null
+          stripe_remaining_payment_id: string | null
+          stripe_freight_payment_id: string | null
           starter_fee: number | null
           status: string
           target_market: string | null
@@ -369,6 +445,82 @@ export type Database = {
             recommended?: boolean;
             selectedAt?: string;
           } | null
+          manufacturers?: Array<{
+            id: string;
+            name: string;
+            minOrderQuantity: number;
+            leadTime: string;
+            price: number;
+            details: string;
+            advantages: string[];
+            disadvantages: string[];
+            recommended?: boolean;
+          }> | null
+          tracking_events?: Array<{
+            date: string;
+            title: string;
+            description: string;
+            completed: boolean;
+            trackingNumber?: string;
+            carrier?: string;
+          }> | null
+          photography_packages?: Array<{
+            id: string;
+            name: string;
+            price: number;
+            imageCount: number;
+            videoIncluded?: boolean;
+            description: string;
+            features: string[];
+            recommended: boolean;
+          }> | null
+          selected_photography_package?: {
+            id: string;
+            name: string;
+            price: number;
+            selectedAt?: string;
+          } | null
+          photography_inspiration_files?: string[] | null
+          photography_questionnaire_url?: string | null
+          completed_photography_assets?: Array<{
+            id: string;
+            name: string;
+            type: string;
+            size: number;
+            url: string;
+          }> | null
+          marketing_packages?: Array<{
+            id: string;
+            name: string;
+            price: number;
+            description: string;
+            features: string[];
+            recommended: boolean;
+          }> | null
+          selected_marketing_package?: {
+            id: string;
+            name: string;
+            price: number;
+            selectedAt?: string;
+          } | null
+          marketing_plan_data?: {
+            targetAudience?: string;
+            brandDescription?: string;
+            competitors?: string;
+            goals?: string;
+            marketingBudget?: string;
+            websiteUrls?: string[];
+            brandInspirationFiles?: string[];
+          } | null
+          deposit_paid?: boolean | null
+          deposit_paid_at?: string | null
+          remaining_paid?: boolean | null
+          remaining_paid_at?: string | null
+          freight_paid?: boolean | null
+          freight_paid_at?: string | null
+          stripe_deposit_payment_id?: string | null
+          stripe_remaining_payment_id?: string | null
+          stripe_freight_payment_id?: string | null
           starter_fee?: number | null
           status?: string
           target_market?: string | null
@@ -415,6 +567,82 @@ export type Database = {
             recommended?: boolean;
             selectedAt?: string;
           } | null
+          manufacturers?: Array<{
+            id: string;
+            name: string;
+            minOrderQuantity: number;
+            leadTime: string;
+            price: number;
+            details: string;
+            advantages: string[];
+            disadvantages: string[];
+            recommended?: boolean;
+          }> | null
+          tracking_events?: Array<{
+            date: string;
+            title: string;
+            description: string;
+            completed: boolean;
+            trackingNumber?: string;
+            carrier?: string;
+          }> | null
+          photography_packages?: Array<{
+            id: string;
+            name: string;
+            price: number;
+            imageCount: number;
+            videoIncluded?: boolean;
+            description: string;
+            features: string[];
+            recommended: boolean;
+          }> | null
+          selected_photography_package?: {
+            id: string;
+            name: string;
+            price: number;
+            selectedAt?: string;
+          } | null
+          photography_inspiration_files?: string[] | null
+          photography_questionnaire_url?: string | null
+          completed_photography_assets?: Array<{
+            id: string;
+            name: string;
+            type: string;
+            size: number;
+            url: string;
+          }> | null
+          marketing_packages?: Array<{
+            id: string;
+            name: string;
+            price: number;
+            description: string;
+            features: string[];
+            recommended: boolean;
+          }> | null
+          selected_marketing_package?: {
+            id: string;
+            name: string;
+            price: number;
+            selectedAt?: string;
+          } | null
+          marketing_plan_data?: {
+            targetAudience?: string;
+            brandDescription?: string;
+            competitors?: string;
+            goals?: string;
+            marketingBudget?: string;
+            websiteUrls?: string[];
+            brandInspirationFiles?: string[];
+          } | null
+          deposit_paid?: boolean | null
+          deposit_paid_at?: string | null
+          remaining_paid?: boolean | null
+          remaining_paid_at?: string | null
+          freight_paid?: boolean | null
+          freight_paid_at?: string | null
+          stripe_deposit_payment_id?: string | null
+          stripe_remaining_payment_id?: string | null
+          stripe_freight_payment_id?: string | null
           starter_fee?: number | null
           status?: string
           target_market?: string | null

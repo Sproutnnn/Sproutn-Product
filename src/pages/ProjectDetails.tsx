@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
-import { ArrowLeftIcon, ArrowRightIcon, CreditCardIcon, UploadIcon, XIcon, PlusIcon, DownloadIcon, ImageIcon, CheckIcon } from 'lucide-react';
+import { ArrowLeftIcon, ArrowRightIcon, CreditCardIcon, UploadIcon, XIcon, PlusIcon, DownloadIcon, ImageIcon, CheckIcon, TrashIcon } from 'lucide-react';
 import ModuleNavigation from '../components/ModuleNavigation';
 import { useAuth } from '../context/AuthContext';
 import { projectsService } from '../services/projects.service';
@@ -169,6 +169,34 @@ const ProjectDetails: React.FC = () => {
   const handleUploadCancel = () => {
     setUploadedFiles([]);
     setShowUploadConfirm(false);
+  };
+
+  const handleDeleteExistingFile = async (fileUrl: string, index: number) => {
+    if (!id) return;
+
+    const confirmed = window.confirm('Are you sure you want to delete this image?');
+    if (!confirmed) return;
+
+    try {
+      // Extract the file path from the URL for deletion from storage
+      const urlParts = fileUrl.split('/project-files/');
+      if (urlParts.length > 1) {
+        const filePath = urlParts[1];
+        await supabase.storage.from('project-files').remove([filePath]);
+      }
+
+      // Update the project to remove the file from the list
+      const newFiles = existingFiles.filter((_, i) => i !== index);
+      await projectsService.update(id, {
+        uploaded_files: newFiles
+      });
+
+      setExistingFiles(newFiles);
+      alert('Image deleted successfully!');
+    } catch (err) {
+      console.error('Error deleting file:', err);
+      alert('Failed to delete image. Please try again.');
+    }
   };
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -352,7 +380,7 @@ const ProjectDetails: React.FC = () => {
                     </h4>
                     <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
                       {existingFiles.map((fileUrl, index) => (
-                        <div key={index} className="border rounded-lg overflow-hidden">
+                        <div key={index} className="border rounded-lg overflow-hidden relative group">
                           <div className="aspect-square bg-gray-100">
                             <img
                               src={fileUrl}
@@ -360,6 +388,13 @@ const ProjectDetails: React.FC = () => {
                               className="w-full h-full object-cover"
                             />
                           </div>
+                          <button
+                            onClick={() => handleDeleteExistingFile(fileUrl, index)}
+                            className="absolute top-1 right-1 bg-red-500 text-white p-1 rounded-full opacity-0 group-hover:opacity-100 transition-opacity hover:bg-red-600"
+                            title="Delete image"
+                          >
+                            <TrashIcon className="h-4 w-4" />
+                          </button>
                         </div>
                       ))}
                     </div>

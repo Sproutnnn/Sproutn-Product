@@ -2,8 +2,11 @@ import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { ArrowLeftIcon, TruckIcon, PackageIcon, ClipboardCheckIcon, CheckCircleIcon, PlusIcon, SaveIcon, XIcon, CreditCardIcon } from 'lucide-react';
 import ModuleNavigation from '../components/ModuleNavigation';
+import AdminStatusControl from '../components/AdminStatusControl';
+import StripePaymentModal from '../components/StripePaymentModal';
 import { useAuth } from '../context/AuthContext';
 import { projectsService } from '../services/projects.service';
+import { paymentsService, PaymentType } from '../services/payments.service';
 const Tracking: React.FC = () => {
   const {
     id
@@ -17,44 +20,46 @@ const Tracking: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [project, setProject] = useState<any>(null);
   const [error, setError] = useState<string | null>(null);
-  const [trackingEvents, setTrackingEvents] = useState([{
-    date: '2023-06-15',
+  const defaultTrackingEvents = [{
+    date: new Date().toISOString().split('T')[0],
     title: 'Order Confirmed',
     description: 'Your order has been confirmed and sent to the manufacturer.',
-    completed: true
+    completed: false
   }, {
-    date: '2023-06-20',
+    date: '',
     title: 'Production Started',
     description: 'The manufacturer has started production of your order.',
-    completed: true
+    completed: false
   }, {
-    date: '2023-07-10',
+    date: '',
     title: 'Quality Control',
     description: 'Your products are undergoing quality control checks.',
     completed: false
   }, {
-    date: '2023-07-20',
+    date: '',
     title: 'Packaging',
     description: 'Your order is being packaged for shipping.',
     completed: false
   }, {
-    date: '2023-07-22',
+    date: '',
     title: 'Picked Up',
     description: 'Your order has been picked up by the shipping carrier.',
     completed: false
   }, {
-    date: '2023-07-25',
+    date: '',
     title: 'Shipped',
     description: 'Your order has been shipped and is on its way to you.',
     completed: false,
     trackingNumber: '',
     carrier: ''
   }, {
-    date: '2023-08-10',
+    date: '',
     title: 'Delivered',
     description: 'Your order has been delivered to the specified address.',
     completed: false
-  }]);
+  }];
+
+  const [trackingEvents, setTrackingEvents] = useState(defaultTrackingEvents);
   const [showTrackingModal, setShowTrackingModal] = useState(false);
   const [trackingInfo, setTrackingInfo] = useState({
     trackingNumber: '',
@@ -62,6 +67,10 @@ const Tracking: React.FC = () => {
   });
   const [estimatedDeliveryDate, setEstimatedDeliveryDate] = useState('August 10, 2023');
   const [isEditingDeliveryDate, setIsEditingDeliveryDate] = useState(false);
+  const [showPaymentModal, setShowPaymentModal] = useState(false);
+  const [currentPaymentType, setCurrentPaymentType] = useState<PaymentType>('remaining');
+  const [currentPaymentAmount, setCurrentPaymentAmount] = useState(0);
+  const [currentPaymentTitle, setCurrentPaymentTitle] = useState('');
   useEffect(() => {
     const loadProject = async () => {
       if (!id) return;
@@ -87,8 +96,10 @@ const Tracking: React.FC = () => {
           }));
         }
 
-        // TODO: Load tracking events from database when migration is ready
-        // For now, tracking events use mock data
+        // Load tracking events from database
+        if (projectData.tracking_events && projectData.tracking_events.length > 0) {
+          setTrackingEvents(projectData.tracking_events);
+        }
       } catch (err) {
         console.error('Error loading project:', err);
         setError('Failed to load project');
@@ -102,46 +113,106 @@ const Tracking: React.FC = () => {
   const handleDeliveryDateChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setEstimatedDeliveryDate(e.target.value);
   };
-  const saveDeliveryDate = () => {
-    setIsEditingDeliveryDate(false);
-    // In a real app, you would save this to the backend
+
+  const saveDeliveryDate = async () => {
+    if (!id) return;
+
+    try {
+      await projectsService.update(id, {
+        estimated_delivery: estimatedDeliveryDate
+      });
+      setIsEditingDeliveryDate(false);
+      alert('Delivery date saved!');
+    } catch (err) {
+      console.error('Error saving delivery date:', err);
+      alert('Failed to save delivery date.');
+    }
   };
-  const updateEventStatus = (index: number) => {
-    setTrackingEvents(prev => {
-      const newEvents = [...prev];
-      // Toggle completion status
-      newEvents[index] = {
-        ...newEvents[index],
-        completed: !newEvents[index].completed
-      };
-      // If marking an event as complete, update its date to today
-      if (!prev[index].completed) {
-        newEvents[index].date = new Date().toISOString().split('T')[0];
-      }
-      // If this is the "Shipped" event and it's being marked as complete
-      if (newEvents[index].title === 'Shipped' && !prev[index].completed) {
-        setShowTrackingModal(true);
-      }
-      return newEvents;
-    });
+
+  const updateEventStatus = async (index: number) => {
+    if (!id) return;
+
+    const newEvents = [...trackingEvents];
+    // Toggle completion status
+    newEvents[index] = {
+      ...newEvents[index],
+      completed: !newEvents[index].completed
+    };
+    // If marking an event as complete, update its date to today
+    if (!trackingEvents[index].completed) {
+      newEvents[index].date = new Date().toISOString().split('T')[0];
+    }
+
+    // If this is the "Shipped" event and it's being marked as complete
+    if (newEvents[index].title === 'Shipped' && !trackingEvents[index].completed) {
+      setShowTrackingModal(true);
+    }
+
+    try {
+      await projectsService.update(id, {
+        tracking_events: newEvents
+      });
+      setTrackingEvents(newEvents);
+    } catch (err) {
+      console.error('Error updating tracking status:', err);
+      alert('Failed to update status.');
+    }
   };
-  const handleTrackingInfoSubmit = (e: React.FormEvent) => {
+
+  const handleTrackingInfoSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!id) return;
+
     // Update the tracking information for the "Shipped" event
-    setTrackingEvents(prev => {
-      const newEvents = [...prev];
-      const shippedIndex = newEvents.findIndex(event => event.title === 'Shipped');
-      if (shippedIndex !== -1) {
-        newEvents[shippedIndex] = {
-          ...newEvents[shippedIndex],
-          trackingNumber: trackingInfo.trackingNumber,
-          carrier: trackingInfo.carrier
-        };
-      }
-      return newEvents;
-    });
-    setShowTrackingModal(false);
+    const newEvents = [...trackingEvents];
+    const shippedIndex = newEvents.findIndex(event => event.title === 'Shipped');
+    if (shippedIndex !== -1) {
+      newEvents[shippedIndex] = {
+        ...newEvents[shippedIndex],
+        trackingNumber: trackingInfo.trackingNumber,
+        carrier: trackingInfo.carrier
+      };
+    }
+
+    try {
+      await projectsService.update(id, {
+        tracking_events: newEvents,
+        tracking_number: trackingInfo.trackingNumber
+      });
+      setTrackingEvents(newEvents);
+      setShowTrackingModal(false);
+      alert('Tracking information saved!');
+    } catch (err) {
+      console.error('Error saving tracking info:', err);
+      alert('Failed to save tracking information.');
+    }
   };
+
+  const handlePayRemaining = () => {
+    if (!project) return;
+    const amounts = paymentsService.calculatePaymentAmounts(project);
+    setCurrentPaymentType('remaining');
+    setCurrentPaymentAmount(amounts.remaining);
+    setCurrentPaymentTitle('Pay Remaining Balance');
+    setShowPaymentModal(true);
+  };
+
+  const handlePayFreight = () => {
+    if (!project) return;
+    const amounts = paymentsService.calculatePaymentAmounts(project);
+    setCurrentPaymentType('freight');
+    setCurrentPaymentAmount(amounts.freight);
+    setCurrentPaymentTitle('Pay Freight');
+    setShowPaymentModal(true);
+  };
+
+  const handlePaymentSuccess = () => {
+    alert('Payment successful!');
+    window.location.reload();
+  };
+
+  const paymentStatus = project ? paymentsService.getPaymentStatus(project) : null;
+  const paymentAmounts = project ? paymentsService.calculatePaymentAmounts(project) : null;
   if (loading) {
     return <div className="flex justify-center items-center h-64">
         <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
@@ -165,6 +236,15 @@ const Tracking: React.FC = () => {
         Back
       </button>
       <ModuleNavigation project={project} />
+
+      {/* Admin Status Control */}
+      {user?.role === 'admin' && id && (
+        <AdminStatusControl
+          projectId={id}
+          currentStatus={project.status}
+        />
+      )}
+
       <div className="bg-white shadow rounded-lg overflow-hidden mt-4">
         <div className="px-6 py-4 border-b border-gray-200">
           <h1 className="text-2xl font-bold text-gray-900">{project.name}</h1>
@@ -208,19 +288,39 @@ const Tracking: React.FC = () => {
                     {/* Pay Remaining button for Quality Control */}
                     {event.title === 'Quality Control' && user?.role === 'customer' && (
                       <div className="mt-3">
-                        <button className="inline-flex items-center px-3 py-1.5 border border-transparent text-xs font-medium rounded-md shadow-sm text-white bg-primary-600 hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500">
-                          <CreditCardIcon className="h-4 w-4 mr-1" />
-                          Pay Remaining Balance
-                        </button>
+                        {paymentStatus?.remainingPaid ? (
+                          <span className="inline-flex items-center px-3 py-1.5 text-xs font-medium text-green-700 bg-green-100 rounded-md">
+                            <CheckCircleIcon className="h-4 w-4 mr-1" />
+                            Remaining Balance Paid
+                          </span>
+                        ) : (
+                          <button
+                            onClick={handlePayRemaining}
+                            className="inline-flex items-center px-3 py-1.5 border border-transparent text-xs font-medium rounded-md shadow-sm text-white bg-primary-600 hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500"
+                          >
+                            <CreditCardIcon className="h-4 w-4 mr-1" />
+                            Pay Remaining Balance (${paymentAmounts?.remaining.toFixed(2) || '0.00'})
+                          </button>
+                        )}
                       </div>
                     )}
                     {/* Payment for Freight button for Packaging */}
                     {event.title === 'Packaging' && user?.role === 'customer' && (
                       <div className="mt-3">
-                        <button className="inline-flex items-center px-3 py-1.5 border border-transparent text-xs font-medium rounded-md shadow-sm text-white bg-primary-600 hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500">
-                          <CreditCardIcon className="h-4 w-4 mr-1" />
-                          Pay Freight
-                        </button>
+                        {paymentStatus?.freightPaid ? (
+                          <span className="inline-flex items-center px-3 py-1.5 text-xs font-medium text-green-700 bg-green-100 rounded-md">
+                            <CheckCircleIcon className="h-4 w-4 mr-1" />
+                            Freight Paid
+                          </span>
+                        ) : (
+                          <button
+                            onClick={handlePayFreight}
+                            className="inline-flex items-center px-3 py-1.5 border border-transparent text-xs font-medium rounded-md shadow-sm text-white bg-primary-600 hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500"
+                          >
+                            <CreditCardIcon className="h-4 w-4 mr-1" />
+                            Pay Freight (${paymentAmounts?.freight.toFixed(2) || '0.00'})
+                          </button>
+                        )}
                       </div>
                     )}
                     <div className={`mt-1 text-xs ${event.completed ? 'text-green-600' : 'text-gray-400'}`}>
@@ -297,6 +397,20 @@ const Tracking: React.FC = () => {
             </form>
           </div>
         </div>}
+
+      {/* Stripe Payment Modal */}
+      {id && (
+        <StripePaymentModal
+          isOpen={showPaymentModal}
+          onClose={() => setShowPaymentModal(false)}
+          onSuccess={handlePaymentSuccess}
+          projectId={id}
+          paymentType={currentPaymentType}
+          amount={currentPaymentAmount}
+          title={currentPaymentTitle}
+          description={currentPaymentType === 'remaining' ? 'Pay the remaining 70% balance to proceed with shipping.' : 'Pay the freight cost for delivery of your order.'}
+        />
+      )}
     </div>;
 };
 export default Tracking;

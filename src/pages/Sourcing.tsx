@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { ArrowLeftIcon, ArrowRightIcon, CheckIcon, CheckCircleIcon } from 'lucide-react';
+import { ArrowLeftIcon, ArrowRightIcon, CheckIcon, CheckCircleIcon, TrashIcon, StarIcon } from 'lucide-react';
 import ModuleNavigation from '../components/ModuleNavigation';
+import AdminStatusControl from '../components/AdminStatusControl';
 import { useAuth } from '../context/AuthContext';
 import { projectsService } from '../services/projects.service';
 interface Manufacturer {
@@ -56,41 +57,9 @@ const Sourcing: React.FC = () => {
 
         setProject(projectData);
 
-        // TODO: Load manufacturers from database when migration is ready
-        // For now, use mock data if admin hasn't added any
-        if (user?.role !== 'admin') {
-          // Show mock manufacturers for customer
-          setManufacturers([{
-            id: 'm1',
-            name: 'TechPro Manufacturing',
-            minOrderQuantity: 500,
-            leadTime: '30-45 days',
-            price: 15.75,
-            details: 'Established in 2005, specializes in consumer electronics with a focus on smart home devices.',
-            advantages: ['Excellent quality control', 'Competitive pricing', 'Experience with similar products'],
-            disadvantages: ['Longer lead time', 'Higher minimum order quantity'],
-            recommended: true
-          }, {
-            id: 'm2',
-            name: 'QuickTurn Electronics',
-            minOrderQuantity: 300,
-            leadTime: '20-30 days',
-            price: 18.5,
-            details: 'Mid-sized manufacturer focused on quick turnaround and flexibility for startups and small businesses.',
-            advantages: ['Faster production time', 'Lower minimum order quantity', 'Good communication'],
-            disadvantages: ['Slightly higher unit cost', 'Less experience with complex products'],
-            recommended: false
-          }, {
-            id: 'm3',
-            name: 'Premium Tech Solutions',
-            minOrderQuantity: 250,
-            leadTime: '25-35 days',
-            price: 22.0,
-            details: 'High-end manufacturer with cutting-edge facilities and premium quality standards.',
-            advantages: ['Superior build quality', 'Advanced testing procedures', 'Premium components used'],
-            disadvantages: ['Higher cost', 'Less flexibility with design changes'],
-            recommended: false
-          }]);
+        // Load manufacturers from database
+        if (projectData.manufacturers && projectData.manufacturers.length > 0) {
+          setManufacturers(projectData.manufacturers);
         }
       } catch (err) {
         console.error('Error loading project:', err);
@@ -170,25 +139,83 @@ const Sourcing: React.FC = () => {
       };
     });
   };
-  const handleAdminSubmit = (e: React.FormEvent) => {
+  const handleAdminSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    // In a real app, this would send data to an API
-    const newMan: Manufacturer = {
-      ...newManufacturer,
-      id: `m${manufacturers.length + 1}`
-    };
-    setManufacturers(prev => [...prev, newMan]);
-    // Reset form
-    setNewManufacturer({
-      name: '',
-      minOrderQuantity: 100,
-      leadTime: '',
-      price: 0,
-      details: '',
-      advantages: [''],
-      disadvantages: ['']
-    });
-    alert('Manufacturer added successfully!');
+    if (!id) return;
+
+    try {
+      const newMan: Manufacturer = {
+        ...newManufacturer,
+        id: `m${Date.now()}`
+      };
+
+      const updatedManufacturers = [...manufacturers, newMan];
+
+      // Save to database
+      await projectsService.update(id, {
+        manufacturers: updatedManufacturers
+      });
+
+      setManufacturers(updatedManufacturers);
+
+      // Reset form
+      setNewManufacturer({
+        name: '',
+        minOrderQuantity: 100,
+        leadTime: '',
+        price: 0,
+        details: '',
+        advantages: [''],
+        disadvantages: ['']
+      });
+
+      alert('Manufacturer added successfully!');
+    } catch (err) {
+      console.error('Error adding manufacturer:', err);
+      alert('Failed to add manufacturer. Please try again.');
+    }
+  };
+
+  const handleDeleteManufacturer = async (manufacturerId: string) => {
+    if (!id) return;
+
+    const confirmed = window.confirm('Are you sure you want to delete this manufacturer?');
+    if (!confirmed) return;
+
+    try {
+      const updatedManufacturers = manufacturers.filter(m => m.id !== manufacturerId);
+
+      await projectsService.update(id, {
+        manufacturers: updatedManufacturers
+      });
+
+      setManufacturers(updatedManufacturers);
+      alert('Manufacturer deleted successfully!');
+    } catch (err) {
+      console.error('Error deleting manufacturer:', err);
+      alert('Failed to delete manufacturer. Please try again.');
+    }
+  };
+
+  const handleSetRecommended = async (manufacturerId: string) => {
+    if (!id) return;
+
+    try {
+      const updatedManufacturers = manufacturers.map(m => ({
+        ...m,
+        recommended: m.id === manufacturerId
+      }));
+
+      await projectsService.update(id, {
+        manufacturers: updatedManufacturers
+      });
+
+      setManufacturers(updatedManufacturers);
+      alert('Recommended manufacturer updated!');
+    } catch (err) {
+      console.error('Error updating recommended manufacturer:', err);
+      alert('Failed to update recommended manufacturer.');
+    }
   };
   if (loading) {
     return <div className="flex justify-center items-center h-64">
@@ -208,6 +235,15 @@ const Sourcing: React.FC = () => {
         Back
       </button>
       <ModuleNavigation project={project} />
+
+      {/* Admin Status Control */}
+      {user?.role === 'admin' && id && (
+        <AdminStatusControl
+          projectId={id}
+          currentStatus={project.status}
+        />
+      )}
+
       <div className="bg-white shadow rounded-lg overflow-hidden mt-4">
         <div className="px-6 py-4 border-b border-gray-200">
           <h1 className="text-2xl font-bold text-gray-900">{project.name}</h1>
@@ -372,15 +408,41 @@ const Sourcing: React.FC = () => {
                     No manufacturers added yet.
                   </p> : <ul className="divide-y divide-gray-200 border rounded-md">
                     {manufacturers.map(man => <li key={man.id} className="p-4">
-                        <div className="flex justify-between">
-                          <div>
-                            <h4 className="text-sm font-medium text-gray-900">
-                              {man.name}
-                            </h4>
+                        <div className="flex justify-between items-start">
+                          <div className="flex-1">
+                            <div className="flex items-center gap-2">
+                              <h4 className="text-sm font-medium text-gray-900">
+                                {man.name}
+                              </h4>
+                              {man.recommended && (
+                                <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-primary-100 text-primary-700">
+                                  <StarIcon className="h-3 w-3 mr-1" />
+                                  Recommended
+                                </span>
+                              )}
+                            </div>
+                            <p className="text-xs text-gray-500 mt-1">
+                              MOQ: {man.minOrderQuantity} | Lead: {man.leadTime}
+                            </p>
                           </div>
-                          <div className="text-sm text-gray-500">
-                            $
-                            {typeof man.price === 'number' ? man.price.toFixed(2) : '0.00'}
+                          <div className="flex items-center gap-3">
+                            <span className="text-sm font-medium text-gray-900">
+                              ${typeof man.price === 'number' ? man.price.toFixed(2) : '0.00'}
+                            </span>
+                            <button
+                              onClick={() => handleSetRecommended(man.id)}
+                              className={`p-1 rounded ${man.recommended ? 'text-primary-600' : 'text-gray-400 hover:text-primary-600'}`}
+                              title="Set as recommended"
+                            >
+                              <StarIcon className="h-4 w-4" />
+                            </button>
+                            <button
+                              onClick={() => handleDeleteManufacturer(man.id)}
+                              className="p-1 text-red-500 hover:text-red-700 rounded"
+                              title="Delete manufacturer"
+                            >
+                              <TrashIcon className="h-4 w-4" />
+                            </button>
                           </div>
                         </div>
                       </li>)}
