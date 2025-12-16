@@ -1,9 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
-import { ArrowLeftIcon, ArrowRightIcon, CreditCardIcon, UploadIcon, XIcon, PlusIcon, DownloadIcon, ImageIcon } from 'lucide-react';
+import { ArrowLeftIcon, ArrowRightIcon, CreditCardIcon, UploadIcon, XIcon, PlusIcon, DownloadIcon, ImageIcon, CheckIcon } from 'lucide-react';
 import ModuleNavigation from '../components/ModuleNavigation';
 import { useAuth } from '../context/AuthContext';
 import { projectsService } from '../services/projects.service';
+import { supabase } from '../lib/supabase';
 const ProjectDetails: React.FC = () => {
   const {
     id
@@ -25,6 +26,9 @@ const ProjectDetails: React.FC = () => {
   });
   const [starterFee, setStarterFee] = useState<number>(399);
   const [uploadedFiles, setUploadedFiles] = useState<File[]>([]);
+  const [existingFiles, setExistingFiles] = useState<string[]>([]);
+  const [showUploadConfirm, setShowUploadConfirm] = useState(false);
+  const [uploading, setUploading] = useState(false);
   useEffect(() => {
     const loadProject = async () => {
       if (!id) return;
@@ -51,6 +55,11 @@ const ProjectDetails: React.FC = () => {
         // Load starter fee
         if (projectData.starter_fee) {
           setStarterFee(projectData.starter_fee);
+        }
+
+        // Load existing uploaded files
+        if (projectData.uploaded_files && projectData.uploaded_files.length > 0) {
+          setExistingFiles(projectData.uploaded_files);
         }
 
       } catch (err) {
@@ -89,10 +98,61 @@ const ProjectDetails: React.FC = () => {
     }));
   };
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files) {
+    if (e.target.files && e.target.files.length > 0) {
       const filesArray = Array.from(e.target.files);
-      setUploadedFiles(prev => [...prev, ...filesArray]);
+      setUploadedFiles(filesArray);
+      setShowUploadConfirm(true);
     }
+  };
+
+  const handleUploadConfirm = async () => {
+    if (!id || uploadedFiles.length === 0) return;
+
+    setUploading(true);
+    try {
+      const uploadedUrls: string[] = [];
+
+      for (const file of uploadedFiles) {
+        const fileExt = file.name.split('.').pop();
+        const fileName = `${id}/${Date.now()}_${Math.random().toString(36).substring(7)}.${fileExt}`;
+
+        const { error: uploadError } = await supabase.storage
+          .from('project-files')
+          .upload(fileName, file);
+
+        if (uploadError) {
+          console.error('Upload error:', uploadError);
+          throw uploadError;
+        }
+
+        const { data: urlData } = supabase.storage
+          .from('project-files')
+          .getPublicUrl(fileName);
+
+        uploadedUrls.push(urlData.publicUrl);
+      }
+
+      // Combine with existing files and save to database
+      const allFiles = [...existingFiles, ...uploadedUrls];
+      await projectsService.update(id, {
+        uploaded_files: allFiles
+      });
+
+      setExistingFiles(allFiles);
+      setUploadedFiles([]);
+      setShowUploadConfirm(false);
+      alert('Files uploaded successfully!');
+    } catch (err) {
+      console.error('Error uploading files:', err);
+      alert('Failed to upload files. Please try again.');
+    } finally {
+      setUploading(false);
+    }
+  };
+
+  const handleUploadCancel = () => {
+    setUploadedFiles([]);
+    setShowUploadConfirm(false);
   };
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -270,24 +330,22 @@ const ProjectDetails: React.FC = () => {
                     </p>
                   </label>
                 </div>
-                {uploadedFiles.length > 0 && <div className="mt-4">
+                {existingFiles.length > 0 && <div className="mt-4">
                     <h4 className="text-sm font-medium text-gray-700 mb-2">
-                      Uploaded Files ({uploadedFiles.length})
+                      Your Uploaded Files ({existingFiles.length})
                     </h4>
                     <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
-                      {uploadedFiles.map((file, index) => <div key={index} className="border rounded-md p-2 flex items-center">
-                          <div className="flex-shrink-0 w-8 h-8 bg-gray-100 rounded-md flex items-center justify-center mr-2">
-                            <span className="text-xs text-gray-500">IMG</span>
+                      {existingFiles.map((fileUrl, index) => (
+                        <div key={index} className="border rounded-lg overflow-hidden">
+                          <div className="aspect-square bg-gray-100">
+                            <img
+                              src={fileUrl}
+                              alt={`Uploaded file ${index + 1}`}
+                              className="w-full h-full object-cover"
+                            />
                           </div>
-                          <div className="min-w-0 flex-1">
-                            <p className="text-xs font-medium text-gray-900 truncate">
-                              {file.name}
-                            </p>
-                            <p className="text-xs text-gray-500">
-                              {(file.size / 1024).toFixed(1)} KB
-                            </p>
-                          </div>
-                        </div>)}
+                        </div>
+                      ))}
                     </div>
                   </div>}
               </div>
@@ -487,6 +545,62 @@ const ProjectDetails: React.FC = () => {
             </form>
           </div>
         </div>}
+
+      {/* Upload Confirmation Modal */}
+      {showUploadConfirm && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white rounded-lg shadow-xl max-w-md w-full mx-4">
+            <div className="flex justify-between items-center p-4 border-b">
+              <h3 className="text-lg font-medium text-gray-900">Confirm Upload</h3>
+              <button onClick={handleUploadCancel} className="text-gray-400 hover:text-gray-500">
+                <XIcon className="h-5 w-5" />
+              </button>
+            </div>
+            <div className="p-4">
+              <p className="text-sm text-gray-600 mb-4">
+                You are about to upload {uploadedFiles.length} file{uploadedFiles.length > 1 ? 's' : ''}:
+              </p>
+              <div className="max-h-40 overflow-y-auto space-y-2 mb-4">
+                {uploadedFiles.map((file, index) => (
+                  <div key={index} className="flex items-center p-2 bg-gray-50 rounded-md">
+                    <ImageIcon className="h-5 w-5 text-gray-400 mr-2" />
+                    <div className="flex-1 min-w-0">
+                      <p className="text-sm font-medium text-gray-900 truncate">{file.name}</p>
+                      <p className="text-xs text-gray-500">{(file.size / 1024).toFixed(1)} KB</p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+              <div className="flex justify-end space-x-3">
+                <button
+                  onClick={handleUploadCancel}
+                  className="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 rounded-md hover:bg-gray-200"
+                  disabled={uploading}
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={handleUploadConfirm}
+                  disabled={uploading}
+                  className="inline-flex items-center px-4 py-2 text-sm font-medium text-white bg-primary-500 rounded-md hover:bg-primary-600 disabled:bg-gray-300"
+                >
+                  {uploading ? (
+                    <>
+                      <div className="animate-spin rounded-full h-4 w-4 border-2 border-white border-t-transparent mr-2"></div>
+                      Uploading...
+                    </>
+                  ) : (
+                    <>
+                      <CheckIcon className="h-4 w-4 mr-2" />
+                      Upload
+                    </>
+                  )}
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>;
 };
 export default ProjectDetails;
