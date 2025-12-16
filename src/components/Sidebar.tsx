@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { HomeIcon, FolderPlusIcon, MessageCircleIcon, SettingsIcon, UserIcon, UsersIcon, FileTextIcon, PencilIcon, LayoutIcon, BookOpenIcon, BarChart2Icon } from 'lucide-react';
+import { HomeIcon, FolderPlusIcon, MessageCircleIcon, UserIcon, UsersIcon, LayoutIcon, BookOpenIcon, BarChart2Icon } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 const Sidebar: React.FC = () => {
   const location = useLocation();
@@ -50,11 +50,6 @@ const Sidebar: React.FC = () => {
     label: 'Profile',
     icon: <UserIcon className="h-5 w-5" />,
     roles: ['admin', 'customer']
-  }, {
-    path: '/settings',
-    label: 'Settings',
-    icon: <SettingsIcon className="h-5 w-5" />,
-    roles: ['admin']
   }];
   return <div className="hidden md:flex md:flex-col md:w-48 md:bg-charcoal-500 md:text-white">
       <div className="flex items-center justify-center h-16 bg-charcoal-600">
