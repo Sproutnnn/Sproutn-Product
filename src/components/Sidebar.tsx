@@ -1,12 +1,35 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { HomeIcon, FolderPlusIcon, MessageCircleIcon, UserIcon, UsersIcon, LayoutIcon, BookOpenIcon, BarChart2Icon } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
+import { chatService } from '../services/chat.service';
+
 const Sidebar: React.FC = () => {
   const location = useLocation();
   const {
     user
   } = useAuth();
+  const [unreadCount, setUnreadCount] = useState(0);
+
+  // Poll for unread messages (admin only)
+  useEffect(() => {
+    if (user?.role !== 'admin') return;
+
+    const checkUnread = async () => {
+      try {
+        const count = await chatService.getUnreadCountForAdmin();
+        setUnreadCount(count);
+      } catch (error) {
+        console.error('Error checking unread messages:', error);
+      }
+    };
+
+    checkUnread();
+    const interval = setInterval(checkUnread, 10000); // Check every 10 seconds
+
+    return () => clearInterval(interval);
+  }, [user]);
+
   const isActive = (path: string) => {
     return location.pathname === path;
   };
@@ -63,7 +86,14 @@ const Sidebar: React.FC = () => {
             return null;
           }
           return <Link key={item.path} to={item.path} className={`flex items-center px-4 py-3 text-sm rounded-md ${isActive(item.path) ? 'bg-primary-700 text-white' : 'text-gray-300 hover:bg-charcoal-600'}`}>
-                <span className="mr-3">{item.icon}</span>
+                <span className="mr-3 relative">
+                  {item.icon}
+                  {item.path === '/chat' && unreadCount > 0 && (
+                    <span className="absolute -top-1 -right-1 h-4 w-4 bg-red-500 rounded-full flex items-center justify-center text-xs text-white font-bold">
+                      {unreadCount > 9 ? '9+' : unreadCount}
+                    </span>
+                  )}
+                </span>
                 <span>{item.label}</span>
               </Link>;
         })}

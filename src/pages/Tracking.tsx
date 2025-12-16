@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { ArrowLeftIcon, TruckIcon, PackageIcon, ClipboardCheckIcon, CheckCircleIcon, PlusIcon, SaveIcon, XIcon } from 'lucide-react';
+import { ArrowLeftIcon, TruckIcon, PackageIcon, ClipboardCheckIcon, CheckCircleIcon, PlusIcon, SaveIcon, XIcon, CreditCardIcon } from 'lucide-react';
 import ModuleNavigation from '../components/ModuleNavigation';
 import { useAuth } from '../context/AuthContext';
 import { projectsService } from '../services/projects.service';
@@ -205,6 +205,24 @@ const Tracking: React.FC = () => {
                               ({event.carrier})
                             </span>}
                         </div>}
+                    {/* Pay Remaining button for Quality Control */}
+                    {event.title === 'Quality Control' && user?.role === 'customer' && (
+                      <div className="mt-3">
+                        <button className="inline-flex items-center px-3 py-1.5 border border-transparent text-xs font-medium rounded-md shadow-sm text-white bg-primary-600 hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500">
+                          <CreditCardIcon className="h-4 w-4 mr-1" />
+                          Pay Remaining Balance
+                        </button>
+                      </div>
+                    )}
+                    {/* Payment for Freight button for Packaging */}
+                    {event.title === 'Packaging' && user?.role === 'customer' && (
+                      <div className="mt-3">
+                        <button className="inline-flex items-center px-3 py-1.5 border border-transparent text-xs font-medium rounded-md shadow-sm text-white bg-primary-600 hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500">
+                          <CreditCardIcon className="h-4 w-4 mr-1" />
+                          Pay Freight
+                        </button>
+                      </div>
+                    )}
                     <div className={`mt-1 text-xs ${event.completed ? 'text-green-600' : 'text-gray-400'}`}>
                       {event.completed ? 'Completed' : 'Expected'}: {event.date}
                     </div>

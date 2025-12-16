@@ -76,6 +76,11 @@ const ChatPage: React.FC = () => {
       setIsTyping(false); // Reset typing indicator when switching chats
       const chatMessages = await chatService.getUserMessages(userId);
       setMessages(chatMessages);
+
+      // Mark messages as read by admin
+      if (user?.role === 'admin') {
+        await chatService.markAsReadByAdmin(userId);
+      }
     } catch (error) {
       console.error('Error loading chat messages:', error);
     }

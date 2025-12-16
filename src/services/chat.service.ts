@@ -293,5 +293,40 @@ export const chatService = {
     }
 
     return data.map(d => d.user_id);
+  },
+
+  /**
+   * Get count of unread messages for admin (messages from users)
+   */
+  async getUnreadCountForAdmin(): Promise<number> {
+    const { count, error } = await supabase
+      .from('chat_messages')
+      .select('*', { count: 'exact', head: true })
+      .eq('sender', 'user')
+      .is('deleted_at', null)
+      .is('read_by_admin', null);
+
+    if (error) {
+      console.error('Error getting unread count:', error);
+      return 0;
+    }
+
+    return count || 0;
+  },
+
+  /**
+   * Mark messages as read by admin
+   */
+  async markAsReadByAdmin(userId: string): Promise<void> {
+    const { error } = await supabase
+      .from('chat_messages')
+      .update({ read_by_admin: new Date().toISOString() })
+      .eq('user_id', userId)
+      .eq('sender', 'user')
+      .is('read_by_admin', null);
+
+    if (error) {
+      console.error('Error marking messages as read:', error);
+    }
   }
 };

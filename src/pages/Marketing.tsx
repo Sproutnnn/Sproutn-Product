@@ -1,9 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { ArrowLeftIcon, UploadIcon, CreditCardIcon, LinkIcon, CheckIcon } from 'lucide-react';
+import { ArrowLeftIcon, UploadIcon, CreditCardIcon, LinkIcon, CheckIcon, DownloadIcon, FileIcon } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import ModuleNavigation from '../components/ModuleNavigation';
 import { projectsService } from '../services/projects.service';
+import { supabase } from '../lib/supabase';
 const Marketing: React.FC = () => {
   const {
     user
@@ -26,6 +27,9 @@ const Marketing: React.FC = () => {
   });
   const [uploadedFiles, setUploadedFiles] = useState<File[]>([]);
   const [selectedPackage, setSelectedPackage] = useState<string | null>(null);
+  const [recommendedPackageFile, setRecommendedPackageFile] = useState<string | null>(null);
+  const [recommendedPackageFileName, setRecommendedPackageFileName] = useState<string | null>(null);
+  const [uploadingRecommended, setUploadingRecommended] = useState(false);
   const [packages, setPackages] = useState([{
     id: 'basic',
     name: 'Basic Marketing Package',
@@ -72,8 +76,11 @@ const Marketing: React.FC = () => {
 
         setProject(projectData);
 
-        // TODO: Load marketing data (packages, form data) from database when migration is ready
-        // For now, packages and form data use mock/default values
+        // Load recommended package file if exists
+        if (projectData.recommended_package_url) {
+          setRecommendedPackageFile(projectData.recommended_package_url);
+          setRecommendedPackageFileName(projectData.recommended_package_name || 'Recommended Package');
+        }
       } catch (err) {
         console.error('Error loading project:', err);
         setError('Failed to load project');
@@ -119,6 +126,48 @@ const Marketing: React.FC = () => {
   const handlePackageSelect = (packageId: string) => {
     setSelectedPackage(packageId);
   };
+
+  const handleRecommendedPackageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (!e.target.files || !e.target.files[0] || !id) return;
+
+    const file = e.target.files[0];
+    setUploadingRecommended(true);
+
+    try {
+      // Upload to Supabase storage
+      const fileExt = file.name.split('.').pop();
+      const fileName = `${id}/recommended_package_${Date.now()}.${fileExt}`;
+
+      const { error: uploadError } = await supabase.storage
+        .from('project-files')
+        .upload(fileName, file);
+
+      if (uploadError) throw uploadError;
+
+      // Get public URL
+      const { data: urlData } = supabase.storage
+        .from('project-files')
+        .getPublicUrl(fileName);
+
+      const publicUrl = urlData.publicUrl;
+
+      // Update project with the file URL
+      await projectsService.update(id, {
+        recommended_package_url: publicUrl,
+        recommended_package_name: file.name
+      });
+
+      setRecommendedPackageFile(publicUrl);
+      setRecommendedPackageFileName(file.name);
+      alert('Recommended package uploaded successfully!');
+    } catch (err) {
+      console.error('Error uploading recommended package:', err);
+      alert('Failed to upload file. Please try again.');
+    } finally {
+      setUploadingRecommended(false);
+    }
+  };
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     // In a real app, this would send data to an API
@@ -323,6 +372,94 @@ const Marketing: React.FC = () => {
                   </div>)}
               </div>
             </div>
+
+            {/* Recommended Package File Section */}
+            <div className="border-t border-gray-200 pt-6">
+              <h3 className="text-lg font-medium text-gray-900 mb-3">
+                Recommended Package Document
+              </h3>
+              <p className="text-sm text-gray-500 mb-4">
+                {user?.role === 'admin'
+                  ? 'Upload a customized marketing package recommendation for this client.'
+                  : 'Download your personalized marketing package recommendation.'}
+              </p>
+
+              {user?.role === 'admin' ? (
+                <div className="space-y-4">
+                  <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center">
+                    <input
+                      type="file"
+                      className="hidden"
+                      id="recommended-package-upload"
+                      accept=".pdf,.doc,.docx"
+                      onChange={handleRecommendedPackageUpload}
+                      disabled={uploadingRecommended}
+                    />
+                    <label htmlFor="recommended-package-upload" className="cursor-pointer flex flex-col items-center justify-center">
+                      <UploadIcon className={`h-10 w-10 mb-3 ${uploadingRecommended ? 'text-gray-300' : 'text-gray-400'}`} />
+                      <p className="text-sm font-medium text-gray-700">
+                        {uploadingRecommended ? 'Uploading...' : 'Click to upload recommended package'}
+                      </p>
+                      <p className="text-xs text-gray-500 mt-1">
+                        PDF or DOC files
+                      </p>
+                    </label>
+                  </div>
+                  {recommendedPackageFile && (
+                    <div className="bg-green-50 border border-green-200 rounded-lg p-4 flex items-center justify-between">
+                      <div className="flex items-center">
+                        <FileIcon className="h-8 w-8 text-green-600 mr-3" />
+                        <div>
+                          <p className="text-sm font-medium text-gray-900">{recommendedPackageFileName}</p>
+                          <p className="text-xs text-green-600">Uploaded successfully</p>
+                        </div>
+                      </div>
+                      <a
+                        href={recommendedPackageFile}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-sm text-primary-600 hover:text-primary-800"
+                      >
+                        View
+                      </a>
+                    </div>
+                  )}
+                </div>
+              ) : (
+                <div>
+                  {recommendedPackageFile ? (
+                    <div className="bg-primary-50 border border-primary-200 rounded-lg p-6">
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center">
+                          <FileIcon className="h-10 w-10 text-primary-600 mr-4" />
+                          <div>
+                            <p className="text-sm font-medium text-gray-900">{recommendedPackageFileName}</p>
+                            <p className="text-xs text-gray-500">Your personalized marketing recommendation</p>
+                          </div>
+                        </div>
+                        <a
+                          href={recommendedPackageFile}
+                          download={recommendedPackageFileName}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-primary-600 hover:bg-primary-700"
+                        >
+                          <DownloadIcon className="h-4 w-4 mr-2" />
+                          Download
+                        </a>
+                      </div>
+                    </div>
+                  ) : (
+                    <div className="bg-gray-50 border border-gray-200 rounded-lg p-6 text-center">
+                      <FileIcon className="h-10 w-10 text-gray-400 mx-auto mb-2" />
+                      <p className="text-sm text-gray-500">No recommended package available yet.</p>
+                      <p className="text-xs text-gray-400 mt-1">Check back later for your personalized recommendation.</p>
+                    </div>
+                  )}
+                </div>
+              )}
+            </div>
+
             {/* Payment Section */}
             <div className="border-t border-gray-200 pt-6">
               <div className="bg-gray-50 p-4 rounded-lg border border-gray-200">
