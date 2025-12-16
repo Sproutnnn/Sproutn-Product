@@ -2,9 +2,11 @@ import React, { useState, useEffect, useRef } from 'react';
 import { MessageCircleIcon, SendIcon, XIcon } from 'lucide-react';
 import { chatService } from '../services/chat.service';
 import { useAuth } from '../context/AuthContext';
+
 const Chat: React.FC = () => {
   const { user } = useAuth();
   const [isOpen, setIsOpen] = useState(false);
+  const [isClosing, setIsClosing] = useState(false);
   const [message, setMessage] = useState('');
   const typingTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   const [messages, setMessages] = useState<Array<{
@@ -140,43 +142,180 @@ const Chat: React.FC = () => {
       setMessage(messageText); // Restore message on error
     }
   };
-  return <>
-      {/* Chat button */}
-      <button onClick={() => setIsOpen(true)} className="fixed bottom-6 right-6 bg-primary-500 text-white rounded-full p-3 shadow-lg hover:bg-primary-600 transition-colors z-50">
-        <MessageCircleIcon className="h-6 w-6" />
-      </button>
+
+  const handleOpen = () => {
+    setIsOpen(true);
+    setIsClosing(false);
+  };
+
+  const handleClose = () => {
+    setIsClosing(true);
+    // Wait for animation to complete before fully closing
+    setTimeout(() => {
+      setIsOpen(false);
+      setIsClosing(false);
+    }, 300);
+  };
+
+  return (
+    <>
+      {/* CSS for animations */}
+      <style>{`
+        @keyframes chatOpen {
+          0% {
+            opacity: 0;
+            transform: scale(0.8) translateY(20px);
+          }
+          100% {
+            opacity: 1;
+            transform: scale(1) translateY(0);
+          }
+        }
+
+        @keyframes chatClose {
+          0% {
+            opacity: 1;
+            transform: scale(1) translateY(0);
+          }
+          100% {
+            opacity: 0;
+            transform: scale(0.8) translateY(20px);
+          }
+        }
+
+        @keyframes buttonPulse {
+          0%, 100% {
+            transform: scale(1);
+          }
+          50% {
+            transform: scale(1.1);
+          }
+        }
+
+        @keyframes buttonWiggle {
+          0%, 100% {
+            transform: rotate(0deg);
+          }
+          25% {
+            transform: rotate(-5deg);
+          }
+          75% {
+            transform: rotate(5deg);
+          }
+        }
+
+        .chat-button:hover {
+          animation: buttonPulse 0.6s ease-in-out infinite;
+        }
+
+        .chat-button:hover .chat-icon {
+          animation: buttonWiggle 0.5s ease-in-out;
+        }
+
+        .chat-window-open {
+          animation: chatOpen 0.3s ease-out forwards;
+        }
+
+        .chat-window-close {
+          animation: chatClose 0.3s ease-in forwards;
+        }
+
+        .chat-header {
+          animation: slideDown 0.3s ease-out 0.1s both;
+        }
+
+        .chat-body {
+          animation: slideDown 0.3s ease-out 0.15s both;
+        }
+
+        .chat-footer {
+          animation: slideDown 0.3s ease-out 0.2s both;
+        }
+
+        @keyframes slideDown {
+          0% {
+            opacity: 0;
+            transform: translateY(-10px);
+          }
+          100% {
+            opacity: 1;
+            transform: translateY(0);
+          }
+        }
+      `}</style>
+
+      {/* Chat button - only show when chat is closed */}
+      {!isOpen && (
+        <button
+          onClick={handleOpen}
+          className="chat-button fixed bottom-6 right-6 bg-primary-500 text-white rounded-full p-4 shadow-lg hover:bg-primary-600 hover:shadow-xl transition-all duration-300 z-50"
+        >
+          <MessageCircleIcon className="chat-icon h-6 w-6" />
+        </button>
+      )}
+
       {/* Chat window */}
-      {isOpen && <div className="fixed bottom-6 right-6 w-80 sm:w-96 bg-white rounded-lg shadow-xl z-50 flex flex-col" style={{
-      height: '500px'
-    }}>
-          <div className="flex items-center justify-between bg-primary-500 text-white p-4 rounded-t-lg">
-            <h3 className="font-medium">Chat</h3>
-            <button onClick={() => setIsOpen(false)} className="text-white hover:text-gray-200">
+      {isOpen && (
+        <div
+          className={`fixed bottom-6 right-6 w-80 sm:w-96 bg-white rounded-lg shadow-xl z-50 flex flex-col overflow-hidden ${
+            isClosing ? 'chat-window-close' : 'chat-window-open'
+          }`}
+          style={{ height: '500px' }}
+        >
+          <div className="chat-header flex items-center justify-between bg-primary-500 text-white p-4 rounded-t-lg">
+            <h3 className="font-medium">Chat with Support</h3>
+            <button
+              onClick={handleClose}
+              className="text-white hover:text-gray-200 transition-colors duration-200 hover:rotate-90 transform"
+            >
               <XIcon className="h-5 w-5" />
             </button>
           </div>
-          <div className="flex-1 p-4 overflow-y-auto space-y-4">
-            {messages.map(msg => <div key={msg.id} className={`flex ${msg.sender === 'user' ? 'justify-end' : 'justify-start'}`}>
-                <div className={`max-w-xs rounded-lg px-4 py-2 ${msg.sender === 'user' ? 'bg-primary-100 text-charcoal-900' : 'bg-gray-100 text-charcoal-900'}`}>
+          <div className="chat-body flex-1 p-4 overflow-y-auto space-y-4">
+            {messages.map(msg => (
+              <div
+                key={msg.id}
+                className={`flex ${msg.sender === 'user' ? 'justify-end' : 'justify-start'}`}
+              >
+                <div
+                  className={`max-w-xs rounded-lg px-4 py-2 transition-all duration-200 hover:shadow-md ${
+                    msg.sender === 'user'
+                      ? 'bg-primary-100 text-charcoal-900'
+                      : 'bg-gray-100 text-charcoal-900'
+                  }`}
+                >
                   <p className="text-sm">{msg.text}</p>
                   <p className="text-xs text-gray-500 mt-1">
                     {new Date(msg.timestamp).toLocaleTimeString([], {
-                hour: '2-digit',
-                minute: '2-digit'
-              })}
+                      hour: '2-digit',
+                      minute: '2-digit'
+                    })}
                   </p>
                 </div>
-              </div>)}
+              </div>
+            ))}
           </div>
-          <form onSubmit={handleSendMessage} className="p-4 border-t">
+          <form onSubmit={handleSendMessage} className="chat-footer p-4 border-t">
             <div className="flex items-center">
-              <input type="text" value={message} onChange={e => handleTyping(e.target.value)} placeholder="Type your message..." className="flex-1 border rounded-l-md py-2 px-3 focus:outline-none focus:ring-2 focus:ring-primary-500" />
-              <button type="submit" className="bg-primary-500 text-white rounded-r-md p-2 hover:bg-primary-600">
+              <input
+                type="text"
+                value={message}
+                onChange={e => handleTyping(e.target.value)}
+                placeholder="Type your message..."
+                className="flex-1 border rounded-l-md py-2 px-3 focus:outline-none focus:ring-2 focus:ring-primary-500 transition-shadow duration-200"
+              />
+              <button
+                type="submit"
+                className="bg-primary-500 text-white rounded-r-md p-2 hover:bg-primary-600 transition-colors duration-200 hover:scale-105 transform"
+              >
                 <SendIcon className="h-5 w-5" />
               </button>
             </div>
           </form>
-        </div>}
-    </>;
+        </div>
+      )}
+    </>
+  );
 };
+
 export default Chat;
