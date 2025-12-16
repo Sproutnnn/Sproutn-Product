@@ -50,12 +50,16 @@ const Chat: React.FC = () => {
 
     // Subscribe to real-time messages
     const subscription = chatService.subscribeToUserMessages(user.id, (newMessage) => {
-      setMessages(prev => [...prev, {
-        id: newMessage.id,
-        sender: newMessage.sender,
-        text: newMessage.text,
-        timestamp: newMessage.created_at || new Date().toISOString()
-      }]);
+      setMessages(prev => {
+        // Avoid duplicates
+        if (prev.some(m => m.id === newMessage.id)) return prev;
+        return [...prev, {
+          id: newMessage.id,
+          sender: newMessage.sender,
+          text: newMessage.text,
+          timestamp: newMessage.created_at || new Date().toISOString()
+        }];
+      });
     });
 
     return () => {

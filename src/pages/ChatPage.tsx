@@ -91,16 +91,51 @@ const ChatPage: React.FC = () => {
   useEffect(() => {
     if (!user?.id) return;
 
-    const targetUserId = user.role === 'admin' ? activeChat : user.id;
-    if (!targetUserId) return;
+    if (user.role === 'admin') {
+      // Admin subscribes to ALL messages
+      const subscription = chatService.subscribeToAllMessages((newMessage) => {
+        // If message is for the active chat, add it to messages
+        if (newMessage.user_id === activeChat) {
+          setMessages(prev => {
+            // Avoid duplicates
+            if (prev.some(m => m.id === newMessage.id)) return prev;
+            return [...prev, newMessage];
+          });
+        }
 
-    const subscription = chatService.subscribeToUserMessages(targetUserId, (newMessage) => {
-      setMessages(prev => [...prev, newMessage]);
-    });
+        // Update threads list with new message
+        setChatThreads(prev => {
+          const existingThread = prev.find(t => t.userId === newMessage.user_id);
+          if (existingThread) {
+            // Update existing thread
+            return prev.map(t =>
+              t.userId === newMessage.user_id
+                ? { ...t, lastMessage: newMessage.text, lastMessageTime: newMessage.created_at || new Date().toISOString() }
+                : t
+            );
+          }
+          // If new user, we'd need to fetch their details - for now just refresh
+          return prev;
+        });
+      });
 
-    return () => {
-      subscription.unsubscribe();
-    };
+      return () => {
+        subscription.unsubscribe();
+      };
+    } else {
+      // Customer subscribes to their own messages
+      const subscription = chatService.subscribeToUserMessages(user.id, (newMessage) => {
+        setMessages(prev => {
+          // Avoid duplicates
+          if (prev.some(m => m.id === newMessage.id)) return prev;
+          return [...prev, newMessage];
+        });
+      });
+
+      return () => {
+        subscription.unsubscribe();
+      };
+    }
   }, [user, activeChat]);
 
   const handleSendMessage = async (e: React.FormEvent) => {

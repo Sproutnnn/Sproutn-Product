@@ -154,6 +154,28 @@ export const chatService = {
   },
 
   /**
+   * Subscribe to ALL new messages (for admin view)
+   */
+  subscribeToAllMessages(
+    callback: (message: ChatMessage) => void
+  ) {
+    return supabase
+      .channel('all_messages')
+      .on(
+        'postgres_changes',
+        {
+          event: 'INSERT',
+          schema: 'public',
+          table: 'chat_messages'
+        },
+        (payload) => {
+          callback(payload.new as ChatMessage);
+        }
+      )
+      .subscribe();
+  },
+
+  /**
    * Subscribe to new messages for a project
    */
   subscribeToProjectMessages(
