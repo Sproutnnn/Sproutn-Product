@@ -367,13 +367,16 @@ const ProjectDetails: React.FC = () => {
               </div>
             </div>}
           {user?.role === 'admin' && <>
-              {/* Customer Uploaded Files Section */}
-              {project.uploaded_files && project.uploaded_files.length > 0 && (
-                <div className="mb-8 bg-blue-50 border border-blue-200 rounded-lg p-4">
-                  <h3 className="text-lg font-medium text-gray-900 mb-3 flex items-center">
-                    <ImageIcon className="h-5 w-5 mr-2 text-blue-600" />
-                    Customer Uploaded Files ({project.uploaded_files.length})
-                  </h3>
+              {/* Customer Uploaded Files Section - Always visible for admin */}
+              <div className="mb-8 bg-blue-50 border border-blue-200 rounded-lg p-4">
+                <h3 className="text-lg font-medium text-gray-900 mb-3 flex items-center">
+                  <ImageIcon className="h-5 w-5 mr-2 text-blue-600" />
+                  Customer Uploaded Images
+                  {project.uploaded_files && project.uploaded_files.length > 0 && (
+                    <span className="ml-2 text-sm text-gray-500">({project.uploaded_files.length})</span>
+                  )}
+                </h3>
+                {project.uploaded_files && project.uploaded_files.length > 0 ? (
                   <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
                     {project.uploaded_files.map((fileUrl: string, index: number) => (
                       <div key={index} className="bg-white border rounded-lg overflow-hidden shadow-sm">
@@ -407,8 +410,13 @@ const ProjectDetails: React.FC = () => {
                       </div>
                     ))}
                   </div>
-                </div>
-              )}
+                ) : (
+                  <div className="text-center py-8 text-gray-500">
+                    <ImageIcon className="h-12 w-12 mx-auto mb-2 text-gray-300" />
+                    <p className="text-sm">No images uploaded by customer yet</p>
+                  </div>
+                )}
+              </div>
 
               <form onSubmit={handleSubmit}>
               <div className="space-y-6">
