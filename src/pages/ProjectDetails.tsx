@@ -100,7 +100,23 @@ const ProjectDetails: React.FC = () => {
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files.length > 0) {
       const filesArray = Array.from(e.target.files);
-      setUploadedFiles(filesArray);
+
+      // Filter to only allow JPG and PNG files
+      const validFiles = filesArray.filter(file => {
+        const extension = file.name.toLowerCase().split('.').pop();
+        return ['jpg', 'jpeg', 'png'].includes(extension || '');
+      });
+
+      if (validFiles.length === 0) {
+        alert('Please select only JPG or PNG files.');
+        return;
+      }
+
+      if (validFiles.length < filesArray.length) {
+        alert(`${filesArray.length - validFiles.length} file(s) were skipped. Only JPG and PNG files are allowed.`);
+      }
+
+      setUploadedFiles(validFiles);
       setShowUploadConfirm(true);
     }
   };
@@ -319,14 +335,14 @@ const ProjectDetails: React.FC = () => {
                   idea
                 </p>
                 <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center">
-                  <input type="file" multiple accept="image/*" className="hidden" id="product-upload" onChange={handleFileChange} />
+                  <input type="file" multiple accept=".jpg,.jpeg,.png" className="hidden" id="product-upload" onChange={handleFileChange} />
                   <label htmlFor="product-upload" className="cursor-pointer flex flex-col items-center justify-center">
                     <UploadIcon className="h-10 w-10 text-gray-400 mb-3" />
                     <p className="text-sm font-medium text-gray-700">
                       Drag and drop files here or click to browse
                     </p>
                     <p className="text-xs text-gray-500 mt-1">
-                      JPG, PNG or GIF, up to 10MB each
+                      JPG or PNG only, up to 10MB each
                     </p>
                   </label>
                 </div>
