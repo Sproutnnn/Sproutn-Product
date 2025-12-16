@@ -48,22 +48,27 @@ const Chat: React.FC = () => {
 
     loadMessages();
 
-    // Subscribe to real-time messages
-    const subscription = chatService.subscribeToUserMessages(user.id, (newMessage) => {
-      setMessages(prev => {
-        // Avoid duplicates
-        if (prev.some(m => m.id === newMessage.id)) return prev;
-        return [...prev, {
-          id: newMessage.id,
-          sender: newMessage.sender,
-          text: newMessage.text,
-          timestamp: newMessage.created_at || new Date().toISOString()
-        }];
-      });
-    });
+    // Poll for new messages every 3 seconds (since realtime requires paid Supabase plan)
+    const pollMessages = async () => {
+      try {
+        const chatMessages = await chatService.getUserMessages(user.id);
+        if (chatMessages.length > 0) {
+          setMessages(chatMessages.map(m => ({
+            id: m.id,
+            sender: m.sender,
+            text: m.text,
+            timestamp: m.created_at || new Date().toISOString()
+          })));
+        }
+      } catch (error) {
+        console.error('Error polling messages:', error);
+      }
+    };
+
+    const interval = setInterval(pollMessages, 3000);
 
     return () => {
-      subscription.unsubscribe();
+      clearInterval(interval);
     };
   }, [user]);
   const handleSendMessage = async (e: React.FormEvent) => {

@@ -87,55 +87,40 @@ const ChatPage: React.FC = () => {
     scrollToBottom();
   }, [messages]);
 
-  // Subscribe to real-time messages
+  // Poll for new messages every 3 seconds (since realtime requires paid Supabase plan)
   useEffect(() => {
     if (!user?.id) return;
 
-    if (user.role === 'admin') {
-      // Admin subscribes to ALL messages
-      const subscription = chatService.subscribeToAllMessages((newMessage) => {
-        // If message is for the active chat, add it to messages
-        if (newMessage.user_id === activeChat) {
-          setMessages(prev => {
-            // Avoid duplicates
-            if (prev.some(m => m.id === newMessage.id)) return prev;
-            return [...prev, newMessage];
-          });
-        }
+    const pollMessages = async () => {
+      try {
+        if (user.role === 'admin') {
+          // Refresh threads list
+          const threads = await chatService.getAllChatThreads();
+          setChatThreads(threads);
 
-        // Update threads list with new message
-        setChatThreads(prev => {
-          const existingThread = prev.find(t => t.userId === newMessage.user_id);
-          if (existingThread) {
-            // Update existing thread
-            return prev.map(t =>
-              t.userId === newMessage.user_id
-                ? { ...t, lastMessage: newMessage.text, lastMessageTime: newMessage.created_at || new Date().toISOString() }
-                : t
-            );
+          // If viewing a chat, refresh messages
+          if (activeChat) {
+            const chatMessages = await chatService.getUserMessages(activeChat);
+            setMessages(chatMessages);
           }
-          // If new user, we'd need to fetch their details - for now just refresh
-          return prev;
-        });
-      });
+        } else {
+          // Customer: refresh their messages
+          const chatMessages = await chatService.getUserMessages(user.id);
+          if (chatMessages.length > 0) {
+            setMessages(chatMessages);
+          }
+        }
+      } catch (error) {
+        console.error('Error polling messages:', error);
+      }
+    };
 
-      return () => {
-        subscription.unsubscribe();
-      };
-    } else {
-      // Customer subscribes to their own messages
-      const subscription = chatService.subscribeToUserMessages(user.id, (newMessage) => {
-        setMessages(prev => {
-          // Avoid duplicates
-          if (prev.some(m => m.id === newMessage.id)) return prev;
-          return [...prev, newMessage];
-        });
-      });
+    // Poll every 3 seconds
+    const interval = setInterval(pollMessages, 3000);
 
-      return () => {
-        subscription.unsubscribe();
-      };
-    }
+    return () => {
+      clearInterval(interval);
+    };
   }, [user, activeChat]);
 
   const handleSendMessage = async (e: React.FormEvent) => {
