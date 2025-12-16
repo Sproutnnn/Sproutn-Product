@@ -238,17 +238,21 @@ export const chatService = {
    * Update typing indicator for a user
    */
   async setTypingStatus(userId: string): Promise<void> {
-    const { error } = await supabase
+    console.log('Setting typing status for user:', userId);
+    const { data, error } = await supabase
       .from('typing_indicators')
       .upsert({
         user_id: userId,
         updated_at: new Date().toISOString()
       }, {
         onConflict: 'user_id'
-      });
+      })
+      .select();
 
     if (error) {
       console.error('Error setting typing status:', error.message, error.details);
+    } else {
+      console.log('Typing status set:', data);
     }
   },
 
@@ -262,14 +266,28 @@ export const chatService = {
       .eq('user_id', userId)
       .single();
 
-    if (error || !data) {
+    if (error) {
+      // No record found is not an error we need to log
+      if (error.code !== 'PGRST116') {
+        console.error('Error getting typing status:', error.message);
+      }
       return false;
     }
 
-    // Consider typing if updated within last 3 seconds
+    if (!data) {
+      return false;
+    }
+
+    // Consider typing if updated within last 5 seconds (extended for polling delay)
     const updatedAt = new Date(data.updated_at).getTime();
     const now = Date.now();
-    return (now - updatedAt) < 3000;
+    const isTyping = (now - updatedAt) < 5000;
+
+    if (isTyping) {
+      console.log('User is typing, last update:', new Date(data.updated_at).toISOString());
+    }
+
+    return isTyping;
   },
 
   /**
