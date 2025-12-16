@@ -204,7 +204,13 @@ const Chat: React.FC = () => {
           }
         }
 
+        .chat-button {
+          opacity: 0.5;
+          transition: opacity 0.3s ease, transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
         .chat-button:hover {
+          opacity: 1;
           animation: buttonPulse 0.6s ease-in-out infinite;
         }
 
