@@ -13,6 +13,7 @@ const ProjectCreation: React.FC = () => {
     targetMarket: '',
     estimatedBudget: ''
   });
+  const [customCategory, setCustomCategory] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     const {
@@ -33,10 +34,13 @@ const ProjectCreation: React.FC = () => {
         throw new Error('User not authenticated');
       }
 
+      // Use custom category if "other" is selected
+      const finalCategory = formData.category === 'other' ? customCategory : formData.category;
+
       await projectsService.create({
         name: formData.name,
         description: formData.description,
-        category: formData.category,
+        category: finalCategory,
         target_market: formData.targetMarket,
         estimated_budget: formData.estimatedBudget,
         customer_id: user.id,
@@ -80,15 +84,31 @@ const ProjectCreation: React.FC = () => {
               </label>
               <select id="category" name="category" value={formData.category} onChange={handleChange} className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
                 <option value="">Select a category</option>
-                <option value="electronics">Electronics</option>
-                <option value="home-goods">Home Goods</option>
+                <option value="beauty-personal-care">Beauty & Personal Care</option>
+                <option value="home-kitchen">Home & Kitchen</option>
+                <option value="electronics-tech">Electronics & Tech</option>
+                <option value="sports-outdoors">Sports & Outdoors</option>
                 <option value="health-wellness">Health & Wellness</option>
                 <option value="toys-games">Toys & Games</option>
-                <option value="fashion-accessories">
-                  Fashion & Accessories
-                </option>
+                <option value="fashion-accessories">Fashion & Accessories</option>
                 <option value="other">Other</option>
               </select>
+              {formData.category === 'other' && (
+                <div className="mt-2">
+                  <label htmlFor="customCategory" className="block text-sm font-medium text-gray-700">
+                    Please specify your category *
+                  </label>
+                  <input
+                    type="text"
+                    id="customCategory"
+                    value={customCategory}
+                    onChange={(e) => setCustomCategory(e.target.value)}
+                    required
+                    className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+                    placeholder="Enter your product category"
+                  />
+                </div>
+              )}
             </div>
             <div>
               <label htmlFor="targetMarket" className="block text-sm font-medium text-gray-700">
@@ -107,7 +127,7 @@ const ProjectCreation: React.FC = () => {
             <button type="button" onClick={() => navigate(-1)} className="mr-4 bg-white py-2 px-4 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
               Cancel
             </button>
-            <button type="submit" disabled={isSubmitting || !formData.name} className="inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:bg-blue-300">
+            <button type="submit" disabled={isSubmitting || !formData.name || (formData.category === 'other' && !customCategory.trim())} className="inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:bg-blue-300">
               {isSubmitting ? 'Creating...' : 'Create Project'}
             </button>
           </div>

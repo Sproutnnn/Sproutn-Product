@@ -71,6 +71,9 @@ const Tracking: React.FC = () => {
   const [currentPaymentType, setCurrentPaymentType] = useState<PaymentType>('remaining');
   const [currentPaymentAmount, setCurrentPaymentAmount] = useState(0);
   const [currentPaymentTitle, setCurrentPaymentTitle] = useState('');
+  // Admin cost settings
+  const [qcCost, setQcCost] = useState(0);
+  const [freightCost, setFreightCost] = useState(500);
   useEffect(() => {
     const loadProject = async () => {
       if (!id) return;
@@ -87,9 +90,18 @@ const Tracking: React.FC = () => {
 
         setProject(projectData);
 
-        // Load estimated delivery date from project
+        // Load estimated delivery date from project (parse as local date to avoid timezone shift)
         if (projectData.estimated_delivery) {
-          setEstimatedDeliveryDate(new Date(projectData.estimated_delivery).toLocaleDateString('en-US', {
+          const dateStr = projectData.estimated_delivery;
+          // Parse as local date to avoid timezone issues
+          let localDate: Date;
+          if (dateStr.match(/^\d{4}-\d{2}-\d{2}$/)) {
+            const [year, month, day] = dateStr.split('-').map(Number);
+            localDate = new Date(year, month - 1, day);
+          } else {
+            localDate = new Date(dateStr);
+          }
+          setEstimatedDeliveryDate(localDate.toLocaleDateString('en-US', {
             year: 'numeric',
             month: 'long',
             day: 'numeric'
@@ -99,6 +111,14 @@ const Tracking: React.FC = () => {
         // Load tracking events from database
         if (projectData.tracking_events && projectData.tracking_events.length > 0) {
           setTrackingEvents(projectData.tracking_events);
+        }
+
+        // Load cost settings
+        if (projectData.qc_cost !== undefined) {
+          setQcCost(projectData.qc_cost || 0);
+        }
+        if (projectData.freight_cost !== undefined) {
+          setFreightCost(projectData.freight_cost || 500);
         }
       } catch (err) {
         console.error('Error loading project:', err);
@@ -211,6 +231,20 @@ const Tracking: React.FC = () => {
     window.location.reload();
   };
 
+  const handleSaveCosts = async () => {
+    if (!id) return;
+    try {
+      await projectsService.update(id, {
+        qc_cost: qcCost,
+        freight_cost: freightCost
+      });
+      alert('Costs saved successfully!');
+    } catch (err) {
+      console.error('Error saving costs:', err);
+      alert('Failed to save costs.');
+    }
+  };
+
   const paymentStatus = project ? paymentsService.getPaymentStatus(project) : null;
   const paymentAmounts = project ? paymentsService.calculatePaymentAmounts(project) : null;
   if (loading) {
@@ -255,12 +289,12 @@ const Tracking: React.FC = () => {
             Production & Shipping Status
           </h2>
           <div className="relative">
-            {/* Timeline line */}
-            <div className="absolute left-9 top-0 h-full w-0.5 bg-gray-200"></div>
+            {/* Timeline line - centered with h-16 icons (center at 8 = 32px) */}
+            <div className="absolute left-8 top-0 h-full w-0.5 bg-gray-200"></div>
             <div className="space-y-8">
               {trackingEvents.map((event, index) => <div key={index} className="relative flex items-start">
-                  <div className={`flex items-center justify-center h-18 w-18 rounded-full border-2 ${event.completed ? 'border-green-500 bg-green-50' : 'border-gray-200 bg-white'} z-10`}>
-                    <div className="p-2">
+                  <div className={`flex items-center justify-center h-16 w-16 rounded-full border-2 ${event.completed ? 'border-green-500 bg-green-50' : 'border-gray-200 bg-white'} z-10`}>
+                    <div className="flex items-center justify-center">
                       {getStatusIcon(index, event.completed)}
                     </div>
                   </div>
@@ -351,6 +385,49 @@ const Tracking: React.FC = () => {
                 </button>
               </div>}
           </div>
+
+          {/* Admin Cost Settings */}
+          {user?.role === 'admin' && (
+            <div className="mt-6 bg-gray-50 border rounded-md p-4">
+              <h3 className="text-md font-medium text-gray-900 mb-4">Payment Amounts</h3>
+              <p className="text-sm text-gray-500 mb-4">Set the costs that customers need to pay at each stage.</p>
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700">QC Cost ($)</label>
+                  <input
+                    type="number"
+                    value={qcCost}
+                    onChange={(e) => setQcCost(parseFloat(e.target.value) || 0)}
+                    min="0"
+                    step="0.01"
+                    className="mt-1 block w-full border border-gray-300 rounded-md py-2 px-3 sm:text-sm focus:outline-none focus:ring-primary-500 focus:border-primary-500"
+                    placeholder="0.00"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700">Freight Cost ($)</label>
+                  <input
+                    type="number"
+                    value={freightCost}
+                    onChange={(e) => setFreightCost(parseFloat(e.target.value) || 0)}
+                    min="0"
+                    step="0.01"
+                    className="mt-1 block w-full border border-gray-300 rounded-md py-2 px-3 sm:text-sm focus:outline-none focus:ring-primary-500 focus:border-primary-500"
+                    placeholder="500.00"
+                  />
+                </div>
+              </div>
+              <div className="mt-4">
+                <button
+                  onClick={handleSaveCosts}
+                  className="inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-primary-500 hover:bg-primary-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500"
+                >
+                  <SaveIcon className="h-4 w-4 mr-2" />
+                  Save Costs
+                </button>
+              </div>
+            </div>
+          )}
         </div>
       </div>
       {/* Tracking Information Modal */}

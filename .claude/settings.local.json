@@ -8,7 +8,10 @@
       "Bash(git restore:*)",
       "Bash(npx supabase db push)",
       "Bash(npm run dev:*)",
-      "Bash(npm run build:*)"
+      "Bash(npm run build:*)",
+      "Bash(npm install:*)",
+      "Bash(dir /b \"C:\\Users\\Thomas\\Documents\\Cursor\\Backup\\Sproutn-Product-main\\supabase\\migrations\")",
+      "Bash(if not exist \"C:\\Users\\Thomas\\Documents\\Cursor\\Backup\\Sproutn-Product-main\\src\\components\\feedback\" mkdir \"C:\\Users\\Thomas\\Documents\\Cursor\\Backup\\Sproutn-Product-main\\src\\components\\feedback\")"
     ]
   }
 }

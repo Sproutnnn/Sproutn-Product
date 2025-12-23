@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
-import { ArrowLeftIcon, ArrowRightIcon, CreditCardIcon, UploadIcon, XIcon, PlusIcon, DownloadIcon, ImageIcon, CheckIcon, TrashIcon } from 'lucide-react';
+import { ArrowLeftIcon, ArrowRightIcon, CreditCardIcon, UploadIcon, XIcon, PlusIcon, DownloadIcon, ImageIcon, CheckIcon, TrashIcon, DollarSignIcon, TagIcon } from 'lucide-react';
 import ModuleNavigation from '../components/ModuleNavigation';
 import { useAuth } from '../context/AuthContext';
 import { projectsService } from '../services/projects.service';
@@ -275,6 +275,45 @@ const ProjectDetails: React.FC = () => {
       </div>
       {/* Module Navigation */}
       <ModuleNavigation project={project} />
+
+      {/* Admin Project Info */}
+      {user?.role === 'admin' && (
+        <div className="bg-gray-50 border border-gray-200 rounded-lg p-4 mb-6">
+          <h3 className="text-sm font-medium text-gray-800 mb-3">Project Information</h3>
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+            <div className="flex items-start">
+              <TagIcon className="h-5 w-5 text-gray-400 mr-2 mt-0.5" />
+              <div>
+                <p className="text-xs text-gray-500">Category</p>
+                <p className="text-sm font-medium text-gray-900">
+                  {project.category ? project.category.replace(/-/g, ' ').replace(/\b\w/g, (l: string) => l.toUpperCase()) : 'Not specified'}
+                </p>
+              </div>
+            </div>
+            <div className="flex items-start">
+              <DollarSignIcon className="h-5 w-5 text-gray-400 mr-2 mt-0.5" />
+              <div>
+                <p className="text-xs text-gray-500">Estimated Budget</p>
+                <p className="text-sm font-medium text-gray-900">
+                  {project.estimated_budget || 'Not specified'}
+                </p>
+              </div>
+            </div>
+            <div>
+              <p className="text-xs text-gray-500">Target Market</p>
+              <p className="text-sm font-medium text-gray-900">
+                {project.target_market || 'Not specified'}
+              </p>
+            </div>
+            <div>
+              <p className="text-xs text-gray-500">Customer</p>
+              <p className="text-sm font-medium text-gray-900">
+                {project.customer?.name || project.customer?.email || 'Unknown'}
+              </p>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Admin Project Status Control */}
       {user?.role === 'admin' && <div className="bg-blue-50 border-l-4 border-blue-400 p-4 mb-6">

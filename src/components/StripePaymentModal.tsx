@@ -26,6 +26,7 @@ const StripePaymentModal: React.FC<StripePaymentModalProps> = ({
 }) => {
   const [isProcessing, setIsProcessing] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [paymentSuccess, setPaymentSuccess] = useState(false);
   const [formData, setFormData] = useState({
     cardholderName: '',
     cardNumber: '',
@@ -34,6 +35,18 @@ const StripePaymentModal: React.FC<StripePaymentModalProps> = ({
   });
 
   if (!isOpen) return null;
+
+  const handleClose = () => {
+    setPaymentSuccess(false);
+    setError(null);
+    setFormData({
+      cardholderName: '',
+      cardNumber: '',
+      expiryDate: '',
+      cvv: ''
+    });
+    onClose();
+  };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -69,8 +82,9 @@ const StripePaymentModal: React.FC<StripePaymentModalProps> = ({
       // Simulate processing time
       await new Promise(resolve => setTimeout(resolve, 1500));
 
+      // Show success state
+      setPaymentSuccess(true);
       onSuccess();
-      onClose();
     } catch (err) {
       console.error('Payment error:', err);
       setError(err instanceof Error ? err.message : 'Payment failed. Please try again.');
@@ -82,9 +96,31 @@ const StripePaymentModal: React.FC<StripePaymentModalProps> = ({
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
       <div className="bg-white rounded-lg shadow-xl max-w-md w-full mx-4">
+        {paymentSuccess ? (
+          /* Success Confirmation UI */
+          <div className="p-6 text-center">
+            <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
+              <CheckIcon className="h-8 w-8 text-green-600" />
+            </div>
+            <h3 className="text-xl font-semibold text-gray-900 mb-2">Payment Successful!</h3>
+            <p className="text-sm text-gray-600 mb-4">
+              Your payment of <span className="font-semibold">${amount.toFixed(2)}</span> has been processed successfully.
+            </p>
+            <p className="text-xs text-gray-500 mb-6">
+              A confirmation email will be sent to your registered email address.
+            </p>
+            <button
+              onClick={handleClose}
+              className="w-full inline-flex items-center justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500"
+            >
+              Continue
+            </button>
+          </div>
+        ) : (
+          <>
         <div className="flex justify-between items-center p-4 border-b">
           <h3 className="text-lg font-medium text-gray-900">{title}</h3>
-          <button onClick={onClose} className="text-gray-400 hover:text-gray-500">
+          <button onClick={handleClose} className="text-gray-400 hover:text-gray-500">
             <XIcon className="h-5 w-5" />
           </button>
         </div>
@@ -196,6 +232,8 @@ const StripePaymentModal: React.FC<StripePaymentModalProps> = ({
             Your payment is secure. We use industry-standard encryption.
           </p>
         </form>
+          </>
+        )}
       </div>
     </div>
   );

@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { ArrowLeftIcon, ArrowRightIcon, CheckIcon, CheckCircleIcon, TrashIcon, StarIcon } from 'lucide-react';
+import { ArrowLeftIcon, ArrowRightIcon, CheckIcon, CheckCircleIcon, TrashIcon, StarIcon, EditIcon } from 'lucide-react';
 import ModuleNavigation from '../components/ModuleNavigation';
 import AdminStatusControl from '../components/AdminStatusControl';
 import { useAuth } from '../context/AuthContext';
@@ -41,6 +41,9 @@ const Sourcing: React.FC = () => {
     advantages: [''],
     disadvantages: ['']
   });
+  // For editing existing manufacturers
+  const [editingManufacturer, setEditingManufacturer] = useState<Manufacturer | null>(null);
+  const [showEditModal, setShowEditModal] = useState(false);
   useEffect(() => {
     const loadProject = async () => {
       if (!id) return;
@@ -106,12 +109,83 @@ const Sourcing: React.FC = () => {
   const handleManufacturerChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const {
       name,
-      value
-    } = e.target;
+      value,
+      type
+    } = e.target as HTMLInputElement;
     setNewManufacturer(prev => ({
       ...prev,
-      [name]: value
+      [name]: type === 'number' ? (parseFloat(value) || 0) : value
     }));
+  };
+
+  // Handler for editing manufacturer form
+  const handleEditManufacturerChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    if (!editingManufacturer) return;
+    const {
+      name,
+      value,
+      type
+    } = e.target as HTMLInputElement;
+    setEditingManufacturer(prev => prev ? ({
+      ...prev,
+      [name]: type === 'number' ? (parseFloat(value) || 0) : value
+    }) : null);
+  };
+
+  const handleEditArrayChange = (field: 'advantages' | 'disadvantages', index: number, value: string) => {
+    if (!editingManufacturer) return;
+    setEditingManufacturer(prev => {
+      if (!prev) return null;
+      const newArray = [...prev[field]];
+      newArray[index] = value;
+      return {
+        ...prev,
+        [field]: newArray
+      };
+    });
+  };
+
+  const addEditArrayItem = (field: 'advantages' | 'disadvantages') => {
+    if (!editingManufacturer) return;
+    setEditingManufacturer(prev => prev ? ({
+      ...prev,
+      [field]: [...prev[field], '']
+    }) : null);
+  };
+
+  const removeEditArrayItem = (field: 'advantages' | 'disadvantages', index: number) => {
+    if (!editingManufacturer) return;
+    setEditingManufacturer(prev => {
+      if (!prev) return null;
+      const newArray = [...prev[field]];
+      newArray.splice(index, 1);
+      return {
+        ...prev,
+        [field]: newArray
+      };
+    });
+  };
+
+  const handleEditManufacturer = async () => {
+    if (!id || !editingManufacturer) return;
+
+    try {
+      const updatedManufacturers = manufacturers.map(m =>
+        m.id === editingManufacturer.id ? editingManufacturer : m
+      );
+
+      await projectsService.update(id, {
+        manufacturers: updatedManufacturers
+      });
+
+      setManufacturers(updatedManufacturers);
+      setEditingManufacturer(null);
+      setShowEditModal(false);
+      alert('Manufacturer updated successfully!');
+    } catch (err) {
+      console.error('Error updating manufacturer:', err);
+      alert('Failed to update manufacturer.');
+    }
   };
   const handleArrayChange = (field: 'advantages' | 'disadvantages', index: number, value: string) => {
     setNewManufacturer(prev => {
@@ -226,6 +300,13 @@ const Sourcing: React.FC = () => {
   if (error || !project) {
     return <div className="flex justify-center items-center h-64">
         <div className="text-red-600">{error || 'Project not found'}</div>
+      </div>;
+  }
+
+  // Wait for user to be loaded
+  if (!user) {
+    return <div className="flex justify-center items-center h-64">
+        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary-500"></div>
       </div>;
   }
 
@@ -437,6 +518,16 @@ const Sourcing: React.FC = () => {
                               <StarIcon className="h-4 w-4" />
                             </button>
                             <button
+                              onClick={() => {
+                                setEditingManufacturer(man);
+                                setShowEditModal(true);
+                              }}
+                              className="p-1 text-blue-500 hover:text-blue-700 rounded"
+                              title="Edit manufacturer"
+                            >
+                              <EditIcon className="h-4 w-4" />
+                            </button>
+                            <button
                               onClick={() => handleDeleteManufacturer(man.id)}
                               className="p-1 text-red-500 hover:text-red-700 rounded"
                               title="Delete manufacturer"
@@ -460,7 +551,69 @@ const Sourcing: React.FC = () => {
               </div>
             </div>}
           {user?.role === 'customer' && <>
-              {manufacturers.length === 0 ? <div className="bg-yellow-50 border-l-4 border-yellow-400 p-4">
+              {/* Show customer's selected manufacturer if they've already made a selection */}
+              {project.selected_manufacturer && (
+                <div className="bg-green-50 border border-green-200 rounded-lg p-4 mb-6">
+                  <h3 className="text-lg font-medium text-gray-900 mb-3 flex items-center">
+                    <CheckCircleIcon className="h-5 w-5 mr-2 text-green-600" />
+                    Your Selected Manufacturer
+                  </h3>
+                  <div className="bg-white rounded-lg border border-green-200 p-4">
+                    <div className="flex justify-between items-start mb-3">
+                      <div>
+                        <h4 className="text-lg font-semibold text-gray-900">{project.selected_manufacturer.name}</h4>
+                        {project.selected_manufacturer.recommended && (
+                          <span className="inline-block bg-primary-100 text-primary-700 text-xs font-medium px-2 py-0.5 rounded mt-1">
+                            RECOMMENDED
+                          </span>
+                        )}
+                      </div>
+                      <div className="text-right">
+                        <span className="text-xl font-bold text-gray-900">${typeof project.selected_manufacturer.price === 'number' ? project.selected_manufacturer.price.toFixed(2) : '0.00'}</span>
+                        <span className="text-sm text-gray-500 block">per unit</span>
+                      </div>
+                    </div>
+                    <p className="text-sm text-gray-600 mb-3">{project.selected_manufacturer.details}</p>
+                    <div className="grid grid-cols-2 gap-4 text-sm">
+                      <div>
+                        <span className="font-medium text-gray-700">Minimum Order:</span>{' '}
+                        <span className="text-gray-600">{project.selected_manufacturer.minOrderQuantity} units</span>
+                      </div>
+                      <div>
+                        <span className="font-medium text-gray-700">Lead Time:</span>{' '}
+                        <span className="text-gray-600">{project.selected_manufacturer.leadTime}</span>
+                      </div>
+                    </div>
+                    <div className="mt-3 grid grid-cols-2 gap-4">
+                      <div>
+                        <h5 className="text-sm font-medium text-green-700 mb-1">Advantages</h5>
+                        <ul className="list-disc list-inside text-sm text-gray-600">
+                          {project.selected_manufacturer.advantages?.map((adv: string, idx: number) => (
+                            <li key={idx}>{adv}</li>
+                          ))}
+                        </ul>
+                      </div>
+                      <div>
+                        <h5 className="text-sm font-medium text-red-700 mb-1">Disadvantages</h5>
+                        <ul className="list-disc list-inside text-sm text-gray-600">
+                          {project.selected_manufacturer.disadvantages?.map((dis: string, idx: number) => (
+                            <li key={idx}>{dis}</li>
+                          ))}
+                        </ul>
+                      </div>
+                    </div>
+                    {project.selected_manufacturer.selectedAt && (
+                      <p className="text-xs text-gray-400 mt-3">
+                        Selected on {new Date(project.selected_manufacturer.selectedAt).toLocaleDateString()}
+                      </p>
+                    )}
+                  </div>
+                </div>
+              )}
+
+              {/* Show selection options if no selection made yet */}
+              {!project.selected_manufacturer && (
+                manufacturers.length === 0 ? <div className="bg-yellow-50 border-l-4 border-yellow-400 p-4">
                   <div className="flex">
                     <div className="ml-3">
                       <p className="text-sm text-yellow-700">
@@ -539,10 +692,180 @@ const Sourcing: React.FC = () => {
                       <ArrowRightIcon className="ml-2 h-4 w-4" />
                     </button>
                   </div>
-                </>}
+                </>
+              )}
             </>}
         </div>
       </div>
+
+      {/* Edit Manufacturer Modal */}
+      {showEditModal && editingManufacturer && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white rounded-lg shadow-xl max-w-2xl w-full mx-4 max-h-[90vh] overflow-y-auto">
+            <div className="px-6 py-4 border-b border-gray-200">
+              <h3 className="text-lg font-medium text-gray-900">Edit Manufacturer</h3>
+            </div>
+            <div className="p-6">
+              <div className="grid grid-cols-1 gap-y-6 gap-x-4 sm:grid-cols-6">
+                <div className="sm:col-span-3">
+                  <label className="block text-sm font-medium text-gray-700">
+                    Manufacturer Name *
+                  </label>
+                  <input
+                    type="text"
+                    name="name"
+                    required
+                    value={editingManufacturer.name}
+                    onChange={handleEditManufacturerChange}
+                    className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-primary-500 focus:border-primary-500 sm:text-sm"
+                  />
+                </div>
+                <div className="sm:col-span-2">
+                  <label className="block text-sm font-medium text-gray-700">
+                    Min Order Quantity *
+                  </label>
+                  <input
+                    type="number"
+                    name="minOrderQuantity"
+                    required
+                    min="1"
+                    value={editingManufacturer.minOrderQuantity}
+                    onChange={handleEditManufacturerChange}
+                    className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-primary-500 focus:border-primary-500 sm:text-sm"
+                  />
+                </div>
+                <div className="sm:col-span-2">
+                  <label className="block text-sm font-medium text-gray-700">
+                    Lead Time *
+                  </label>
+                  <input
+                    type="text"
+                    name="leadTime"
+                    required
+                    value={editingManufacturer.leadTime}
+                    onChange={handleEditManufacturerChange}
+                    className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-primary-500 focus:border-primary-500 sm:text-sm"
+                    placeholder="e.g., 30-45 days"
+                  />
+                </div>
+                <div className="sm:col-span-2">
+                  <label className="block text-sm font-medium text-gray-700">
+                    Unit Price (USD) *
+                  </label>
+                  <input
+                    type="number"
+                    name="price"
+                    required
+                    min="0.01"
+                    step="0.01"
+                    value={editingManufacturer.price}
+                    onChange={handleEditManufacturerChange}
+                    className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-primary-500 focus:border-primary-500 sm:text-sm"
+                  />
+                </div>
+                <div className="sm:col-span-6">
+                  <label className="block text-sm font-medium text-gray-700">
+                    Details *
+                  </label>
+                  <textarea
+                    name="details"
+                    rows={3}
+                    required
+                    value={editingManufacturer.details}
+                    onChange={handleEditManufacturerChange}
+                    className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-primary-500 focus:border-primary-500 sm:text-sm"
+                  />
+                </div>
+                <div className="sm:col-span-6">
+                  <label className="block text-sm font-medium text-gray-700">
+                    Advantages *
+                  </label>
+                  {editingManufacturer.advantages.map((adv, index) => (
+                    <div key={`edit-adv-${index}`} className="flex mt-1">
+                      <input
+                        type="text"
+                        required
+                        value={adv}
+                        onChange={e => handleEditArrayChange('advantages', index, e.target.value)}
+                        className="block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-primary-500 focus:border-primary-500 sm:text-sm"
+                        placeholder={`Advantage ${index + 1}`}
+                      />
+                      {index > 0 && (
+                        <button
+                          type="button"
+                          onClick={() => removeEditArrayItem('advantages', index)}
+                          className="ml-2 inline-flex items-center p-1 border border-transparent rounded-full shadow-sm text-white bg-red-600 hover:bg-red-700"
+                        >
+                          <span className="h-5 w-5 flex items-center justify-center">×</span>
+                        </button>
+                      )}
+                    </div>
+                  ))}
+                  <button
+                    type="button"
+                    onClick={() => addEditArrayItem('advantages')}
+                    className="mt-2 inline-flex items-center px-3 py-1 border border-gray-300 shadow-sm text-sm leading-4 font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50"
+                  >
+                    + Add Advantage
+                  </button>
+                </div>
+                <div className="sm:col-span-6">
+                  <label className="block text-sm font-medium text-gray-700">
+                    Disadvantages *
+                  </label>
+                  {editingManufacturer.disadvantages.map((disadv, index) => (
+                    <div key={`edit-disadv-${index}`} className="flex mt-1">
+                      <input
+                        type="text"
+                        required
+                        value={disadv}
+                        onChange={e => handleEditArrayChange('disadvantages', index, e.target.value)}
+                        className="block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-primary-500 focus:border-primary-500 sm:text-sm"
+                        placeholder={`Disadvantage ${index + 1}`}
+                      />
+                      {index > 0 && (
+                        <button
+                          type="button"
+                          onClick={() => removeEditArrayItem('disadvantages', index)}
+                          className="ml-2 inline-flex items-center p-1 border border-transparent rounded-full shadow-sm text-white bg-red-600 hover:bg-red-700"
+                        >
+                          <span className="h-5 w-5 flex items-center justify-center">×</span>
+                        </button>
+                      )}
+                    </div>
+                  ))}
+                  <button
+                    type="button"
+                    onClick={() => addEditArrayItem('disadvantages')}
+                    className="mt-2 inline-flex items-center px-3 py-1 border border-gray-300 shadow-sm text-sm leading-4 font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50"
+                  >
+                    + Add Disadvantage
+                  </button>
+                </div>
+              </div>
+              <div className="mt-6 flex justify-end gap-3">
+                <button
+                  type="button"
+                  onClick={() => {
+                    setEditingManufacturer(null);
+                    setShowEditModal(false);
+                  }}
+                  className="px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="button"
+                  onClick={handleEditManufacturer}
+                  className="px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-primary-500 hover:bg-primary-600"
+                >
+                  Save Changes
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>;
 };
 export default Sourcing;

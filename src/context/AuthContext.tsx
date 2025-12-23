@@ -5,6 +5,7 @@ import { analyticsStorage } from '../lib/analytics/storage';
 interface AuthContextType {
   user: User | null;
   isAuthenticated: boolean;
+  isLoading: boolean;
   login: (email: string, password: string) => Promise<void>;
   logout: () => void;
   updateUserProfile: (data: Partial<Pick<User, 'name' | 'company_name' | 'email'>>) => Promise<void>;
@@ -18,6 +19,7 @@ export const AuthProvider: React.FC<{
 }) => {
   const [user, setUser] = useState<User | null>(null);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
 
   // Check for existing session on mount
   useEffect(() => {
@@ -30,7 +32,11 @@ export const AuthProvider: React.FC<{
         } else {
           localStorage.removeItem('userId');
         }
+      }).finally(() => {
+        setIsLoading(false);
       });
+    } else {
+      setIsLoading(false);
     }
   }, []);
   const login = async (email: string, password: string) => {
@@ -92,6 +98,7 @@ export const AuthProvider: React.FC<{
   return <AuthContext.Provider value={{
     user,
     isAuthenticated,
+    isLoading,
     login,
     logout,
     updateUserProfile,

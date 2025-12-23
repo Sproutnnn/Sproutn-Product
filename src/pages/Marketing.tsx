@@ -1,11 +1,12 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { ArrowLeftIcon, UploadIcon, CreditCardIcon, LinkIcon, CheckIcon, DownloadIcon, FileIcon, PlusIcon, TrashIcon, StarIcon, XIcon } from 'lucide-react';
+import { ArrowLeftIcon, UploadIcon, CreditCardIcon, LinkIcon, CheckIcon, DownloadIcon, FileIcon, PlusIcon, TrashIcon, StarIcon, XIcon, LockIcon, MessageSquareIcon, SendIcon, PackageIcon } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import ModuleNavigation from '../components/ModuleNavigation';
 import AdminStatusControl from '../components/AdminStatusControl';
 import { projectsService } from '../services/projects.service';
 import { supabase } from '../lib/supabase';
+import { defaultMarketingPackages } from '../data/defaultPackages';
 
 interface MarketingPackage {
   id: string;
@@ -40,6 +41,13 @@ const Marketing: React.FC = () => {
   const [recommendedPackageFileName, setRecommendedPackageFileName] = useState<string | null>(null);
   const [uploadingRecommended, setUploadingRecommended] = useState(false);
   const [packages, setPackages] = useState<MarketingPackage[]>([]);
+
+  // Marketing plan submission state
+  const [marketingPlanSubmitted, setMarketingPlanSubmitted] = useState(false);
+  const [marketingPlanSubmittedAt, setMarketingPlanSubmittedAt] = useState<string | null>(null);
+  const [adminFeedback, setAdminFeedback] = useState('');
+  const [newAdminFeedback, setNewAdminFeedback] = useState('');
+  const [savingFeedback, setSavingFeedback] = useState(false);
 
   // Admin form state
   const [showAddPackageForm, setShowAddPackageForm] = useState(false);
@@ -93,6 +101,15 @@ const Marketing: React.FC = () => {
         if (projectData.recommended_package_url) {
           setRecommendedPackageFile(projectData.recommended_package_url);
           setRecommendedPackageFileName(projectData.recommended_package_name || 'Recommended Package');
+        }
+
+        // Load marketing plan submission state
+        if (projectData.marketing_plan_submitted) {
+          setMarketingPlanSubmitted(true);
+          setMarketingPlanSubmittedAt(projectData.marketing_plan_submitted_at || null);
+        }
+        if (projectData.marketing_plan_admin_feedback) {
+          setAdminFeedback(projectData.marketing_plan_admin_feedback);
         }
       } catch (err) {
         console.error('Error loading project:', err);
@@ -179,7 +196,7 @@ const Marketing: React.FC = () => {
     }
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSave = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!id) return;
 
@@ -197,6 +214,58 @@ const Marketing: React.FC = () => {
       alert('Failed to save. Please try again.');
     } finally {
       setSaving(false);
+    }
+  };
+
+  const handleSubmitPlan = async () => {
+    if (!id) return;
+
+    const confirmed = window.confirm('Are you sure you want to submit your marketing plan? You will not be able to edit it after submission.');
+    if (!confirmed) return;
+
+    setSaving(true);
+    try {
+      const submittedAt = new Date().toISOString();
+      await projectsService.update(id, {
+        marketing_plan_data: {
+          ...formData,
+          brandInspirationFiles
+        },
+        marketing_plan_submitted: true,
+        marketing_plan_submitted_at: submittedAt
+      });
+      setMarketingPlanSubmitted(true);
+      setMarketingPlanSubmittedAt(submittedAt);
+      alert('Marketing plan submitted successfully!');
+    } catch (err) {
+      console.error('Error submitting marketing plan:', err);
+      alert('Failed to submit. Please try again.');
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const handleSaveAdminFeedback = async () => {
+    if (!id || !newAdminFeedback.trim()) return;
+
+    setSavingFeedback(true);
+    try {
+      const feedbackWithTimestamp = adminFeedback
+        ? `${adminFeedback}\n\n[${new Date().toLocaleString()}]\n${newAdminFeedback}`
+        : `[${new Date().toLocaleString()}]\n${newAdminFeedback}`;
+
+      await projectsService.update(id, {
+        marketing_plan_admin_feedback: feedbackWithTimestamp
+      });
+
+      setAdminFeedback(feedbackWithTimestamp);
+      setNewAdminFeedback('');
+      alert('Feedback saved!');
+    } catch (err) {
+      console.error('Error saving feedback:', err);
+      alert('Failed to save feedback.');
+    } finally {
+      setSavingFeedback(false);
     }
   };
 
@@ -345,6 +414,35 @@ const Marketing: React.FC = () => {
     });
   };
 
+  const handleLoadDefaultPackages = async () => {
+    if (!id) return;
+
+    const confirmed = window.confirm(
+      packages.length > 0
+        ? 'This will replace all existing packages with default templates. Are you sure?'
+        : 'Load default marketing packages?'
+    );
+    if (!confirmed) return;
+
+    try {
+      // Generate new IDs for the default packages
+      const packagesWithNewIds = defaultMarketingPackages.map(pkg => ({
+        ...pkg,
+        id: `mkt_pkg_${Date.now()}_${Math.random().toString(36).substring(7)}`
+      }));
+
+      await projectsService.update(id, {
+        marketing_packages: packagesWithNewIds
+      });
+
+      setPackages(packagesWithNewIds);
+      alert('Default packages loaded successfully!');
+    } catch (err) {
+      console.error('Error loading defaults:', err);
+      alert('Failed to load default packages.');
+    }
+  };
+
   if (loading) {
     return (
       <div className="flex justify-center items-center h-64">
@@ -386,126 +484,257 @@ const Marketing: React.FC = () => {
         </div>
         <div className="p-6">
           <div className="space-y-8">
-            {/* Marketing Plan Form */}
-            <form onSubmit={handleSubmit}>
-              <div className="space-y-6">
-                <div>
-                  <label htmlFor="targetAudience" className="block text-sm font-medium text-gray-700">Target Audience</label>
-                  <textarea
-                    id="targetAudience"
-                    name="targetAudience"
-                    rows={3}
-                    className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-primary-500 focus:border-primary-500 sm:text-sm"
-                    placeholder="Describe your ideal customer"
-                    value={formData.targetAudience}
-                    onChange={handleChange}
-                  />
-                </div>
-                <div>
-                  <label htmlFor="brandDescription" className="block text-sm font-medium text-gray-700">Brand Description</label>
-                  <textarea
-                    id="brandDescription"
-                    name="brandDescription"
-                    rows={3}
-                    className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-primary-500 focus:border-primary-500 sm:text-sm"
-                    placeholder="Describe your brand's voice, values, and personality"
-                    value={formData.brandDescription}
-                    onChange={handleChange}
-                  />
-                </div>
-                <div>
-                  <label htmlFor="competitors" className="block text-sm font-medium text-gray-700">Competitors</label>
-                  <textarea
-                    id="competitors"
-                    name="competitors"
-                    rows={3}
-                    className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-primary-500 focus:border-primary-500 sm:text-sm"
-                    placeholder="List your main competitors and what makes your product different"
-                    value={formData.competitors}
-                    onChange={handleChange}
-                  />
-                </div>
-                <div>
-                  <label htmlFor="goals" className="block text-sm font-medium text-gray-700">Marketing Goals</label>
-                  <textarea
-                    id="goals"
-                    name="goals"
-                    rows={3}
-                    className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-primary-500 focus:border-primary-500 sm:text-sm"
-                    placeholder="What are your key marketing objectives?"
-                    value={formData.goals}
-                    onChange={handleChange}
-                  />
-                </div>
-                <div>
-                  <label htmlFor="marketingBudget" className="block text-sm font-medium text-gray-700">Marketing Budget</label>
-                  <div className="mt-1 relative rounded-md shadow-sm">
-                    <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                      <span className="text-gray-500 sm:text-sm">$</span>
+            {/* Marketing Plan Form - Show read-only for admin or after customer submission */}
+            {(user?.role === 'admin' || marketingPlanSubmitted) ? (
+              <div>
+                {/* Submission status banner */}
+                {marketingPlanSubmitted && (
+                  <div className="mb-6 p-4 bg-green-50 border border-green-200 rounded-lg flex items-center">
+                    <LockIcon className="h-5 w-5 text-green-600 mr-3" />
+                    <div>
+                      <p className="text-sm font-medium text-green-800">Marketing Plan Submitted</p>
+                      {marketingPlanSubmittedAt && (
+                        <p className="text-xs text-green-600">
+                          Submitted on {new Date(marketingPlanSubmittedAt).toLocaleDateString()} at {new Date(marketingPlanSubmittedAt).toLocaleTimeString()}
+                        </p>
+                      )}
                     </div>
-                    <input
-                      type="text"
-                      name="marketingBudget"
-                      id="marketingBudget"
-                      className="focus:ring-primary-500 focus:border-primary-500 block w-full pl-7 pr-12 sm:text-sm border-gray-300 rounded-md"
-                      placeholder="0.00"
-                      value={formData.marketingBudget}
+                  </div>
+                )}
+
+                {!marketingPlanSubmitted && user?.role === 'admin' && (
+                  <div className="mb-6 p-4 bg-yellow-50 border border-yellow-200 rounded-lg flex items-center">
+                    <MessageSquareIcon className="h-5 w-5 text-yellow-600 mr-3" />
+                    <p className="text-sm text-yellow-800">Customer has not submitted their marketing plan yet.</p>
+                  </div>
+                )}
+
+                {/* Read-only view of form data */}
+                <div className="space-y-6">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Target Audience</label>
+                    <div className="bg-gray-50 border border-gray-200 rounded-md p-3">
+                      <p className="text-sm text-gray-900 whitespace-pre-wrap">{formData.targetAudience || 'Not provided'}</p>
+                    </div>
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Brand Description</label>
+                    <div className="bg-gray-50 border border-gray-200 rounded-md p-3">
+                      <p className="text-sm text-gray-900 whitespace-pre-wrap">{formData.brandDescription || 'Not provided'}</p>
+                    </div>
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Competitors</label>
+                    <div className="bg-gray-50 border border-gray-200 rounded-md p-3">
+                      <p className="text-sm text-gray-900 whitespace-pre-wrap">{formData.competitors || 'Not provided'}</p>
+                    </div>
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Marketing Goals</label>
+                    <div className="bg-gray-50 border border-gray-200 rounded-md p-3">
+                      <p className="text-sm text-gray-900 whitespace-pre-wrap">{formData.goals || 'Not provided'}</p>
+                    </div>
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Marketing Budget</label>
+                    <div className="bg-gray-50 border border-gray-200 rounded-md p-3">
+                      <p className="text-sm text-gray-900">{formData.marketingBudget ? `$${formData.marketingBudget} USD` : 'Not provided'}</p>
+                    </div>
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Website URL Inspiration</label>
+                    <div className="bg-gray-50 border border-gray-200 rounded-md p-3">
+                      {formData.websiteUrls.filter(url => url.trim()).length > 0 ? (
+                        <ul className="space-y-1">
+                          {formData.websiteUrls.filter(url => url.trim()).map((url, index) => (
+                            <li key={index}>
+                              <a href={url} target="_blank" rel="noopener noreferrer" className="text-sm text-primary-600 hover:text-primary-800 flex items-center">
+                                <LinkIcon className="h-4 w-4 mr-1" />
+                                {url}
+                              </a>
+                            </li>
+                          ))}
+                        </ul>
+                      ) : (
+                        <p className="text-sm text-gray-500">No URLs provided</p>
+                      )}
+                    </div>
+                  </div>
+                </div>
+
+                {/* Admin Feedback Section */}
+                {user?.role === 'admin' && marketingPlanSubmitted && (
+                  <div className="mt-8 border-t border-gray-200 pt-6">
+                    <h3 className="text-lg font-medium text-gray-900 mb-4">Admin Feedback</h3>
+
+                    {adminFeedback && (
+                      <div className="mb-4 bg-blue-50 border border-blue-200 rounded-md p-4">
+                        <h4 className="text-sm font-medium text-blue-800 mb-2">Previous Feedback</h4>
+                        <p className="text-sm text-gray-700 whitespace-pre-wrap">{adminFeedback}</p>
+                      </div>
+                    )}
+
+                    <div className="space-y-3">
+                      <textarea
+                        value={newAdminFeedback}
+                        onChange={(e) => setNewAdminFeedback(e.target.value)}
+                        rows={3}
+                        className="block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-primary-500 focus:border-primary-500 sm:text-sm"
+                        placeholder="Add feedback for the customer..."
+                      />
+                      <button
+                        onClick={handleSaveAdminFeedback}
+                        disabled={savingFeedback || !newAdminFeedback.trim()}
+                        className="inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-primary-600 hover:bg-primary-700 disabled:bg-gray-400"
+                      >
+                        <SendIcon className="h-4 w-4 mr-2" />
+                        {savingFeedback ? 'Saving...' : 'Send Feedback'}
+                      </button>
+                    </div>
+                  </div>
+                )}
+
+                {/* Customer view of admin feedback */}
+                {user?.role === 'customer' && adminFeedback && (
+                  <div className="mt-8 border-t border-gray-200 pt-6">
+                    <h3 className="text-lg font-medium text-gray-900 mb-4">Feedback from Admin</h3>
+                    <div className="bg-blue-50 border border-blue-200 rounded-md p-4">
+                      <p className="text-sm text-gray-700 whitespace-pre-wrap">{adminFeedback}</p>
+                    </div>
+                  </div>
+                )}
+              </div>
+            ) : (
+              /* Editable form for customer (not yet submitted) */
+              <form onSubmit={handleSave}>
+                <div className="space-y-6">
+                  <div>
+                    <label htmlFor="targetAudience" className="block text-sm font-medium text-gray-700">Target Audience</label>
+                    <textarea
+                      id="targetAudience"
+                      name="targetAudience"
+                      rows={3}
+                      className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-primary-500 focus:border-primary-500 sm:text-sm"
+                      placeholder="Describe your ideal customer"
+                      value={formData.targetAudience}
                       onChange={handleChange}
                     />
-                    <div className="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
-                      <span className="text-gray-500 sm:text-sm">USD</span>
+                  </div>
+                  <div>
+                    <label htmlFor="brandDescription" className="block text-sm font-medium text-gray-700">Brand Description</label>
+                    <textarea
+                      id="brandDescription"
+                      name="brandDescription"
+                      rows={3}
+                      className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-primary-500 focus:border-primary-500 sm:text-sm"
+                      placeholder="Describe your brand's voice, values, and personality"
+                      value={formData.brandDescription}
+                      onChange={handleChange}
+                    />
+                  </div>
+                  <div>
+                    <label htmlFor="competitors" className="block text-sm font-medium text-gray-700">Competitors</label>
+                    <textarea
+                      id="competitors"
+                      name="competitors"
+                      rows={3}
+                      className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-primary-500 focus:border-primary-500 sm:text-sm"
+                      placeholder="List your main competitors and what makes your product different"
+                      value={formData.competitors}
+                      onChange={handleChange}
+                    />
+                  </div>
+                  <div>
+                    <label htmlFor="goals" className="block text-sm font-medium text-gray-700">Marketing Goals</label>
+                    <textarea
+                      id="goals"
+                      name="goals"
+                      rows={3}
+                      className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-primary-500 focus:border-primary-500 sm:text-sm"
+                      placeholder="What are your key marketing objectives?"
+                      value={formData.goals}
+                      onChange={handleChange}
+                    />
+                  </div>
+                  <div>
+                    <label htmlFor="marketingBudget" className="block text-sm font-medium text-gray-700">Marketing Budget</label>
+                    <div className="mt-1 relative rounded-md shadow-sm">
+                      <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                        <span className="text-gray-500 sm:text-sm">$</span>
+                      </div>
+                      <input
+                        type="text"
+                        name="marketingBudget"
+                        id="marketingBudget"
+                        className="focus:ring-primary-500 focus:border-primary-500 block w-full pl-7 pr-12 sm:text-sm border-gray-300 rounded-md"
+                        placeholder="0.00"
+                        value={formData.marketingBudget}
+                        onChange={handleChange}
+                      />
+                      <div className="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
+                        <span className="text-gray-500 sm:text-sm">USD</span>
+                      </div>
+                    </div>
+                  </div>
+                  {/* Website URL Inspiration */}
+                  <div>
+                    <div className="flex justify-between items-center mb-2">
+                      <label className="block text-sm font-medium text-gray-700">Website URL Inspiration</label>
+                      <button type="button" onClick={handleAddUrl} className="inline-flex items-center px-2 py-1 border border-transparent text-xs font-medium rounded text-primary-700 bg-primary-100 hover:bg-primary-200">
+                        + Add URL
+                      </button>
+                    </div>
+                    <div className="space-y-2">
+                      {formData.websiteUrls.map((url, index) => (
+                        <div key={index} className="flex items-center">
+                          <div className="flex-grow relative rounded-md shadow-sm">
+                            <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                              <LinkIcon className="h-4 w-4 text-gray-400" />
+                            </div>
+                            <input
+                              type="url"
+                              value={url}
+                              onChange={e => handleUrlChange(index, e.target.value)}
+                              className="block w-full pl-10 border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-primary-500 focus:border-primary-500 sm:text-sm"
+                              placeholder="https://example.com"
+                            />
+                          </div>
+                        </div>
+                      ))}
                     </div>
                   </div>
                 </div>
-                {/* Website URL Inspiration */}
-                <div>
-                  <div className="flex justify-between items-center mb-2">
-                    <label className="block text-sm font-medium text-gray-700">Website URL Inspiration</label>
-                    <button type="button" onClick={handleAddUrl} className="inline-flex items-center px-2 py-1 border border-transparent text-xs font-medium rounded text-primary-700 bg-primary-100 hover:bg-primary-200">
-                      + Add URL
-                    </button>
-                  </div>
-                  <div className="space-y-2">
-                    {formData.websiteUrls.map((url, index) => (
-                      <div key={index} className="flex items-center">
-                        <div className="flex-grow relative rounded-md shadow-sm">
-                          <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                            <LinkIcon className="h-4 w-4 text-gray-400" />
-                          </div>
-                          <input
-                            type="url"
-                            value={url}
-                            onChange={e => handleUrlChange(index, e.target.value)}
-                            className="block w-full pl-10 border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-primary-500 focus:border-primary-500 sm:text-sm"
-                            placeholder="https://example.com"
-                          />
-                        </div>
-                      </div>
-                    ))}
-                  </div>
+                <div className="mt-6 flex gap-3">
+                  <button
+                    type="submit"
+                    disabled={saving}
+                    className="inline-flex items-center px-4 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 disabled:bg-gray-100"
+                  >
+                    {saving ? 'Saving...' : 'Save Draft'}
+                  </button>
+                  <button
+                    type="button"
+                    onClick={handleSubmitPlan}
+                    disabled={saving}
+                    className="inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-primary-600 hover:bg-primary-700 disabled:bg-gray-400"
+                  >
+                    <SendIcon className="h-4 w-4 mr-2" />
+                    {saving ? 'Submitting...' : 'Submit Marketing Plan'}
+                  </button>
                 </div>
-              </div>
-              <div className="mt-6">
-                <button
-                  type="submit"
-                  disabled={saving}
-                  className="inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-primary-600 hover:bg-primary-700 disabled:bg-gray-400"
-                >
-                  {saving ? 'Saving...' : 'Save Information'}
-                </button>
-              </div>
-            </form>
+              </form>
+            )}
 
             {/* Brand Inspiration Upload */}
             <div className="border-t border-gray-200 pt-6">
               <h3 className="text-lg font-medium text-gray-900 mb-3">Upload Brand Inspiration</h3>
               <p className="text-sm text-gray-500 mb-4">Share brand assets, inspiration, or examples to help us understand your brand identity.</p>
               <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center">
-                <input type="file" multiple className="hidden" id="brand-upload" onChange={handleFileChange} />
+                <input type="file" multiple accept="image/*,.pdf,.doc,.docx,.zip" className="hidden" id="brand-upload" onChange={handleFileChange} />
                 <label htmlFor="brand-upload" className="cursor-pointer flex flex-col items-center justify-center">
                   <UploadIcon className="h-10 w-10 text-gray-400 mb-3" />
                   <p className="text-sm font-medium text-gray-700">Drag and drop files here or click to browse</p>
-                  <p className="text-xs text-gray-500 mt-1">JPG, PNG, PDF, or DOC files</p>
+                  <p className="text-xs text-gray-500 mt-1">JPG, PNG, PDF, DOC, or ZIP files</p>
                 </label>
               </div>
               {uploadedFiles.length > 0 && (
@@ -559,13 +788,22 @@ const Marketing: React.FC = () => {
               <div className="flex justify-between items-center mb-3">
                 <h3 className="text-lg font-medium text-gray-900">Marketing Packages</h3>
                 {user?.role === 'admin' && (
-                  <button
-                    onClick={() => setShowAddPackageForm(true)}
-                    className="inline-flex items-center px-3 py-1.5 border border-transparent text-xs font-medium rounded-md text-white bg-primary-600 hover:bg-primary-700"
-                  >
-                    <PlusIcon className="h-4 w-4 mr-1" />
-                    Add Package
-                  </button>
+                  <div className="flex items-center gap-2">
+                    <button
+                      onClick={handleLoadDefaultPackages}
+                      className="inline-flex items-center px-3 py-1.5 border border-gray-300 text-xs font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50"
+                    >
+                      <PackageIcon className="h-4 w-4 mr-1" />
+                      Load Defaults
+                    </button>
+                    <button
+                      onClick={() => setShowAddPackageForm(true)}
+                      className="inline-flex items-center px-3 py-1.5 border border-transparent text-xs font-medium rounded-md text-white bg-primary-600 hover:bg-primary-700"
+                    >
+                      <PlusIcon className="h-4 w-4 mr-1" />
+                      Add Package
+                    </button>
+                  </div>
                 )}
               </div>
               <p className="text-sm text-gray-500 mb-4">Select a marketing package that fits your launch needs.</p>
@@ -644,7 +882,7 @@ const Marketing: React.FC = () => {
                       type="file"
                       className="hidden"
                       id="recommended-package-upload"
-                      accept=".pdf,.doc,.docx"
+                      accept=".pdf,.doc,.docx,.zip"
                       onChange={handleRecommendedPackageUpload}
                       disabled={uploadingRecommended}
                     />
@@ -653,7 +891,7 @@ const Marketing: React.FC = () => {
                       <p className="text-sm font-medium text-gray-700">
                         {uploadingRecommended ? 'Uploading...' : 'Click to upload recommended package'}
                       </p>
-                      <p className="text-xs text-gray-500 mt-1">PDF or DOC files</p>
+                      <p className="text-xs text-gray-500 mt-1">PDF, DOC, or ZIP files</p>
                     </label>
                   </div>
                   {recommendedPackageFile && (

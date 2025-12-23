@@ -1,11 +1,12 @@
 import React, { useEffect, useState, Fragment } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { ArrowLeftIcon, ArrowRightIcon, CheckIcon, BoxIcon, MapPinIcon, CameraIcon, MessageCircleIcon, ImageIcon, DownloadIcon, XIcon } from 'lucide-react';
+import { ArrowLeftIcon, ArrowRightIcon, CheckIcon, BoxIcon, MapPinIcon, CameraIcon, MessageCircleIcon, ImageIcon, DownloadIcon, XIcon, TruckIcon, RefreshCwIcon } from 'lucide-react';
 import ModuleNavigation from '../components/ModuleNavigation';
 import AdminStatusControl from '../components/AdminStatusControl';
 import { useAuth } from '../context/AuthContext';
 import { projectsService } from '../services/projects.service';
 import { supabase } from '../lib/supabase';
+import { FeedbackThreadList } from '../components/feedback';
 const Prototyping: React.FC = () => {
   const {
     id
@@ -195,18 +196,48 @@ const Prototyping: React.FC = () => {
         notes: adminData.notes
       });
 
-      // If status is feedback, move to the next step
-      if (adminData.prototypeStatus === 'feedback') {
-        // Also update the project status to sourcing
-        await projectsService.update(id, { status: 'sourcing' });
-        navigate(`/project/${id}/sourcing`);
+      if (adminData.prototypeStatus === 'delivered') {
+        alert('Sample marked as delivered! The customer can now provide feedback.');
       } else {
         alert('Prototype status updated successfully!');
-        // Reload project data to show updated info
-        window.location.reload();
       }
+      // Reload project data to show updated info
+      window.location.reload();
     } catch (err) {
       alert(err instanceof Error ? err.message : 'Failed to update prototype status');
+    }
+  };
+
+  // Admin action handlers for feedback stage
+  const handleApproveAndProceed = async () => {
+    if (!id) return;
+    try {
+      await projectsService.update(id, { status: 'sourcing' });
+      alert('Sample approved! Moving to sourcing stage.');
+      navigate(`/project/${id}/sourcing`);
+    } catch (err) {
+      alert(err instanceof Error ? err.message : 'Failed to proceed to sourcing');
+    }
+  };
+
+  const handleRequestNewSample = async () => {
+    if (!id) return;
+    try {
+      await projectsService.updatePrototypeStatus(id, {
+        prototypeStatus: 'producing',
+        trackingNumber: '',
+        estimatedDelivery: '',
+        notes: adminData.notes + '\n[New sample requested]'
+      });
+      // Clear customer feedback for new sample
+      await projectsService.update(id, {
+        customer_feedback: null,
+        feedback_images: []
+      });
+      alert('New sample requested. Status reset to producing.');
+      window.location.reload();
+    } catch (err) {
+      alert(err instanceof Error ? err.message : 'Failed to request new sample');
     }
   };
   // Prototype steps
@@ -217,8 +248,11 @@ const Prototyping: React.FC = () => {
     id: 'shipping',
     label: 'Sample Shipped'
   }, {
+    id: 'delivered',
+    label: 'Sample Delivered'
+  }, {
     id: 'feedback',
-    label: 'Sample Feedback'
+    label: 'Feedback Received'
   }];
   const getCurrentStepIndex = () => {
     if (!project || !project.prototype_status) return 0;
@@ -272,19 +306,19 @@ const Prototyping: React.FC = () => {
                       {/* Step circle */}
                       <div className="flex flex-col items-center">
                         <div className="relative">
-                          <div className={`flex items-center justify-center w-10 h-10 rounded-full 
-                              ${isActive ? 'bg-primary-50' : 'bg-gray-100'}`}>
-                            {isCompleted ? <CheckIcon className="h-5 w-5 text-primary-600" /> : <BoxIcon className={`h-5 w-5 ${isActive ? 'text-primary-600' : 'text-gray-400'}`} />}
+                          <div className={`flex items-center justify-center w-10 h-10 rounded-full
+                              ${isCompleted ? 'bg-green-100' : isActive ? 'bg-primary-50' : 'bg-gray-100'}`}>
+                            {isCompleted ? <CheckIcon className="h-5 w-5 text-green-600" /> : <BoxIcon className={`h-5 w-5 ${isActive ? 'text-primary-600' : 'text-gray-400'}`} />}
                           </div>
                           <span className={`mt-2 text-xs block text-center w-24 -ml-7
-                              ${isActive ? index === currentStepIndex ? 'text-primary-600 font-medium' : 'text-charcoal-500' : 'text-gray-400'}`}>
+                              ${isCompleted ? 'text-green-600' : isActive ? index === currentStepIndex ? 'text-primary-600 font-medium' : 'text-charcoal-500' : 'text-gray-400'}`}>
                             {step.label}
                           </span>
                         </div>
                       </div>
                       {/* Connector line */}
                       {index < prototypeSteps.length - 1 && <div className="flex-1 h-1 mx-2">
-                          <div className={`h-full ${index < currentStepIndex ? 'bg-primary-500' : 'bg-gray-200'}`} />
+                          <div className={`h-full ${index < currentStepIndex ? 'bg-green-500' : 'bg-gray-200'}`} />
                         </div>}
                     </Fragment>;
               })}
@@ -342,13 +376,41 @@ const Prototyping: React.FC = () => {
                 </div>
                 <div className="mt-4 flex justify-end">
                   <button type="submit" className="inline-flex items-center justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-primary-500 hover:bg-primary-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500">
-                    {adminData.prototypeStatus === 'feedback' ? <>
-                        Move to Sourcing
-                        <ArrowRightIcon className="ml-2 h-4 w-4" />
-                      </> : 'Update Status'}
+                    Update Status
                   </button>
                 </div>
               </form>
+
+              {/* Admin Action Panel - shown when feedback has been received */}
+              {project.customer_feedback && (
+                <div className="mt-6 border rounded-md p-4 bg-yellow-50 border-yellow-200">
+                  <h3 className="text-md font-medium text-gray-900 mb-3">
+                    Feedback Review Actions
+                  </h3>
+                  <p className="text-sm text-gray-600 mb-4">
+                    Review the customer feedback above and choose how to proceed:
+                  </p>
+                  <div className="flex flex-wrap gap-3">
+                    <button
+                      onClick={handleApproveAndProceed}
+                      className="inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-green-600 hover:bg-green-700"
+                    >
+                      <CheckIcon className="h-4 w-4 mr-2" />
+                      Approve & Move to Sourcing
+                    </button>
+                    <button
+                      onClick={handleRequestNewSample}
+                      className="inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-orange-500 hover:bg-orange-600"
+                    >
+                      <RefreshCwIcon className="h-4 w-4 mr-2" />
+                      Request New Sample
+                    </button>
+                  </div>
+                  <p className="text-xs text-gray-500 mt-3">
+                    Note: Use the notes field above to communicate with the customer about any required changes.
+                  </p>
+                </div>
+              )}
 
               {/* Customer Sample Feedback Section for Admin */}
               <div className="mt-6 border rounded-md p-4 bg-green-50 border-green-200">
@@ -547,10 +609,41 @@ const Prototyping: React.FC = () => {
                 </div>
               </div>}
           </div>
+          {/* Tracking Information for Customer */}
+          {user?.role === 'customer' && project.tracking_number && ['shipping', 'delivered', 'feedback'].includes(project.prototype_status) && (
+            <div className="mt-6 bg-blue-50 border border-blue-200 rounded-md p-4">
+              <h3 className="text-md font-medium text-gray-900 mb-2 flex items-center">
+                <TruckIcon className="h-5 w-5 mr-2 text-blue-600" />
+                Tracking Information
+              </h3>
+              <div className="text-sm">
+                <p><span className="font-medium">Tracking Number:</span> {project.tracking_number}</p>
+                {project.estimated_delivery && (
+                  <p className="mt-1">
+                    <span className="font-medium">Estimated Delivery:</span>{' '}
+                    {new Date(project.estimated_delivery + 'T00:00:00').toLocaleDateString()}
+                  </p>
+                )}
+              </div>
+            </div>
+          )}
+
+          {/* Sample Delivered Notification */}
+          {user?.role === 'customer' && project.prototype_status === 'delivered' && !project.customer_feedback && (
+            <div className="mt-4 bg-green-50 border-l-4 border-green-400 p-4">
+              <p className="text-sm text-green-700">
+                Your sample has been delivered! Please provide your feedback below so we can proceed to the next step.
+              </p>
+            </div>
+          )}
+
           {user?.role === 'customer' && <div className="mt-8 border-t border-gray-200 pt-6">
               <h2 className="text-lg font-medium text-gray-900 mb-4">
                 Sample Feedback
               </h2>
+
+              {/* Show feedback form only when status is delivered or feedback, and no feedback submitted yet */}
+              {['delivered', 'feedback'].includes(project.prototype_status || '') && !project.customer_feedback ? (
               <div className="bg-white border rounded-md p-4">
                 <form onSubmit={handleFeedbackSubmit}>
                   <div className="mb-4">
@@ -627,9 +720,40 @@ const Prototyping: React.FC = () => {
                   </div>
                 </form>
               </div>
+              ) : project.customer_feedback ? (
+                /* Feedback already submitted */
+                <div className="bg-green-50 border border-green-200 rounded-md p-4">
+                  <div className="flex items-start">
+                    <CheckIcon className="h-5 w-5 text-green-600 mt-0.5 mr-2" />
+                    <div>
+                      <p className="text-sm font-medium text-green-700">Feedback Submitted</p>
+                      <p className="text-sm text-gray-600 mt-1 whitespace-pre-wrap">{project.customer_feedback}</p>
+                      {project.feedback_images && project.feedback_images.length > 0 && (
+                        <div className="mt-3">
+                          <p className="text-xs text-gray-500">{project.feedback_images.length} image(s) attached</p>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              ) : (
+                /* Waiting for delivery */
+                <div className="bg-gray-50 border rounded-md p-4">
+                  <p className="text-sm text-gray-500">
+                    You'll be able to provide feedback once your sample has been delivered.
+                  </p>
+                </div>
+              )}
             </div>}
         </div>
       </div>
+
+      {/* Feedback Threads Section */}
+      {id && (
+        <div className="mt-6">
+          <FeedbackThreadList projectId={id} />
+        </div>
+      )}
     </div>;
 };
 export default Prototyping;
