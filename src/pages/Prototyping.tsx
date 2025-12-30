@@ -209,10 +209,18 @@ const Prototyping: React.FC = () => {
   };
 
   // Admin action handlers for feedback stage
+  const [showApprovalConfirm, setShowApprovalConfirm] = useState(false);
+  const [showNewSampleConfirm, setShowNewSampleConfirm] = useState(false);
+  const [newSampleReason, setNewSampleReason] = useState('');
+
   const handleApproveAndProceed = async () => {
     if (!id) return;
     try {
-      await projectsService.update(id, { status: 'sourcing' });
+      await projectsService.update(id, {
+        status: 'sourcing',
+        sample_approved: true,
+        sample_approved_at: new Date().toISOString()
+      });
       alert('Sample approved! Moving to sourcing stage.');
       navigate(`/project/${id}/sourcing`);
     } catch (err) {
@@ -223,16 +231,21 @@ const Prototyping: React.FC = () => {
   const handleRequestNewSample = async () => {
     if (!id) return;
     try {
+      const noteAddition = newSampleReason
+        ? `\n[New sample requested: ${newSampleReason}]`
+        : '\n[New sample requested]';
+
       await projectsService.updatePrototypeStatus(id, {
         prototypeStatus: 'producing',
         trackingNumber: '',
         estimatedDelivery: '',
-        notes: adminData.notes + '\n[New sample requested]'
+        notes: (adminData.notes || '') + noteAddition
       });
       // Clear customer feedback for new sample
       await projectsService.update(id, {
         customer_feedback: null,
-        feedback_images: []
+        feedback_images: [],
+        sample_revision_count: (project.sample_revision_count || 0) + 1
       });
       alert('New sample requested. Status reset to producing.');
       window.location.reload();
@@ -383,23 +396,28 @@ const Prototyping: React.FC = () => {
 
               {/* Admin Action Panel - shown when feedback has been received */}
               {project.customer_feedback && (
-                <div className="mt-6 border rounded-md p-4 bg-yellow-50 border-yellow-200">
-                  <h3 className="text-md font-medium text-gray-900 mb-3">
-                    Feedback Review Actions
+                <div className="mt-6 border-2 rounded-md p-4 bg-yellow-50 border-yellow-400">
+                  <h3 className="text-lg font-semibold text-gray-900 mb-2">
+                    ⚠️ Action Required: Review Sample Feedback
                   </h3>
+                  {project.sample_revision_count > 0 && (
+                    <p className="text-sm text-orange-600 mb-2">
+                      This is revision #{project.sample_revision_count + 1}
+                    </p>
+                  )}
                   <p className="text-sm text-gray-600 mb-4">
-                    Review the customer feedback above and choose how to proceed:
+                    Customer has provided feedback. Review carefully and decide whether to approve the sample or request revisions.
                   </p>
                   <div className="flex flex-wrap gap-3">
                     <button
-                      onClick={handleApproveAndProceed}
+                      onClick={() => setShowApprovalConfirm(true)}
                       className="inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-green-600 hover:bg-green-700"
                     >
                       <CheckIcon className="h-4 w-4 mr-2" />
-                      Approve & Move to Sourcing
+                      Approve Sample
                     </button>
                     <button
-                      onClick={handleRequestNewSample}
+                      onClick={() => setShowNewSampleConfirm(true)}
                       className="inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-orange-500 hover:bg-orange-600"
                     >
                       <RefreshCwIcon className="h-4 w-4 mr-2" />
@@ -407,7 +425,7 @@ const Prototyping: React.FC = () => {
                     </button>
                   </div>
                   <p className="text-xs text-gray-500 mt-3">
-                    Note: Use the notes field above to communicate with the customer about any required changes.
+                    Approving will move the project to the Sourcing stage. Requesting a new sample will reset to Producing.
                   </p>
                 </div>
               )}
@@ -758,6 +776,103 @@ const Prototyping: React.FC = () => {
       {id && ['delivered', 'feedback'].includes(project.prototype_status || '') && (
         <div className="mt-6">
           <FeedbackThreadList projectId={id} />
+        </div>
+      )}
+
+      {/* Approval Confirmation Modal */}
+      {showApprovalConfirm && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white rounded-lg shadow-xl max-w-md w-full mx-4 p-6">
+            <h3 className="text-lg font-semibold text-gray-900 mb-4">
+              Confirm Sample Approval
+            </h3>
+            <p className="text-sm text-gray-600 mb-4">
+              Are you sure you want to approve this sample and move to the Sourcing stage?
+            </p>
+            <div className="bg-blue-50 border border-blue-200 rounded-md p-3 mb-4">
+              <p className="text-sm text-blue-800">
+                <strong>This will:</strong>
+              </p>
+              <ul className="text-sm text-blue-700 list-disc list-inside mt-1">
+                <li>Mark the sample as approved</li>
+                <li>Move the project to the Sourcing stage</li>
+                <li>Allow the customer to proceed with manufacturer selection</li>
+              </ul>
+            </div>
+            <div className="flex justify-end gap-3">
+              <button
+                onClick={() => setShowApprovalConfirm(false)}
+                className="px-4 py-2 border border-gray-300 rounded-md text-sm font-medium text-gray-700 bg-white hover:bg-gray-50"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={() => {
+                  setShowApprovalConfirm(false);
+                  handleApproveAndProceed();
+                }}
+                className="px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-green-600 hover:bg-green-700"
+              >
+                Yes, Approve & Proceed
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Request New Sample Confirmation Modal */}
+      {showNewSampleConfirm && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white rounded-lg shadow-xl max-w-md w-full mx-4 p-6">
+            <h3 className="text-lg font-semibold text-gray-900 mb-4">
+              Request New Sample
+            </h3>
+            <p className="text-sm text-gray-600 mb-4">
+              This will reset the sampling process. The customer will need to wait for a new sample.
+            </p>
+            <div className="mb-4">
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Reason for new sample (optional)
+              </label>
+              <textarea
+                value={newSampleReason}
+                onChange={(e) => setNewSampleReason(e.target.value)}
+                rows={3}
+                className="block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-primary-500 focus:border-primary-500 sm:text-sm"
+                placeholder="e.g., Quality issues, wrong color, size adjustments needed..."
+              />
+            </div>
+            <div className="bg-orange-50 border border-orange-200 rounded-md p-3 mb-4">
+              <p className="text-sm text-orange-800">
+                <strong>This will:</strong>
+              </p>
+              <ul className="text-sm text-orange-700 list-disc list-inside mt-1">
+                <li>Reset status to "Producing Sample"</li>
+                <li>Clear the current feedback</li>
+                <li>Increment the revision counter</li>
+              </ul>
+            </div>
+            <div className="flex justify-end gap-3">
+              <button
+                onClick={() => {
+                  setShowNewSampleConfirm(false);
+                  setNewSampleReason('');
+                }}
+                className="px-4 py-2 border border-gray-300 rounded-md text-sm font-medium text-gray-700 bg-white hover:bg-gray-50"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={() => {
+                  setShowNewSampleConfirm(false);
+                  handleRequestNewSample();
+                }}
+                className="px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-orange-500 hover:bg-orange-600"
+              >
+                Request New Sample
+              </button>
+            </div>
+          </div>
         </div>
       )}
     </div>;
