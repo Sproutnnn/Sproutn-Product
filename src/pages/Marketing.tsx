@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { ArrowLeftIcon, UploadIcon, CreditCardIcon, LinkIcon, CheckIcon, DownloadIcon, FileIcon, PlusIcon, TrashIcon, StarIcon, XIcon, LockIcon, MessageSquareIcon, SendIcon, PackageIcon } from 'lucide-react';
+import { ArrowLeftIcon, UploadIcon, CreditCardIcon, LinkIcon, CheckIcon, DownloadIcon, FileIcon, FileArchiveIcon, PlusIcon, TrashIcon, StarIcon, XIcon, LockIcon, MessageSquareIcon, SendIcon, PackageIcon } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import ModuleNavigation from '../components/ModuleNavigation';
 import AdminStatusControl from '../components/AdminStatusControl';
@@ -472,6 +472,21 @@ const Marketing: React.FC = () => {
     }
   };
 
+  // Helper function to check if a URL points to an image file
+  const isImageFile = (url: string): boolean => {
+    const imageExtensions = ['jpg', 'jpeg', 'png', 'gif', 'webp', 'bmp', 'svg'];
+    const urlPath = url.split('?')[0].toLowerCase();
+    const extension = urlPath.split('.').pop() || '';
+    return imageExtensions.includes(extension);
+  };
+
+  // Helper function to get file name from URL
+  const getFileName = (url: string): string => {
+    const urlPath = url.split('?')[0];
+    const parts = urlPath.split('/');
+    return parts[parts.length - 1] || 'file';
+  };
+
   if (loading) {
     return (
       <div className="flex justify-center items-center h-64">
@@ -822,9 +837,20 @@ const Marketing: React.FC = () => {
                   <h4 className="text-sm font-medium text-gray-700 mb-2">Uploaded Brand Files ({brandInspirationFiles.length})</h4>
                   <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
                     {brandInspirationFiles.map((url, index) => (
-                      <a key={index} href={url} target="_blank" rel="noopener noreferrer" className="border rounded-lg p-2 flex items-center hover:bg-gray-50">
-                        <FileIcon className="h-5 w-5 text-gray-400 mr-2" />
-                        <span className="text-xs text-gray-700 truncate">File {index + 1}</span>
+                      <a key={index} href={url} target="_blank" rel="noopener noreferrer" className="border rounded-lg overflow-hidden bg-white shadow-sm hover:bg-gray-50 block">
+                        {isImageFile(url) ? (
+                          <img src={url} alt={`Brand file ${index + 1}`} className="w-full h-24 object-cover" />
+                        ) : (
+                          <div className="w-full h-24 bg-gray-100 flex flex-col items-center justify-center">
+                            <FileArchiveIcon className="h-8 w-8 text-gray-400 mb-1" />
+                            <span className="text-xs text-gray-500 truncate px-2 max-w-full">
+                              {getFileName(url)}
+                            </span>
+                          </div>
+                        )}
+                        <div className="p-2 text-center">
+                          <span className="text-xs text-gray-700">File {index + 1}</span>
+                        </div>
                       </a>
                     ))}
                   </div>

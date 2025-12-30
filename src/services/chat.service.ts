@@ -80,11 +80,16 @@ export const chatService = {
       const user = userMap.get(userId);
 
       if (!threadMap.has(userId)) {
+        // Truncate last message to 25 characters for preview
+        const truncatedMessage = msg.text && msg.text.length > 25
+          ? msg.text.substring(0, 25) + '...'
+          : msg.text;
+
         threadMap.set(userId, {
           userId,
           userName: user?.name || 'Unknown',
           userEmail: user?.email || '',
-          lastMessage: msg.text,
+          lastMessage: truncatedMessage,
           lastMessageTime: msg.created_at || new Date().toISOString(),
           unreadCount: 0,
           isDeleted: false

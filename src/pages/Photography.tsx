@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { ArrowLeftIcon, UploadIcon, DownloadIcon, CreditCardIcon, FileTextIcon, CheckIcon, PlusIcon, TrashIcon, StarIcon, XIcon, EditIcon, PackageIcon } from 'lucide-react';
+import { ArrowLeftIcon, UploadIcon, DownloadIcon, CreditCardIcon, FileTextIcon, CheckIcon, PlusIcon, TrashIcon, StarIcon, XIcon, EditIcon, PackageIcon, FileIcon, FileArchiveIcon } from 'lucide-react';
 import ModuleNavigation from '../components/ModuleNavigation';
 import AdminStatusControl from '../components/AdminStatusControl';
 import StripePaymentModal from '../components/StripePaymentModal';
@@ -193,13 +193,31 @@ const Photography: React.FC = () => {
   };
 
   const handleDownloadInspirationFile = (url: string, index: number) => {
+    // Extract file extension from URL
+    const urlPath = url.split('?')[0]; // Remove query params
+    const extension = urlPath.split('.').pop() || 'jpg';
     const link = document.createElement('a');
     link.href = url;
-    link.download = `inspiration_${index + 1}.jpg`;
+    link.download = `inspiration_${index + 1}.${extension}`;
     link.target = '_blank';
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
+  };
+
+  // Helper function to check if a URL points to an image file
+  const isImageFile = (url: string): boolean => {
+    const imageExtensions = ['jpg', 'jpeg', 'png', 'gif', 'webp', 'bmp', 'svg'];
+    const urlPath = url.split('?')[0].toLowerCase();
+    const extension = urlPath.split('.').pop() || '';
+    return imageExtensions.includes(extension);
+  };
+
+  // Helper function to get file name from URL
+  const getFileName = (url: string): string => {
+    const urlPath = url.split('?')[0];
+    const parts = urlPath.split('/');
+    return parts[parts.length - 1] || 'file';
   };
 
   const handleQuestionnaireUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -524,7 +542,16 @@ const Photography: React.FC = () => {
                     {inspirationFiles.map((url, index) => (
                       <div key={index} className="border rounded-lg overflow-hidden bg-white shadow-sm">
                         <div className="relative">
-                          <img src={url} alt={`Inspiration ${index + 1}`} className="w-full h-24 object-cover" />
+                          {isImageFile(url) ? (
+                            <img src={url} alt={`Inspiration ${index + 1}`} className="w-full h-24 object-cover" />
+                          ) : (
+                            <div className="w-full h-24 bg-gray-100 flex flex-col items-center justify-center">
+                              <FileArchiveIcon className="h-8 w-8 text-gray-400 mb-1" />
+                              <span className="text-xs text-gray-500 truncate px-2 max-w-full">
+                                {getFileName(url)}
+                              </span>
+                            </div>
+                          )}
                         </div>
                         <div className="p-2 flex justify-between items-center bg-gray-50">
                           <button
