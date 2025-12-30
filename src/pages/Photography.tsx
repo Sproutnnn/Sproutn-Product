@@ -51,6 +51,7 @@ const Photography: React.FC = () => {
   const [showEditPackageForm, setShowEditPackageForm] = useState(false);
   const [editingPackage, setEditingPackage] = useState<PhotographyPackage | null>(null);
   const [editPriceInput, setEditPriceInput] = useState('0');
+  const [editImageCountInput, setEditImageCountInput] = useState('0');
 
   // Customer questionnaire upload
   const [customerQuestionnaireUrl, setCustomerQuestionnaireUrl] = useState<string | null>(null);
@@ -264,7 +265,11 @@ const Photography: React.FC = () => {
 
     try {
       const updatedPackages = packages.map(p =>
-        p.id === editingPackage.id ? { ...editingPackage, price: parseFloat(editPriceInput) || 0 } : p
+        p.id === editingPackage.id ? {
+          ...editingPackage,
+          price: parseFloat(editPriceInput) || 0,
+          imageCount: parseInt(editImageCountInput) || 0
+        } : p
       );
 
       await projectsService.update(id, {
@@ -661,6 +666,7 @@ const Photography: React.FC = () => {
                               e.stopPropagation();
                               setEditingPackage(pkg);
                               setEditPriceInput(pkg.price.toString());
+                              setEditImageCountInput(pkg.imageCount.toString());
                               setShowEditPackageForm(true);
                             }}
                             className="p-1 text-gray-400 hover:text-primary-600 rounded"
@@ -997,9 +1003,14 @@ const Photography: React.FC = () => {
                 <div>
                   <label className="block text-sm font-medium text-gray-700">Image Count</label>
                   <input
-                    type="number"
-                    value={editingPackage.imageCount}
-                    onChange={(e) => setEditingPackage({ ...editingPackage, imageCount: parseInt(e.target.value) || 0 })}
+                    type="text"
+                    value={editImageCountInput}
+                    onChange={(e) => {
+                      const val = e.target.value;
+                      if (val === '' || /^\d*$/.test(val)) {
+                        setEditImageCountInput(val);
+                      }
+                    }}
                     className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 sm:text-sm"
                     required
                   />
