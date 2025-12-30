@@ -84,13 +84,23 @@ const ProjectCreation: React.FC = () => {
               </label>
               <select id="category" name="category" value={formData.category} onChange={handleChange} className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
                 <option value="">Select a category</option>
+                <option value="arts-crafts">Arts & Crafts</option>
+                <option value="automotive">Automotive</option>
+                <option value="baby-kids">Baby & Kids</option>
                 <option value="beauty-personal-care">Beauty & Personal Care</option>
-                <option value="home-kitchen">Home & Kitchen</option>
+                <option value="books-media">Books & Media</option>
                 <option value="electronics-tech">Electronics & Tech</option>
-                <option value="sports-outdoors">Sports & Outdoors</option>
-                <option value="health-wellness">Health & Wellness</option>
-                <option value="toys-games">Toys & Games</option>
                 <option value="fashion-accessories">Fashion & Accessories</option>
+                <option value="food-beverages">Food & Beverages</option>
+                <option value="garden-outdoor">Garden & Outdoor</option>
+                <option value="health-wellness">Health & Wellness</option>
+                <option value="home-kitchen">Home & Kitchen</option>
+                <option value="jewelry-watches">Jewelry & Watches</option>
+                <option value="office-school">Office & School Supplies</option>
+                <option value="pet-supplies">Pet Supplies</option>
+                <option value="sports-outdoors">Sports & Outdoors</option>
+                <option value="tools-home-improvement">Tools & Home Improvement</option>
+                <option value="toys-games">Toys & Games</option>
                 <option value="other">Other</option>
               </select>
               {formData.category === 'other' && (
