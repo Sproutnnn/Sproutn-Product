@@ -749,48 +749,68 @@ const Marketing: React.FC = () => {
 
             {/* Brand Inspiration Upload */}
             <div className="border-t border-gray-200 pt-6">
-              <h3 className="text-lg font-medium text-gray-900 mb-3">Upload Brand Inspiration</h3>
-              <p className="text-sm text-gray-500 mb-4">Share brand assets, inspiration, or examples to help us understand your brand identity.</p>
-              <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center">
-                <input type="file" multiple accept="image/*,.pdf,.doc,.docx,.zip" className="hidden" id="brand-upload" onChange={handleFileChange} />
-                <label htmlFor="brand-upload" className="cursor-pointer flex flex-col items-center justify-center">
-                  <UploadIcon className="h-10 w-10 text-gray-400 mb-3" />
-                  <p className="text-sm font-medium text-gray-700">Drag and drop files here or click to browse</p>
-                  <p className="text-xs text-gray-500 mt-1">JPG, PNG, PDF, DOC, or ZIP files</p>
-                </label>
-              </div>
-              {uploadedFiles.length > 0 && (
-                <div className="mt-4">
-                  <h4 className="text-sm font-medium text-gray-700 mb-2">Files to Upload ({uploadedFiles.length})</h4>
-                  <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3 mb-3">
-                    {uploadedFiles.map((file, index) => (
-                      <div key={index} className="border rounded-md p-2 flex items-center relative">
-                        <button
-                          onClick={() => setUploadedFiles(prev => prev.filter((_, i) => i !== index))}
-                          className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full p-0.5 hover:bg-red-600"
-                        >
-                          <XIcon className="h-3 w-3" />
-                        </button>
-                        <div className="flex-shrink-0 w-8 h-8 bg-gray-100 rounded-md flex items-center justify-center mr-2">
-                          <span className="text-xs text-gray-500">FILE</span>
-                        </div>
-                        <div className="min-w-0 flex-1">
-                          <p className="text-xs font-medium text-gray-900 truncate">{file.name}</p>
-                          <p className="text-xs text-gray-500">{(file.size / 1024).toFixed(1)} KB</p>
-                        </div>
-                      </div>
-                    ))}
+              <h3 className="text-lg font-medium text-gray-900 mb-3">Brand Inspiration Files</h3>
+              <p className="text-sm text-gray-500 mb-4">
+                {user?.role === 'admin'
+                  ? 'Brand assets and inspiration uploaded by the customer.'
+                  : 'Share brand assets, inspiration, or examples to help us understand your brand identity.'}
+              </p>
+
+              {/* Upload section - only for customer before submission */}
+              {user?.role === 'customer' && !marketingPlanSubmitted && (
+                <>
+                  <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center">
+                    <input type="file" multiple accept="image/*,.pdf,.doc,.docx,.zip" className="hidden" id="brand-upload" onChange={handleFileChange} />
+                    <label htmlFor="brand-upload" className="cursor-pointer flex flex-col items-center justify-center">
+                      <UploadIcon className="h-10 w-10 text-gray-400 mb-3" />
+                      <p className="text-sm font-medium text-gray-700">Drag and drop files here or click to browse</p>
+                      <p className="text-xs text-gray-500 mt-1">JPG, PNG, PDF, DOC, or ZIP files</p>
+                    </label>
                   </div>
-                  <button
-                    onClick={handleBrandUpload}
-                    disabled={uploadingBrand}
-                    className="inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-primary-600 hover:bg-primary-700 disabled:bg-gray-400"
-                  >
-                    {uploadingBrand ? 'Uploading...' : 'Upload Files'}
-                  </button>
+                  {uploadedFiles.length > 0 && (
+                    <div className="mt-4">
+                      <h4 className="text-sm font-medium text-gray-700 mb-2">Files to Upload ({uploadedFiles.length})</h4>
+                      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3 mb-3">
+                        {uploadedFiles.map((file, index) => (
+                          <div key={index} className="border rounded-md p-2 flex items-center relative">
+                            <button
+                              onClick={() => setUploadedFiles(prev => prev.filter((_, i) => i !== index))}
+                              className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full p-0.5 hover:bg-red-600"
+                            >
+                              <XIcon className="h-3 w-3" />
+                            </button>
+                            <div className="flex-shrink-0 w-8 h-8 bg-gray-100 rounded-md flex items-center justify-center mr-2">
+                              <span className="text-xs text-gray-500">FILE</span>
+                            </div>
+                            <div className="min-w-0 flex-1">
+                              <p className="text-xs font-medium text-gray-900 truncate">{file.name}</p>
+                              <p className="text-xs text-gray-500">{(file.size / 1024).toFixed(1)} KB</p>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                      <button
+                        onClick={handleBrandUpload}
+                        disabled={uploadingBrand}
+                        className="inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-primary-600 hover:bg-primary-700 disabled:bg-gray-400"
+                      >
+                        {uploadingBrand ? 'Uploading...' : 'Upload Files'}
+                      </button>
+                    </div>
+                  )}
+                </>
+              )}
+
+              {/* Locked message for customer after submission */}
+              {user?.role === 'customer' && marketingPlanSubmitted && (
+                <div className="mb-4 p-3 bg-gray-50 border border-gray-200 rounded-md flex items-center">
+                  <LockIcon className="h-4 w-4 text-gray-400 mr-2" />
+                  <p className="text-sm text-gray-500">File uploads are locked after submission.</p>
                 </div>
               )}
-              {brandInspirationFiles.length > 0 && (
+
+              {/* Display uploaded files - visible to both roles */}
+              {brandInspirationFiles.length > 0 ? (
                 <div className="mt-4">
                   <h4 className="text-sm font-medium text-gray-700 mb-2">Uploaded Brand Files ({brandInspirationFiles.length})</h4>
                   <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
@@ -801,6 +821,10 @@ const Marketing: React.FC = () => {
                       </a>
                     ))}
                   </div>
+                </div>
+              ) : (
+                <div className="mt-4 p-3 bg-gray-50 border border-gray-200 rounded-md">
+                  <p className="text-sm text-gray-500">No brand inspiration files uploaded yet.</p>
                 </div>
               )}
             </div>
