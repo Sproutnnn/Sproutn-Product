@@ -535,11 +535,15 @@ const ProjectDetails: React.FC = () => {
                     <div className="flex items-center gap-2">
                       <span className="text-lg text-gray-500">$</span>
                       <input
-                        type="number"
-                        min="0"
-                        step="0.01"
-                        value={starterFee}
-                        onChange={(e) => setStarterFee(parseFloat(e.target.value) || 0)}
+                        type="text"
+                        inputMode="decimal"
+                        value={starterFee || ''}
+                        onChange={(e) => {
+                          const val = e.target.value;
+                          if (val === '' || /^\d*\.?\d*$/.test(val)) {
+                            setStarterFee(val === '' ? 0 : parseFloat(val) || 0);
+                          }
+                        }}
                         className="w-28 text-xl font-bold text-gray-900 border border-gray-300 rounded-md px-2 py-1 focus:outline-none focus:ring-primary-500 focus:border-primary-500"
                       />
                       <button

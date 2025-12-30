@@ -420,7 +420,7 @@ const Sourcing: React.FC = () => {
                     <label htmlFor="minOrderQuantity" className="block text-sm font-medium text-gray-700">
                       Min Order Quantity *
                     </label>
-                    <input type="number" name="minOrderQuantity" id="minOrderQuantity" required min="1" value={newManufacturer.minOrderQuantity} onChange={handleManufacturerChange} className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-primary-500 focus:border-primary-500 sm:text-sm" />
+                    <input type="text" inputMode="numeric" name="minOrderQuantity" id="minOrderQuantity" required value={newManufacturer.minOrderQuantity || ''} onChange={(e) => { const val = e.target.value; if (val === '' || /^\d*$/.test(val)) { handleManufacturerChange({ target: { name: 'minOrderQuantity', value: val === '' ? 0 : parseInt(val) || 0 } } as any); } }} className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-primary-500 focus:border-primary-500 sm:text-sm" />
                   </div>
                   <div className="sm:col-span-2">
                     <label htmlFor="leadTime" className="block text-sm font-medium text-gray-700">
@@ -432,7 +432,7 @@ const Sourcing: React.FC = () => {
                     <label htmlFor="price" className="block text-sm font-medium text-gray-700">
                       Unit Price (USD) *
                     </label>
-                    <input type="number" name="price" id="price" required min="0.01" step="0.01" value={newManufacturer.price} onChange={handleManufacturerChange} className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-primary-500 focus:border-primary-500 sm:text-sm" />
+                    <input type="text" inputMode="decimal" name="price" id="price" required value={newManufacturer.price || ''} onChange={(e) => { const val = e.target.value; if (val === '' || /^\d*\.?\d*$/.test(val)) { handleManufacturerChange({ target: { name: 'price', value: val === '' ? 0 : parseFloat(val) || 0 } } as any); } }} className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-primary-500 focus:border-primary-500 sm:text-sm" />
                   </div>
                   <div className="sm:col-span-6">
                     <label htmlFor="details" className="block text-sm font-medium text-gray-700">
@@ -725,12 +725,17 @@ const Sourcing: React.FC = () => {
                     Min Order Quantity *
                   </label>
                   <input
-                    type="number"
+                    type="text"
+                    inputMode="numeric"
                     name="minOrderQuantity"
                     required
-                    min="1"
-                    value={editingManufacturer.minOrderQuantity}
-                    onChange={handleEditManufacturerChange}
+                    value={editingManufacturer.minOrderQuantity || ''}
+                    onChange={(e) => {
+                      const val = e.target.value;
+                      if (val === '' || /^\d*$/.test(val)) {
+                        handleEditManufacturerChange({ target: { name: 'minOrderQuantity', value: val === '' ? 0 : parseInt(val) || 0 } } as any);
+                      }
+                    }}
                     className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-primary-500 focus:border-primary-500 sm:text-sm"
                   />
                 </div>
@@ -753,13 +758,17 @@ const Sourcing: React.FC = () => {
                     Unit Price (USD) *
                   </label>
                   <input
-                    type="number"
+                    type="text"
+                    inputMode="decimal"
                     name="price"
                     required
-                    min="0.01"
-                    step="0.01"
-                    value={editingManufacturer.price}
-                    onChange={handleEditManufacturerChange}
+                    value={editingManufacturer.price || ''}
+                    onChange={(e) => {
+                      const val = e.target.value;
+                      if (val === '' || /^\d*\.?\d*$/.test(val)) {
+                        handleEditManufacturerChange({ target: { name: 'price', value: val === '' ? 0 : parseFloat(val) || 0 } } as any);
+                      }
+                    }}
                     className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-primary-500 focus:border-primary-500 sm:text-sm"
                   />
                 </div>

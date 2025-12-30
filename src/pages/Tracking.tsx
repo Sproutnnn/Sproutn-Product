@@ -395,11 +395,15 @@ const Tracking: React.FC = () => {
                 <div>
                   <label className="block text-sm font-medium text-gray-700">QC Cost ($)</label>
                   <input
-                    type="number"
-                    value={qcCost}
-                    onChange={(e) => setQcCost(parseFloat(e.target.value) || 0)}
-                    min="0"
-                    step="0.01"
+                    type="text"
+                    inputMode="decimal"
+                    value={qcCost || ''}
+                    onChange={(e) => {
+                      const val = e.target.value;
+                      if (val === '' || /^\d*\.?\d*$/.test(val)) {
+                        setQcCost(val === '' ? 0 : parseFloat(val) || 0);
+                      }
+                    }}
                     className="mt-1 block w-full border border-gray-300 rounded-md py-2 px-3 sm:text-sm focus:outline-none focus:ring-primary-500 focus:border-primary-500"
                     placeholder="0.00"
                   />
@@ -407,11 +411,15 @@ const Tracking: React.FC = () => {
                 <div>
                   <label className="block text-sm font-medium text-gray-700">Freight Cost ($)</label>
                   <input
-                    type="number"
-                    value={freightCost}
-                    onChange={(e) => setFreightCost(parseFloat(e.target.value) || 0)}
-                    min="0"
-                    step="0.01"
+                    type="text"
+                    inputMode="decimal"
+                    value={freightCost || ''}
+                    onChange={(e) => {
+                      const val = e.target.value;
+                      if (val === '' || /^\d*\.?\d*$/.test(val)) {
+                        setFreightCost(val === '' ? 0 : parseFloat(val) || 0);
+                      }
+                    }}
                     className="mt-1 block w-full border border-gray-300 rounded-md py-2 px-3 sm:text-sm focus:outline-none focus:ring-primary-500 focus:border-primary-500"
                     placeholder="500.00"
                   />

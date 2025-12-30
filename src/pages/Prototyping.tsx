@@ -420,11 +420,15 @@ const Prototyping: React.FC = () => {
                       Sample Price ($)
                     </label>
                     <input
-                      type="number"
-                      step="0.01"
-                      min="0"
+                      type="text"
+                      inputMode="decimal"
                       value={samplePrice || ''}
-                      onChange={(e) => setSamplePrice(parseFloat(e.target.value) || 0)}
+                      onChange={(e) => {
+                        const val = e.target.value;
+                        if (val === '' || /^\d*\.?\d*$/.test(val)) {
+                          setSamplePrice(val === '' ? 0 : parseFloat(val) || 0);
+                        }
+                      }}
                       className="block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-primary-500 focus:border-primary-500 sm:text-sm"
                       placeholder="Enter sample price"
                     />

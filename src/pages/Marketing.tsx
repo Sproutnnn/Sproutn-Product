@@ -1025,9 +1025,15 @@ const Marketing: React.FC = () => {
               <div>
                 <label className="block text-sm font-medium text-gray-700">Price ($)</label>
                 <input
-                  type="number"
-                  value={newPackage.price}
-                  onChange={(e) => setNewPackage(prev => ({ ...prev, price: parseFloat(e.target.value) || 0 }))}
+                  type="text"
+                  inputMode="decimal"
+                  value={newPackage.price || ''}
+                  onChange={(e) => {
+                    const val = e.target.value;
+                    if (val === '' || /^\d*\.?\d*$/.test(val)) {
+                      setNewPackage(prev => ({ ...prev, price: val === '' ? 0 : parseFloat(val) || 0 }));
+                    }
+                  }}
                   className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 sm:text-sm"
                   required
                 />
