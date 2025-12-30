@@ -97,6 +97,13 @@ const Marketing: React.FC = () => {
 
         if (projectData.marketing_packages && projectData.marketing_packages.length > 0) {
           setPackages(projectData.marketing_packages);
+        } else {
+          // Load default packages if none exist
+          const packagesWithIds = defaultMarketingPackages.map(pkg => ({
+            ...pkg,
+            id: `mkt_pkg_${Date.now()}_${Math.random().toString(36).substring(7)}`
+          }));
+          setPackages(packagesWithIds);
         }
 
         if (projectData.selected_marketing_package) {
