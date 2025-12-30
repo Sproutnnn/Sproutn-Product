@@ -46,6 +46,7 @@ const Photography: React.FC = () => {
     recommended: false
   });
   const [priceInput, setPriceInput] = useState('0'); // String state for price input
+  const [imageCountInput, setImageCountInput] = useState('0'); // String state for image count input
 
   // Edit package state
   const [showEditPackageForm, setShowEditPackageForm] = useState(false);
@@ -194,6 +195,8 @@ const Photography: React.FC = () => {
     try {
       const pkg: PhotographyPackage = {
         ...newPackage,
+        price: parseFloat(priceInput) || 0,
+        imageCount: parseInt(imageCountInput) || 0,
         id: `photo_pkg_${Date.now()}`
       };
 
@@ -212,6 +215,8 @@ const Photography: React.FC = () => {
         features: [''],
         recommended: false
       });
+      setPriceInput('0');
+      setImageCountInput('0');
       setShowAddPackageForm(false);
       alert('Package added successfully!');
     } catch (err) {
@@ -897,9 +902,14 @@ const Photography: React.FC = () => {
                 <div>
                   <label className="block text-sm font-medium text-gray-700">Image Count</label>
                   <input
-                    type="number"
-                    value={newPackage.imageCount}
-                    onChange={(e) => setNewPackage(prev => ({ ...prev, imageCount: parseInt(e.target.value) || 0 }))}
+                    type="text"
+                    value={imageCountInput}
+                    onChange={(e) => {
+                      const val = e.target.value;
+                      if (val === '' || /^\d*$/.test(val)) {
+                        setImageCountInput(val);
+                      }
+                    }}
                     className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 sm:text-sm"
                     required
                   />
