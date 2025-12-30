@@ -167,6 +167,41 @@ const Photography: React.FC = () => {
     }
   };
 
+  const handleDeleteInspirationFile = async (urlToDelete: string, index: number) => {
+    if (!id) return;
+
+    if (!window.confirm('Are you sure you want to delete this image?')) return;
+
+    try {
+      // Extract file path from URL for storage deletion
+      const urlParts = urlToDelete.split('/project-files/');
+      if (urlParts.length > 1) {
+        const filePath = urlParts[1];
+        await supabase.storage.from('project-files').remove([filePath]);
+      }
+
+      // Update the list
+      const updatedFiles = inspirationFiles.filter((_, i) => i !== index);
+      await projectsService.update(id, {
+        photography_inspiration_files: updatedFiles
+      });
+      setInspirationFiles(updatedFiles);
+    } catch (err) {
+      console.error('Error deleting file:', err);
+      alert('Failed to delete file. Please try again.');
+    }
+  };
+
+  const handleDownloadInspirationFile = (url: string, index: number) => {
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = `inspiration_${index + 1}.jpg`;
+    link.target = '_blank';
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
+
   const handleQuestionnaireUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     if (!id || !e.target.files || !e.target.files[0]) return;
 
@@ -487,8 +522,28 @@ const Photography: React.FC = () => {
                   <h4 className="text-sm font-medium text-gray-700 mb-2">Uploaded Inspiration ({inspirationFiles.length})</h4>
                   <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
                     {inspirationFiles.map((url, index) => (
-                      <div key={index} className="border rounded-lg overflow-hidden">
-                        <img src={url} alt={`Inspiration ${index + 1}`} className="w-full h-24 object-cover" />
+                      <div key={index} className="border rounded-lg overflow-hidden bg-white shadow-sm">
+                        <div className="relative">
+                          <img src={url} alt={`Inspiration ${index + 1}`} className="w-full h-24 object-cover" />
+                        </div>
+                        <div className="p-2 flex justify-between items-center bg-gray-50">
+                          <button
+                            onClick={() => handleDownloadInspirationFile(url, index)}
+                            className="inline-flex items-center text-xs text-primary-600 hover:text-primary-800"
+                            title="Download"
+                          >
+                            <DownloadIcon className="h-3 w-3 mr-1" />
+                            Download
+                          </button>
+                          <button
+                            onClick={() => handleDeleteInspirationFile(url, index)}
+                            className="inline-flex items-center text-xs text-red-600 hover:text-red-800"
+                            title="Delete"
+                          >
+                            <TrashIcon className="h-3 w-3 mr-1" />
+                            Delete
+                          </button>
+                        </div>
                       </div>
                     ))}
                   </div>
