@@ -353,12 +353,12 @@ const Prototyping: React.FC = () => {
                       <option value="feedback">Feedback Received</option>
                     </select>
                   </div>
-                  {adminData.prototypeStatus === 'shipping' && <>
+                  {['shipping', 'delivered', 'feedback'].includes(adminData.prototypeStatus) && <>
                       <div>
                         <label htmlFor="trackingNumber" className="block text-sm font-medium text-gray-700">
-                          Tracking Number
+                          Tracking Number {adminData.prototypeStatus === 'shipping' && <span className="text-red-500">*</span>}
                         </label>
-                        <input type="text" name="trackingNumber" id="trackingNumber" value={adminData.trackingNumber} onChange={handleAdminChange} className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-primary-500 focus:border-primary-500 sm:text-sm" />
+                        <input type="text" name="trackingNumber" id="trackingNumber" value={adminData.trackingNumber} onChange={handleAdminChange} required={adminData.prototypeStatus === 'shipping'} className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-primary-500 focus:border-primary-500 sm:text-sm" placeholder="Enter tracking number" />
                       </div>
                       <div>
                         <label htmlFor="estimatedDelivery" className="block text-sm font-medium text-gray-700">
@@ -610,19 +610,25 @@ const Prototyping: React.FC = () => {
               </div>}
           </div>
           {/* Tracking Information for Customer */}
-          {user?.role === 'customer' && project.tracking_number && ['shipping', 'delivered', 'feedback'].includes(project.prototype_status) && (
+          {user?.role === 'customer' && ['shipping', 'delivered', 'feedback'].includes(project.prototype_status) && (
             <div className="mt-6 bg-blue-50 border border-blue-200 rounded-md p-4">
               <h3 className="text-md font-medium text-gray-900 mb-2 flex items-center">
                 <TruckIcon className="h-5 w-5 mr-2 text-blue-600" />
                 Tracking Information
               </h3>
               <div className="text-sm">
-                <p><span className="font-medium">Tracking Number:</span> {project.tracking_number}</p>
-                {project.estimated_delivery && (
-                  <p className="mt-1">
-                    <span className="font-medium">Estimated Delivery:</span>{' '}
-                    {new Date(project.estimated_delivery + 'T00:00:00').toLocaleDateString()}
-                  </p>
+                {project.tracking_number ? (
+                  <>
+                    <p><span className="font-medium">Tracking Number:</span> {project.tracking_number}</p>
+                    {project.estimated_delivery && (
+                      <p className="mt-1">
+                        <span className="font-medium">Estimated Delivery:</span>{' '}
+                        {new Date(project.estimated_delivery + 'T00:00:00').toLocaleDateString()}
+                      </p>
+                    )}
+                  </>
+                ) : (
+                  <p className="text-gray-600">Tracking number will be provided shortly.</p>
                 )}
               </div>
             </div>
@@ -748,8 +754,8 @@ const Prototyping: React.FC = () => {
         </div>
       </div>
 
-      {/* Feedback Threads Section */}
-      {id && (
+      {/* Feedback Threads Section - Only show after sample is delivered */}
+      {id && ['delivered', 'feedback'].includes(project.prototype_status || '') && (
         <div className="mt-6">
           <FeedbackThreadList projectId={id} />
         </div>
