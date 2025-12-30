@@ -185,6 +185,15 @@ const FeedbackThreadView: React.FC<FeedbackThreadViewProps> = ({ thread, onBack,
           <div className="ml-3 flex-1">
             <p className="text-sm font-medium text-gray-900">{thread.creator?.name || 'Unknown'}</p>
             <p className="text-sm text-gray-700 mt-1 whitespace-pre-wrap">{thread.initial_feedback}</p>
+            {thread.images && thread.images.length > 0 && (
+              <div className="mt-2 flex flex-wrap gap-2">
+                {thread.images.map((img, idx) => (
+                  <a key={idx} href={img} target="_blank" rel="noopener noreferrer">
+                    <img src={img} alt={`Attachment ${idx + 1}`} className="h-20 w-20 object-cover rounded border" />
+                  </a>
+                ))}
+              </div>
+            )}
           </div>
         </div>
       </div>

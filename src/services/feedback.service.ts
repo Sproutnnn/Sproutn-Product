@@ -5,6 +5,7 @@ export interface FeedbackThread {
   project_id: string;
   title: string;
   initial_feedback: string;
+  images: string[];
   status: 'open' | 'resolved' | 'pending';
   category: 'general' | 'design' | 'quality' | 'shipping' | 'other';
   created_by: string;
@@ -41,6 +42,7 @@ export interface CreateThreadInput {
   initial_feedback: string;
   category?: string;
   created_by: string;
+  images?: string[];
 }
 
 export interface CreateReplyInput {
@@ -145,6 +147,7 @@ class FeedbackService {
         initial_feedback: input.initial_feedback,
         category: input.category || 'general',
         created_by: input.created_by,
+        images: input.images || [],
         status: 'open'
       })
       .select(`
