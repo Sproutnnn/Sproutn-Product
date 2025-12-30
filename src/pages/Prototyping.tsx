@@ -1,8 +1,9 @@
 import React, { useEffect, useState, Fragment } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { ArrowLeftIcon, ArrowRightIcon, CheckIcon, BoxIcon, MapPinIcon, CameraIcon, MessageCircleIcon, ImageIcon, DownloadIcon, XIcon, TruckIcon, RefreshCwIcon } from 'lucide-react';
+import { ArrowLeftIcon, ArrowRightIcon, CheckIcon, BoxIcon, MapPinIcon, CameraIcon, MessageCircleIcon, ImageIcon, DownloadIcon, XIcon, TruckIcon, RefreshCwIcon, CreditCardIcon } from 'lucide-react';
 import ModuleNavigation from '../components/ModuleNavigation';
 import AdminStatusControl from '../components/AdminStatusControl';
+import StripePaymentModal from '../components/StripePaymentModal';
 import { useAuth } from '../context/AuthContext';
 import { projectsService } from '../services/projects.service';
 import { supabase } from '../lib/supabase';
@@ -39,6 +40,12 @@ const Prototyping: React.FC = () => {
   });
   const [feedback, setFeedback] = useState('');
   const [feedbackImages, setFeedbackImages] = useState<File[]>([]);
+
+  // Sample payment state
+  const [showSamplePaymentModal, setShowSamplePaymentModal] = useState(false);
+  const [samplePaymentComplete, setSamplePaymentComplete] = useState(false);
+  const [samplePrice, setSamplePrice] = useState(0);
+
   useEffect(() => {
     const loadProject = async () => {
       if (!id) return;
@@ -85,6 +92,14 @@ const Prototyping: React.FC = () => {
           setFeedback(projectData.customer_feedback);
         }
 
+        // Load sample payment status
+        if (projectData.sample_payment_complete) {
+          setSamplePaymentComplete(true);
+        }
+        if (projectData.sample_price) {
+          setSamplePrice(projectData.sample_price);
+        }
+
       } catch (err) {
         setError(err instanceof Error ? err.message : 'Failed to load project');
       } finally {
@@ -94,6 +109,20 @@ const Prototyping: React.FC = () => {
 
     loadProject();
   }, [id]);
+
+  const handleSamplePaymentSuccess = async () => {
+    if (!id) return;
+    try {
+      await projectsService.update(id, {
+        sample_payment_complete: true,
+        sample_payment_date: new Date().toISOString()
+      });
+      setSamplePaymentComplete(true);
+    } catch (err) {
+      console.error('Error updating sample payment status:', err);
+    }
+  };
+
   const handleFeedbackChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     setFeedback(e.target.value);
   };
@@ -349,6 +378,81 @@ const Prototyping: React.FC = () => {
                 </div>
               </div>
             </div>
+
+            {/* Sample Payment Section for Customer */}
+            {user?.role === 'customer' && samplePrice > 0 && (project.prototype_status === 'producing' || !project.prototype_status) && (
+              <div className="mb-6 bg-gray-50 p-4 rounded-lg border border-gray-200">
+                <div className="flex justify-between items-center">
+                  <div>
+                    <h3 className="text-lg font-medium text-gray-900">Sample Production Fee</h3>
+                    <p className="text-sm text-gray-500">Payment required to begin sample production</p>
+                  </div>
+                  <div className="text-xl font-bold text-gray-900">
+                    ${samplePrice.toFixed(2)}
+                  </div>
+                </div>
+                <div className="mt-4">
+                  {samplePaymentComplete ? (
+                    <div className="w-full inline-flex items-center justify-center py-2 px-4 bg-green-100 text-green-800 rounded-md">
+                      <CheckIcon className="mr-2 h-5 w-5" />
+                      Payment Complete - Sample in Production
+                    </div>
+                  ) : (
+                    <button
+                      onClick={() => setShowSamplePaymentModal(true)}
+                      className="w-full inline-flex items-center justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-primary-600 hover:bg-primary-700"
+                    >
+                      <CreditCardIcon className="mr-2 h-5 w-5" />
+                      Pay for Sample
+                    </button>
+                  )}
+                </div>
+              </div>
+            )}
+
+            {/* Admin: Set Sample Price */}
+            {user?.role === 'admin' && (project.prototype_status === 'producing' || !project.prototype_status) && (
+              <div className="mb-6 bg-purple-50 p-4 rounded-lg border border-purple-200">
+                <h3 className="text-md font-medium text-gray-900 mb-3">Sample Pricing</h3>
+                <div className="flex items-center gap-4">
+                  <div className="flex-1">
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      Sample Price ($)
+                    </label>
+                    <input
+                      type="number"
+                      step="0.01"
+                      min="0"
+                      value={samplePrice || ''}
+                      onChange={(e) => setSamplePrice(parseFloat(e.target.value) || 0)}
+                      className="block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-primary-500 focus:border-primary-500 sm:text-sm"
+                      placeholder="Enter sample price"
+                    />
+                  </div>
+                  <button
+                    onClick={async () => {
+                      if (!id) return;
+                      try {
+                        await projectsService.update(id, { sample_price: samplePrice });
+                        alert('Sample price updated!');
+                      } catch (err) {
+                        alert('Failed to update price');
+                      }
+                    }}
+                    className="mt-6 px-4 py-2 bg-purple-600 text-white rounded-md hover:bg-purple-700 text-sm"
+                  >
+                    Save Price
+                  </button>
+                </div>
+                {samplePaymentComplete && (
+                  <p className="mt-2 text-sm text-green-600 flex items-center">
+                    <CheckIcon className="h-4 w-4 mr-1" />
+                    Customer has paid for this sample
+                  </p>
+                )}
+              </div>
+            )}
+
             {user?.role === 'admin' && <>
               <form onSubmit={handleAdminSubmit} className="border rounded-md p-4 bg-gray-50">
                 <h3 className="text-md font-medium text-gray-900 mb-4">
@@ -874,6 +978,20 @@ const Prototyping: React.FC = () => {
             </div>
           </div>
         </div>
+      )}
+
+      {/* Sample Payment Modal */}
+      {id && samplePrice > 0 && (
+        <StripePaymentModal
+          isOpen={showSamplePaymentModal}
+          onClose={() => setShowSamplePaymentModal(false)}
+          onSuccess={handleSamplePaymentSuccess}
+          projectId={id}
+          paymentType="sample"
+          amount={samplePrice}
+          title="Sample Production Payment"
+          description="Payment for sample production and shipping."
+        />
       )}
     </div>;
 };

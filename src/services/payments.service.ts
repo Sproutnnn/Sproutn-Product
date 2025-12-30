@@ -4,7 +4,7 @@ import { loadStripe, Stripe } from '@stripe/stripe-js';
 // This should be your test key for development and live key for production
 const stripePromise = loadStripe(import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY || 'pk_test_placeholder');
 
-export type PaymentType = 'deposit' | 'remaining' | 'freight' | 'starter_fee' | 'photography' | 'marketing';
+export type PaymentType = 'deposit' | 'remaining' | 'freight' | 'starter_fee' | 'photography' | 'marketing' | 'sample';
 
 export interface PaymentIntent {
   clientSecret: string;
@@ -76,6 +76,11 @@ export const paymentsService = {
         updates.marketing_payment_complete = true;
         updates.marketing_payment_date = now;
         updates.stripe_marketing_payment_id = paymentIntentId;
+        break;
+      case 'sample':
+        updates.sample_payment_complete = true;
+        updates.sample_payment_date = now;
+        updates.stripe_sample_payment_id = paymentIntentId;
         break;
     }
 
