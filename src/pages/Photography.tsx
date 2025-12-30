@@ -3,6 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { ArrowLeftIcon, UploadIcon, DownloadIcon, CreditCardIcon, FileTextIcon, CheckIcon, PlusIcon, TrashIcon, StarIcon, XIcon, EditIcon, PackageIcon } from 'lucide-react';
 import ModuleNavigation from '../components/ModuleNavigation';
 import AdminStatusControl from '../components/AdminStatusControl';
+import StripePaymentModal from '../components/StripePaymentModal';
 import { useAuth } from '../context/AuthContext';
 import { projectsService } from '../services/projects.service';
 import { supabase } from '../lib/supabase';
@@ -57,6 +58,10 @@ const Photography: React.FC = () => {
   // Customer questionnaire upload
   const [customerQuestionnaireUrl, setCustomerQuestionnaireUrl] = useState<string | null>(null);
 
+  // Payment modal state
+  const [showPaymentModal, setShowPaymentModal] = useState(false);
+  const [photographyPaymentComplete, setPhotographyPaymentComplete] = useState(false);
+
   useEffect(() => {
     const loadProject = async () => {
       if (!id) return;
@@ -96,6 +101,10 @@ const Photography: React.FC = () => {
 
         if (projectData.customer_questionnaire_url) {
           setCustomerQuestionnaireUrl(projectData.customer_questionnaire_url);
+        }
+
+        if (projectData.photography_payment_complete) {
+          setPhotographyPaymentComplete(true);
         }
       } catch (err) {
         console.error('Error loading project:', err);
@@ -372,6 +381,19 @@ const Photography: React.FC = () => {
       features[index] = value;
       return { ...prev, features };
     });
+  };
+
+  const handlePhotographyPaymentSuccess = async () => {
+    if (!id) return;
+    try {
+      await projectsService.update(id, {
+        photography_payment_complete: true,
+        photography_payment_date: new Date().toISOString()
+      });
+      setPhotographyPaymentComplete(true);
+    } catch (err) {
+      console.error('Error updating payment status:', err);
+    }
   };
 
   if (loading) {
@@ -849,10 +871,20 @@ const Photography: React.FC = () => {
                     </div>
                   </div>
                   <div className="mt-4">
-                    <button className="w-full inline-flex items-center justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-primary-600 hover:bg-primary-700">
-                      <CreditCardIcon className="mr-2 h-5 w-5" />
-                      Make Payment
-                    </button>
+                    {photographyPaymentComplete ? (
+                      <div className="w-full inline-flex items-center justify-center py-2 px-4 bg-green-100 text-green-800 rounded-md">
+                        <CheckIcon className="mr-2 h-5 w-5" />
+                        Payment Complete
+                      </div>
+                    ) : (
+                      <button
+                        onClick={() => setShowPaymentModal(true)}
+                        className="w-full inline-flex items-center justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-primary-600 hover:bg-primary-700"
+                      >
+                        <CreditCardIcon className="mr-2 h-5 w-5" />
+                        Make Payment
+                      </button>
+                    )}
                   </div>
                 </div>
               </div>
@@ -1082,6 +1114,20 @@ const Photography: React.FC = () => {
             </form>
           </div>
         </div>
+      )}
+
+      {/* Photography Payment Modal */}
+      {id && selectedPackage && (
+        <StripePaymentModal
+          isOpen={showPaymentModal}
+          onClose={() => setShowPaymentModal(false)}
+          onSuccess={handlePhotographyPaymentSuccess}
+          projectId={id}
+          paymentType="photography"
+          amount={packages.find(p => p.id === selectedPackage)?.price || 0}
+          title="Photography Package Payment"
+          description={`Payment for ${packages.find(p => p.id === selectedPackage)?.name || 'photography package'}.`}
+        />
       )}
     </div>
   );

@@ -4,6 +4,7 @@ import { ArrowLeftIcon, UploadIcon, CreditCardIcon, LinkIcon, CheckIcon, Downloa
 import { useAuth } from '../context/AuthContext';
 import ModuleNavigation from '../components/ModuleNavigation';
 import AdminStatusControl from '../components/AdminStatusControl';
+import StripePaymentModal from '../components/StripePaymentModal';
 import { projectsService } from '../services/projects.service';
 import { supabase } from '../lib/supabase';
 import { defaultMarketingPackages } from '../data/defaultPackages';
@@ -59,6 +60,10 @@ const Marketing: React.FC = () => {
     recommended: false
   });
 
+  // Payment modal state
+  const [showPaymentModal, setShowPaymentModal] = useState(false);
+  const [marketingPaymentComplete, setMarketingPaymentComplete] = useState(false);
+
   useEffect(() => {
     const loadProject = async () => {
       if (!id) return;
@@ -110,6 +115,10 @@ const Marketing: React.FC = () => {
         }
         if (projectData.marketing_plan_admin_feedback) {
           setAdminFeedback(projectData.marketing_plan_admin_feedback);
+        }
+
+        if (projectData.marketing_payment_complete) {
+          setMarketingPaymentComplete(true);
         }
       } catch (err) {
         console.error('Error loading project:', err);
@@ -360,6 +369,19 @@ const Marketing: React.FC = () => {
     } catch (err) {
       console.error('Error selecting package:', err);
       alert('Failed to select package.');
+    }
+  };
+
+  const handleMarketingPaymentSuccess = async () => {
+    if (!id) return;
+    try {
+      await projectsService.update(id, {
+        marketing_payment_complete: true,
+        marketing_payment_date: new Date().toISOString()
+      });
+      setMarketingPaymentComplete(true);
+    } catch (err) {
+      console.error('Error updating payment status:', err);
     }
   };
 
@@ -957,10 +979,20 @@ const Marketing: React.FC = () => {
                     </div>
                   </div>
                   <div className="mt-4">
-                    <button className="w-full inline-flex items-center justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-primary-600 hover:bg-primary-700">
-                      <CreditCardIcon className="mr-2 h-5 w-5" />
-                      Make Payment
-                    </button>
+                    {marketingPaymentComplete ? (
+                      <div className="w-full inline-flex items-center justify-center py-2 px-4 bg-green-100 text-green-800 rounded-md">
+                        <CheckIcon className="mr-2 h-5 w-5" />
+                        Payment Complete
+                      </div>
+                    ) : (
+                      <button
+                        onClick={() => setShowPaymentModal(true)}
+                        className="w-full inline-flex items-center justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-primary-600 hover:bg-primary-700"
+                      >
+                        <CreditCardIcon className="mr-2 h-5 w-5" />
+                        Make Payment
+                      </button>
+                    )}
                   </div>
                 </div>
               </div>
@@ -1045,6 +1077,20 @@ const Marketing: React.FC = () => {
             </form>
           </div>
         </div>
+      )}
+
+      {/* Marketing Payment Modal */}
+      {id && selectedPackage && (
+        <StripePaymentModal
+          isOpen={showPaymentModal}
+          onClose={() => setShowPaymentModal(false)}
+          onSuccess={handleMarketingPaymentSuccess}
+          projectId={id}
+          paymentType="marketing"
+          amount={packages.find(p => p.id === selectedPackage)?.price || 0}
+          title="Marketing Package Payment"
+          description={`Payment for ${packages.find(p => p.id === selectedPackage)?.name || 'marketing package'}.`}
+        />
       )}
     </div>
   );

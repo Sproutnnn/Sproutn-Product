@@ -44,7 +44,6 @@ const Payment: React.FC = () => {
   }, [id]);
 
   const handlePaymentSuccess = () => {
-    alert('Payment successful! Thank you for your deposit.');
     // Update project status to production
     if (id) {
       projectsService.updateProjectStatus(id, 'production').then(() => {
