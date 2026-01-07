@@ -10,10 +10,11 @@ const About: React.FC = () => {
         <div className="container mx-auto px-6">
           <div className="max-w-3xl mx-auto text-center">
             <h1 className="text-4xl md:text-5xl font-bold mb-6 animate-slideUp">
-              The mission
+              Purpose & Mission
             </h1>
             <p className="text-xl mb-8 animate-slideUp animation-delay-200">
-              Empower people to act on their ideas. Make them trust themselves enough to take the jump and avoid a life of regret. We are obsessed with making your dreams come to life
+              Redefining the economy where small and medium-sized businesses hold greater value, power, and opportunity and more people become entrepreneurs.
+              Making starting a business more accessible with tools and a service that turn your ideas into reality.
             </p>
           </div>
         </div>

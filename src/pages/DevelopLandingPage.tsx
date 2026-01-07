@@ -81,7 +81,7 @@ const LandingPage: React.FC = () => {
               <div className="w-8 h-8 bg-teal-500/10 rounded-full flex items-center justify-center text-teal-400 mb-4">
                 <MonitorIcon className="h-4 w-4" />
               </div>
-              <h3 className="text-lg font-medium text-white mb-2">UI/UX Design</h3>
+              <h3 className="text-lg font-medium text-white mb-2">Beta Design</h3>
               <p className="text-sm text-gray-400">
                 Design your platform for the best user experience and clean aesthetic
               </p>
